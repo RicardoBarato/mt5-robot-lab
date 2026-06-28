@@ -1,0 +1,219 @@
+{
+  "backtest_real_run": false,
+  "champion_by_profile": {
+    "controlled_risk": {
+      "candidate_id": "xauusd_base_seed_e00d496de154",
+      "drawdown": 0,
+      "max_drawdown_tolerated": 20.0,
+      "mutation_origin": "trend_strength_variant",
+      "profile_allowed": true,
+      "profile_id": "controlled_risk",
+      "profile_label": "Controlled Risk Mode",
+      "profile_rank": 1,
+      "profile_rejection_reasons": [],
+      "profit": 0,
+      "ranking_metric": "profit",
+      "risk_flags": [],
+      "seed_id": "xauusd_base_seed",
+      "trades": 0
+    },
+    "wild": {
+      "candidate_id": "xauusd_base_seed_e00d496de154",
+      "drawdown": 0,
+      "max_drawdown_tolerated": 100.0,
+      "mutation_origin": "trend_strength_variant",
+      "profile_allowed": true,
+      "profile_id": "wild",
+      "profile_label": "Wild Mode",
+      "profile_rank": 1,
+      "profile_rejection_reasons": [],
+      "profit": 0,
+      "ranking_metric": "profit",
+      "risk_flags": [],
+      "seed_id": "xauusd_base_seed",
+      "trades": 0
+    }
+  },
+  "dd_max_tolerated_override": null,
+  "loop_execution": false,
+  "mt5_real_run": false,
+  "profiles": {
+    "controlled_risk": [
+      {
+        "candidate_id": "xauusd_base_seed_e00d496de154",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 20.0,
+        "mutation_origin": "trend_strength_variant",
+        "profile_allowed": true,
+        "profile_id": "controlled_risk",
+        "profile_label": "Controlled Risk Mode",
+        "profile_rank": 1,
+        "profile_rejection_reasons": [],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      },
+      {
+        "candidate_id": "xauusd_base_seed_cbc86a8b08d8",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 20.0,
+        "mutation_origin": "sessionless_exploration",
+        "profile_allowed": true,
+        "profile_id": "controlled_risk",
+        "profile_label": "Controlled Risk Mode",
+        "profile_rank": 2,
+        "profile_rejection_reasons": [],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      },
+      {
+        "candidate_id": "xauusd_base_seed_0ff1c86bfe88",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 20.0,
+        "mutation_origin": "wide_stop_asymmetric_payoff",
+        "profile_allowed": true,
+        "profile_id": "controlled_risk",
+        "profile_label": "Controlled Risk Mode",
+        "profile_rank": 3,
+        "profile_rejection_reasons": [],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      },
+      {
+        "candidate_id": "xauusd_base_seed_b08f740fc9d7",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 20.0,
+        "mutation_origin": "aggressive_grid_research",
+        "profile_allowed": false,
+        "profile_id": "controlled_risk",
+        "profile_label": "Controlled Risk Mode",
+        "profile_rank": 4,
+        "profile_rejection_reasons": [
+          "grid_not_allowed_in_profile"
+        ],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [
+          "grid_enabled"
+        ],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      },
+      {
+        "candidate_id": "xauusd_base_seed_ac00bfc6742a",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 20.0,
+        "mutation_origin": "martingale_research_flagged",
+        "profile_allowed": false,
+        "profile_id": "controlled_risk",
+        "profile_label": "Controlled Risk Mode",
+        "profile_rank": 5,
+        "profile_rejection_reasons": [
+          "martingale_not_allowed_in_profile"
+        ],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [
+          "martingale_enabled"
+        ],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      }
+    ],
+    "wild": [
+      {
+        "candidate_id": "xauusd_base_seed_e00d496de154",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 100.0,
+        "mutation_origin": "trend_strength_variant",
+        "profile_allowed": true,
+        "profile_id": "wild",
+        "profile_label": "Wild Mode",
+        "profile_rank": 1,
+        "profile_rejection_reasons": [],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      },
+      {
+        "candidate_id": "xauusd_base_seed_cbc86a8b08d8",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 100.0,
+        "mutation_origin": "sessionless_exploration",
+        "profile_allowed": true,
+        "profile_id": "wild",
+        "profile_label": "Wild Mode",
+        "profile_rank": 2,
+        "profile_rejection_reasons": [],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      },
+      {
+        "candidate_id": "xauusd_base_seed_b08f740fc9d7",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 100.0,
+        "mutation_origin": "aggressive_grid_research",
+        "profile_allowed": true,
+        "profile_id": "wild",
+        "profile_label": "Wild Mode",
+        "profile_rank": 3,
+        "profile_rejection_reasons": [],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [
+          "grid_enabled"
+        ],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      },
+      {
+        "candidate_id": "xauusd_base_seed_ac00bfc6742a",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 100.0,
+        "mutation_origin": "martingale_research_flagged",
+        "profile_allowed": true,
+        "profile_id": "wild",
+        "profile_label": "Wild Mode",
+        "profile_rank": 4,
+        "profile_rejection_reasons": [],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [
+          "martingale_enabled"
+        ],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      },
+      {
+        "candidate_id": "xauusd_base_seed_0ff1c86bfe88",
+        "drawdown": 0,
+        "max_drawdown_tolerated": 100.0,
+        "mutation_origin": "wide_stop_asymmetric_payoff",
+        "profile_allowed": true,
+        "profile_id": "wild",
+        "profile_label": "Wild Mode",
+        "profile_rank": 5,
+        "profile_rejection_reasons": [],
+        "profit": 0,
+        "ranking_metric": "profit",
+        "risk_flags": [],
+        "seed_id": "xauusd_base_seed",
+        "trades": 0
+      }
+    ]
+  },
+  "status": "risk_profile_ranking_completed"
+}

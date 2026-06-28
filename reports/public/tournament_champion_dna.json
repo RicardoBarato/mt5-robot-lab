@@ -1,0 +1,30 @@
+{
+  "backtest_real_run": false,
+  "candidate_id": "xauusd_base_seed_e00d496de154",
+  "drawdown": 0,
+  "loop_execution": false,
+  "mt5_real_run": false,
+  "mutation_origin": "trend_strength_variant",
+  "parameters": {
+    "ADX_min": 30,
+    "ATR_period": 21,
+    "SL": 350.0,
+    "TP_R": 2.5,
+    "break_even": true,
+    "lot_multiplier": 1.0,
+    "risk_percent": 1.0,
+    "trailing_stop": false,
+    "use_grid": false,
+    "use_martingale": false,
+    "use_session_filter": true
+  },
+  "profit": 0,
+  "profit_factor": 0,
+  "rank": 1,
+  "ranking_metric": "profit",
+  "risk_flags": [],
+  "seed_id": "xauusd_base_seed",
+  "status": "smoke_run",
+  "trades": 0,
+  "winrate": 0
+}
