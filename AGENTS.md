@@ -33,3 +33,23 @@ Project identity:
 - Do not create releases, tags, installers or portable zips until a separate
   release mission authorizes them.
 - Do not run real MT5 or real backtests during scaffold work.
+
+## Grand MVP Factory Mode
+
+The Grand MVP Factory mode is the permanent operating model for larger MT5
+Robot Lab production batches.
+
+- Codex works only inside `E:\mt5-robot-lab`.
+- MVPs should be large enough to move the product forward, but decomposed into
+  safe modules.
+- Each MVP must define objective, affected files, tests, risk, rollback plan and
+  report.
+- No MVP may touch `ea-xau`, PayoffGrid or ONPN11.
+- No MVP may run real MT5 unless the mission explicitly allows it.
+- No MVP may generate `.exe` or `.zip` artifacts unless the mission explicitly
+  allows it.
+- Every MVP must pass publication guard.
+- Every MVP must end in a branch and pull request.
+- Every change must preserve the final user experience without CLI.
+- Codex assisted mode is optional and never required.
+- The final end user does not need CLI for normal workflows.

@@ -59,6 +59,18 @@ intelligence mode selection and a Champion DNA preview area. The user-facing
 goal is to avoid manual CLI usage for normal workflows while keeping real MT5
 execution disabled until the adapter is explicitly implemented.
 
+## Grand MVP Factory
+
+MT5 Robot Lab uses a Grand MVP Factory workflow to evolve the desktop app
+through large, controlled, validated MVP batches.
+
+```powershell
+python factory\mvp_factory.py --self-test
+python factory\mvp_factory.py --list
+python factory\mvp_factory.py --next
+python factory\mvp_factory.py --generate-prompt MVP-001
+```
+
 ## Champion DNA
 
 Champion DNA records the source, parameters, metrics, risk flags and code-change
