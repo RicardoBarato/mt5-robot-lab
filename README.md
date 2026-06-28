@@ -31,6 +31,17 @@ laboratories such as `ea-ustec`, `ea-us30` or `ea-btc`.
 
 This project does not edit `ea-xau` directly.
 
+## Public Repository Governance
+
+`main` is intended to stay protected. Changes should use branch + PR workflow,
+with CI required before merge. Public artifacts must not include private reports,
+credentials, broker/account details, local paths, `.set` files, `.ex5` files or
+real MT5 logs.
+
+CI and public checks must not run real MT5, real Strategy Tester backtests or
+live trading. PayoffGrid and ONPN11 / financial-panel-br are outside the scope
+of this project.
+
 ## Intelligence Modes
 
 - `local_auto`: local programmed mutation without external AI.
