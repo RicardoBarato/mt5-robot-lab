@@ -27,6 +27,7 @@ from app.core.champion_dna import (
 from app.core.export_reports import export_sample_summary
 from app.core.intelligence_modes import validate_intelligence_modes
 from app.core.lab_registry import load_lab_registry
+from app.core.leaderboard_schema import make_public_leaderboard_sample, validate_leaderboard_entry
 from app.core.mt5_detection import generate_diagnostics
 from app.core.risk_profile_ranking import generate_risk_profile_report
 from app.core.symbol_mapping import TIMEFRAME_MINUTES
@@ -104,6 +105,10 @@ def run_self_test() -> dict[str, object]:
     validation = validate_submission_package(PROJECT_ROOT / "reports" / "public" / "submission_package_sample")
     if validation["validation_status"] != "pass":
         raise AssertionError("Submission package validation failed")
+    leaderboard_sample = make_public_leaderboard_sample(PROJECT_ROOT / "reports" / "public")
+    if leaderboard_sample["mt5_real_run"] or leaderboard_sample["backtest_real_run"] or leaderboard_sample["upload_ready"]:
+        raise AssertionError("Leaderboard sample must remain non-real and not upload-ready")
+    validate_leaderboard_entry(leaderboard_sample["entries"][0])
     exports = export_sample_summary(PROJECT_ROOT / "reports" / "public")
 
     return {
@@ -119,6 +124,13 @@ def run_self_test() -> dict[str, object]:
         "champion_artifacts": {key: str(value) for key, value in written.items()},
         "champion_dna_v2": {key: str(value) for key, value in dna_v2_artifacts.items()},
         "submission_package": submission_package,
+        "leaderboard_sample": {
+            "status": leaderboard_sample["status"],
+            "entry_count": len(leaderboard_sample["entries"]),
+            "mt5_real_run": leaderboard_sample["mt5_real_run"],
+            "backtest_real_run": leaderboard_sample["backtest_real_run"],
+            "upload_ready": leaderboard_sample["upload_ready"],
+        },
         "exports": {key: str(value) for key, value in exports.items()},
     }
 

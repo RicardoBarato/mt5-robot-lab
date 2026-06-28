@@ -428,7 +428,8 @@
       "E:\\mt5-robot-lab",
       "app/core/",
       "docs/",
-      "tests/"
+      "tests/",
+      "reports/public/"
     ],
     "done_criteria": [
       "Leaderboard categories are documented",
@@ -437,8 +438,15 @@
       "Draft PR opened"
     ],
     "expected_files": [
-      "docs/",
-      "reports/public/"
+      "app/core/leaderboard_schema.py",
+      "docs/ONLINE_LEADERBOARD_SPEC.md",
+      "docs/LEADERBOARD_CATEGORIES.md",
+      "docs/SUBMISSION_VALIDATION_MODEL.md",
+      "docs/COMMUNITY_AND_MONETIZATION_MODEL.md",
+      "docs/LICENSING_AND_BRAND_BOUNDARY.md",
+      "tests/test_leaderboard_schema.py",
+      "reports/public/leaderboard_sample.json",
+      "reports/public/leaderboard_sample.md"
     ],
     "forbidden_scope": [
       "E:\\ea-xau",
@@ -456,7 +464,7 @@
       "public_claims_boundary",
       "ranking_abuse_prevention"
     ],
-    "status": "planned",
+    "status": "completed",
     "title": "Online Leaderboard Spec",
     "type": "leaderboard_spec",
     "validation_commands": [
