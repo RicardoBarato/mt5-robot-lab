@@ -4,8 +4,8 @@ The first Grand MVP queue contains 10 planned MVPs.
 
 | ID | Title | Priority | Status |
 | --- | --- | --- | --- |
-| MVP-001 | Desktop Navigation v2 | P0 | planned |
-| MVP-002 | Tournament Config Wizard | P0 | planned |
+| MVP-001 | Desktop Navigation v2 | P0 | completed |
+| MVP-002 | Tournament Config Wizard | P0 | completed |
 | MVP-003 | MT5 Detection Real Smoke | P1 | planned |
 | MVP-004 | Symbol Discovery Adapter | P1 | planned |
 | MVP-005 | Local Mutation Engine Dry-Run | P1 | planned |

@@ -64,6 +64,10 @@ Selection, MT5 Setup, Symbol and Timeframe, Intelligence Mode, Tournament Setup,
 Running Backtests, Champions Ranking, Champion DNA, Export Spreadsheet and
 Settings. The same screen registry is validated in headless self-tests.
 
+MVP-002 adds the Tournament Config Wizard foundation: a validated tournament
+configuration model, ignored local config save/load, public-safe dry-run preview
+files and wizard actions that still do not run real MT5.
+
 ## Grand MVP Factory
 
 MT5 Robot Lab uses a Grand MVP Factory workflow to evolve the desktop app

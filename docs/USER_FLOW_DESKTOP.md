@@ -47,6 +47,13 @@ The default mode is `local_auto`. `codex_assisted` is optional and requires
 explicit user authorization. `seeds_only` remains the simplest mode because it
 uses included base robots without generating new code mutations.
 
+## Tournament Config Wizard
+
+MVP-002 adds a safe wizard state model with lab, requested symbol, optional
+broker symbol, timeframe, years, initial balance, max backtests, champion count,
+intelligence mode and output formats. The wizard can save/load ignored local
+config, validate defaults, reset defaults and prepare a public dry-run preview.
+
 ## Execution Boundary
 
 The polished bootstrap UI still does not run real MT5, real Strategy Tester

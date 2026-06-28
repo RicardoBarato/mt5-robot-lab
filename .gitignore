@@ -7,6 +7,8 @@ venv/
 config/local.json
 config/mt5.local.json
 config/mt5.local.ps1
+config/local.tournament.json
+config/*.local.json
 
 reports/private/*
 !reports/private/.gitkeep
