@@ -30,6 +30,7 @@ from app.core.lab_registry import load_lab_registry
 from app.core.mt5_detection import generate_diagnostics
 from app.core.risk_profile_ranking import generate_risk_profile_report
 from app.core.symbol_mapping import TIMEFRAME_MINUTES
+from app.core.submission_package import create_submission_package, validate_submission_package
 from app.core.tournament_engine import run_tournament
 from app.ui.main_window import launch_app
 from app.ui.screens import INTELLIGENCE_MODE_OPTIONS, NavigationController, build_screen_registry
@@ -82,6 +83,27 @@ def run_self_test() -> dict[str, object]:
     artifact_root = PROJECT_ROOT / "reports" / "public" / "sample_champion_dna"
     written = write_champion_artifacts(dna, artifact_root)
     dna_v2_artifacts = save_champion_dna(dna, PROJECT_ROOT / "reports" / "public")
+    submission_package = create_submission_package(
+        dna,
+        {
+            "status": "sample_not_real_backtest",
+            "ranking_metric": "profit",
+            "candidate_count": 1,
+        },
+        {
+            "lab_id": "ea-xau",
+            "lab_name": "XAU Robot Lab",
+            "requested_symbol": "XAUUSD",
+            "broker_symbol": "XAUUSD",
+            "timeframe": "M5",
+            "timeframe_minutes": 5,
+            "initial_balance_usd": 10000.0,
+        },
+        PROJECT_ROOT / "reports" / "public" / "submission_package_sample",
+    )
+    validation = validate_submission_package(PROJECT_ROOT / "reports" / "public" / "submission_package_sample")
+    if validation["validation_status"] != "pass":
+        raise AssertionError("Submission package validation failed")
     exports = export_sample_summary(PROJECT_ROOT / "reports" / "public")
 
     return {
@@ -96,6 +118,7 @@ def run_self_test() -> dict[str, object]:
         "codex_required": config.codex_required,
         "champion_artifacts": {key: str(value) for key, value in written.items()},
         "champion_dna_v2": {key: str(value) for key, value in dna_v2_artifacts.items()},
+        "submission_package": submission_package,
         "exports": {key: str(value) for key, value in exports.items()},
     }
 

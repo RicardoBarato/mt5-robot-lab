@@ -1,0 +1,8 @@
+{
+  "backtest_real_run": false,
+  "candidate_count": 1,
+  "mt5_real_run": false,
+  "ranking_metric": "profit",
+  "status": "sample_not_real_backtest",
+  "tournament_100_run": false
+}

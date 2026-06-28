@@ -1,0 +1,11 @@
+{
+  "max_drawdown_tolerated_pct": 100.0,
+  "ranking_profile": "wild_profit",
+  "ranking_reason": "Wild Mode accepted this candidate because profit ranked highest and max drawdown tolerance was 100.0%.",
+  "risk_flags": [
+    "grid_enabled",
+    "martingale_enabled"
+  ],
+  "risk_mode": "wild",
+  "risk_profile": "wild"
+}

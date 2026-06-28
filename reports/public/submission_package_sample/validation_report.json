@@ -1,0 +1,15 @@
+{
+  "backtest_real_run": false,
+  "hash_mismatches": [],
+  "hashes_valid": true,
+  "json_parse_errors": [],
+  "manifest_fields_present": true,
+  "missing_files": [],
+  "missing_manifest_fields": [],
+  "mt5_real_run": false,
+  "online_upload": false,
+  "private_artifact_findings": [],
+  "private_artifact_scan_passed": true,
+  "required_files_present": true,
+  "validation_status": "pass"
+}

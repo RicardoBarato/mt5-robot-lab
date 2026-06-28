@@ -100,6 +100,21 @@ The scaffold can generate sample CSV and Markdown summaries. If `openpyxl` is
 available, it can also write a sample XLSX file. Missing `openpyxl` is not a
 failure.
 
+## Submission Package
+
+Submission Package v1 creates a local public-safe folder for future online
+ranking workflows. It includes Champion DNA, tournament summary, risk profile,
+public configuration, hashes, a manifest and a validation report.
+
+Current sample:
+
+```text
+reports/public/submission_package_sample/
+```
+
+The package is local only. It is not uploaded, it is not a leaderboard entry and
+it is not a real backtest claim.
+
 ## MT5 Boundary
 
 MetaTrader 5 must be installed separately by the user. This app must not bundle

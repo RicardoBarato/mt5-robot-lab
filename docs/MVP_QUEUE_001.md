@@ -12,7 +12,7 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-006 | Champion DNA v1 / smoke package | P1 | completed |
 | MVP-007 | Risk Profile Ranking Engine | P1 | completed |
 | MVP-008 | Champion DNA v2 | P1 | completed |
-| MVP-009 | Submission Package v1 | P2 | planned |
+| MVP-009 | Submission Package v1 | P2 | completed |
 | MVP-010 | Online Leaderboard Spec | P3 | planned |
 
 Use:
@@ -23,4 +23,4 @@ python factory\mvp_factory.py --next
 python factory\mvp_factory.py --generate-prompt MVP-009
 ```
 
-The next planned step after MVP-008 is `MVP-009 Submission Package v1`.
+The next planned step after MVP-009 is `MVP-010 Online Leaderboard Spec`.
