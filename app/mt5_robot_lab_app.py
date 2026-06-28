@@ -29,6 +29,16 @@ from app.core.intelligence_modes import validate_intelligence_modes
 from app.core.lab_registry import load_lab_registry
 from app.core.leaderboard_schema import make_public_leaderboard_sample, validate_leaderboard_entry
 from app.core.mt5_detection import generate_diagnostics
+from app.core.operator_gate import (
+    APPROVAL_PHRASE_EN,
+    APPROVAL_PHRASE_PT,
+    approve_operator_gate,
+    create_operator_approval_request,
+    default_operator_gate,
+    is_real_mt5_execution_allowed,
+    make_operator_gate_summary,
+    write_operator_gate_preview,
+)
 from app.core.risk_profile_ranking import generate_risk_profile_report
 from app.core.symbol_mapping import TIMEFRAME_MINUTES
 from app.core.submission_package import create_submission_package, validate_submission_package
@@ -48,8 +58,8 @@ def run_self_test() -> dict[str, object]:
         raise AssertionError("Default timeframe is not supported")
 
     screens = build_screen_registry(config)
-    if len(screens) != 11:
-        raise AssertionError("Desktop navigation must expose 11 screens")
+    if len(screens) != 12:
+        raise AssertionError("Desktop navigation must expose 12 screens")
     controller = NavigationController(screens)
     if controller.current_screen != "welcome":
         raise AssertionError("Default screen must be welcome")
@@ -59,6 +69,8 @@ def run_self_test() -> dict[str, object]:
         raise AssertionError("previous_screen did not return to welcome")
     if controller.go_to_screen("settings").id != "settings":
         raise AssertionError("go_to_screen did not navigate to settings")
+    if controller.go_to_screen("real_mt5_smoke_gate").id != "real_mt5_smoke_gate":
+        raise AssertionError("go_to_screen did not navigate to real_mt5_smoke_gate")
     if {option["mode"] for option in INTELLIGENCE_MODE_OPTIONS} != {"local_auto", "codex_assisted", "seeds_only"}:
         raise AssertionError("Intelligence mode screen must contain exactly 3 modes")
 
@@ -109,6 +121,47 @@ def run_self_test() -> dict[str, object]:
     if leaderboard_sample["mt5_real_run"] or leaderboard_sample["backtest_real_run"] or leaderboard_sample["upload_ready"]:
         raise AssertionError("Leaderboard sample must remain non-real and not upload-ready")
     validate_leaderboard_entry(leaderboard_sample["entries"][0])
+    operator_gate = default_operator_gate()
+    if is_real_mt5_execution_allowed(operator_gate):
+        raise AssertionError("Default operator gate must block real MT5 execution")
+    wrong_phrase = approve_operator_gate(operator_gate, "wrong phrase")
+    if wrong_phrase["approval_phrase_matched"] or wrong_phrase["execution_allowed"]:
+        raise AssertionError("Wrong operator approval phrase must not approve execution")
+    technical_ready_request = create_operator_approval_request(
+        {
+            "real_execution_requested": True,
+            "smoke_only": True,
+            "max_backtests": 1,
+            "tournament_100_run": False,
+            "credentials_stored": False,
+        },
+        {
+            "mt5_installed": True,
+            "terminal_found": True,
+            "metaeditor_found": True,
+        },
+    )
+    approved_gate = approve_operator_gate(technical_ready_request, APPROVAL_PHRASE_EN)
+    if not approved_gate["execution_allowed"]:
+        raise AssertionError("Correct phrase and technical readiness should approve the gate")
+    too_many = create_operator_approval_request(
+        {"real_execution_requested": True, "max_backtests": 2},
+        {"mt5_installed": True, "terminal_found": True, "metaeditor_found": True},
+    )
+    if approve_operator_gate(too_many, APPROVAL_PHRASE_PT)["execution_allowed"]:
+        raise AssertionError("Operator gate must block max_backtests > 1")
+    tournament_100 = create_operator_approval_request(
+        {"real_execution_requested": True, "tournament_100_run": True},
+        {"mt5_installed": True, "terminal_found": True, "metaeditor_found": True},
+    )
+    if approve_operator_gate(tournament_100, APPROVAL_PHRASE_EN)["execution_allowed"]:
+        raise AssertionError("Operator gate must block tournament_100_run=true")
+    credentials = create_operator_approval_request(
+        {"real_execution_requested": True, "credentials_stored": True},
+        {"mt5_installed": True, "terminal_found": True, "metaeditor_found": True},
+    )
+    if approve_operator_gate(credentials, APPROVAL_PHRASE_EN)["execution_allowed"]:
+        raise AssertionError("Operator gate must block stored credentials")
     exports = export_sample_summary(PROJECT_ROOT / "reports" / "public")
 
     return {
@@ -131,7 +184,37 @@ def run_self_test() -> dict[str, object]:
             "backtest_real_run": leaderboard_sample["backtest_real_run"],
             "upload_ready": leaderboard_sample["upload_ready"],
         },
+        "operator_gate": make_operator_gate_summary(operator_gate),
         "exports": {key: str(value) for key, value in exports.items()},
+    }
+
+
+def run_operator_gate_self_test() -> dict[str, object]:
+    gate = default_operator_gate()
+    wrong_phrase = approve_operator_gate(gate, "wrong phrase")
+    technical_ready = create_operator_approval_request(
+        {
+            "real_execution_requested": True,
+            "smoke_only": True,
+            "max_backtests": 1,
+            "tournament_100_run": False,
+            "credentials_stored": False,
+        },
+        {
+            "mt5_installed": True,
+            "terminal_found": True,
+            "metaeditor_found": True,
+        },
+    )
+    approved = approve_operator_gate(technical_ready, APPROVAL_PHRASE_EN)
+    return {
+        "status": "operator_gate_self_test_passed",
+        "default_blocks": not gate["execution_allowed"],
+        "wrong_phrase_blocks": not wrong_phrase["execution_allowed"],
+        "correct_phrase_can_approve_when_ready": approved["execution_allowed"],
+        "mt5_real_run": False,
+        "backtest_real_run": False,
+        "credentials_stored": False,
     }
 
 
@@ -143,6 +226,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--candidate-generator-self-test", action="store_true", help="Generate safe candidate JSON artifacts")
     parser.add_argument("--tournament-smoke-self-test", action="store_true", help="Run the safe MVP-006 tournament smoke")
     parser.add_argument("--risk-profile-self-test", action="store_true", help="Rank tournament candidates by risk profile")
+    parser.add_argument("--operator-gate-self-test", action="store_true", help="Run safe operator gate validation")
+    parser.add_argument("--preview-real-mt5-smoke-gate", action="store_true", help="Write safe operator gate preview artifacts")
     return parser
 
 
@@ -189,6 +274,13 @@ def main(argv: list[str] | None = None) -> int:
             PROJECT_ROOT / "reports" / "public" / "risk_profile_ranking.json",
         )
         print(json.dumps(result.__dict__, indent=2, sort_keys=True))
+        return 0
+    if args.operator_gate_self_test:
+        print(json.dumps(run_operator_gate_self_test(), indent=2, sort_keys=True))
+        return 0
+    if args.preview_real_mt5_smoke_gate:
+        preview = write_operator_gate_preview(PROJECT_ROOT / "reports" / "public")
+        print(json.dumps(preview, indent=2, sort_keys=True))
         return 0
     launch_app(PROJECT_ROOT)
     return 0

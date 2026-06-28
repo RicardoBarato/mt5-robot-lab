@@ -11,9 +11,11 @@ import json
 import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 from app.core.backtest_parser import BacktestMetrics, empty_smoke_metrics
 from app.core.mt5_detection import detect_mt5
+from app.core.operator_gate import BLOCKED_REASON, is_real_mt5_execution_allowed
 
 
 @dataclass(frozen=True)
@@ -51,6 +53,8 @@ class MT5SmokeRunResult:
         payload["drawdown"] = _clean_number(payload["drawdown"])
         payload["winrate"] = _clean_number(payload["winrate"])
         payload["profit_factor"] = _clean_number(payload["profit_factor"])
+        payload["mt5_real_run"] = payload["mt5_real_execution"]
+        payload["backtest_real_run"] = payload["strategy_tester_executed"]
         return payload
 
 
@@ -72,6 +76,7 @@ def run_mt5_smoke(
     config: MT5SmokeConfig | None = None,
     *,
     allow_real_execution: bool = False,
+    operator_gate: dict[str, Any] | None = None,
     terminal_path: str | None = None,
     tester_config_path: str | None = None,
     metrics: BacktestMetrics | None = None,
@@ -103,6 +108,26 @@ def run_mt5_smoke(
             terminal_path=terminal,
             command=command,
             reason="real_mt5_execution_not_authorized_for_validation",
+        )
+
+    if not operator_gate or not is_real_mt5_execution_allowed(operator_gate):
+        return MT5SmokeRunResult(
+            symbol=smoke_config.symbol,
+            timeframe=smoke_config.timeframe,
+            profit=parsed_metrics.profit,
+            drawdown=parsed_metrics.drawdown,
+            trades=parsed_metrics.trades,
+            winrate=parsed_metrics.winrate,
+            profit_factor=parsed_metrics.profit_factor,
+            status="blocked_by_operator_gate",
+            candidate_id=smoke_config.candidate_id,
+            initial_balance_usd=smoke_config.initial_balance_usd,
+            mt5_real_execution=False,
+            strategy_tester_executed=False,
+            loop_execution=False,
+            terminal_path=terminal,
+            command=command,
+            reason=BLOCKED_REASON,
         )
 
     if not terminal:

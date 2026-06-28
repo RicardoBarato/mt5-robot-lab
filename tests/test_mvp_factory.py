@@ -10,10 +10,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class MvpFactoryTests(unittest.TestCase):
-    def test_queue_loads_and_has_11_mvps(self) -> None:
+    def test_queue_loads_and_has_12_mvps(self) -> None:
         queue = load_queue()
         validate_queue(queue)
-        self.assertEqual(len(queue), 11)
+        self.assertEqual(len(queue), 12)
 
     def test_ids_are_unique(self) -> None:
         queue = load_queue()

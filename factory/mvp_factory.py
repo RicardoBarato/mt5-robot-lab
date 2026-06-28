@@ -65,8 +65,8 @@ def validate_queue(queue: list[dict[str, Any]]) -> None:
         for term in REQUIRED_FORBIDDEN_TERMS:
             if term not in forbidden_text:
                 raise ValueError(f"{item['id']} forbidden_scope does not mention {term}")
-    if len(queue) != 11:
-        raise ValueError(f"Expected 11 MVPs, found {len(queue)}")
+    if len(queue) != 12:
+        raise ValueError(f"Expected 12 MVPs, found {len(queue)}")
 
 
 def find_mvp(queue: list[dict[str, Any]], mvp_id: str) -> dict[str, Any]:

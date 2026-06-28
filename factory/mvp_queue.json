@@ -533,5 +533,67 @@
       "python factory\\mvp_factory.py --next",
       "git diff --check"
     ]
+  },
+  {
+    "allowed_scope": [
+      "E:\\mt5-robot-lab",
+      "app/core/",
+      "app/ui/",
+      "docs/",
+      "tests/",
+      "tools/",
+      "reports/public/",
+      "factory/"
+    ],
+    "done_criteria": [
+      "real execution requires explicit operator approval",
+      "app and CLI expose safe approval preview",
+      "no MT5 real run occurs in CI",
+      "no credentials are stored",
+      "local manifests record approval state",
+      "publication guard passes"
+    ],
+    "expected_files": [
+      "app/core/operator_gate.py",
+      "tests/test_operator_gate.py",
+      "docs/REAL_MT5_SMOKE_OPERATOR_GATE.md",
+      "docs/REAL_MT5_EXECUTION_BOUNDARY.md",
+      "reports/public/operator_gate_preview.json",
+      "reports/public/operator_gate_preview.md",
+      "reports/public/MVP_012_REAL_MT5_SMOKE_OPERATOR_GATE_REPORT.md"
+    ],
+    "forbidden_scope": [
+      "E:\\ea-xau",
+      "RicardoBarato/ea-xau",
+      "PayoffGrid",
+      "RB Risk Engine AI",
+      "ONPN11",
+      "financial-panel-br"
+    ],
+    "id": "MVP-012",
+    "next_handoff": "MVP-013 Real MT5 Smoke Execution",
+    "objective": "Create explicit operator approval gates for future real MT5 smoke execution without running real MT5 by default.",
+    "priority": "high",
+    "risk_flags": [
+      "accidental_real_mt5_execution",
+      "credential_storage_boundary",
+      "operator_approval_bypass",
+      "ci_real_execution_boundary"
+    ],
+    "status": "completed",
+    "title": "Real MT5 Smoke Operator Gate",
+    "type": "grand_mvp",
+    "validation_commands": [
+      "python -m compileall app tests tools factory",
+      "python -m unittest discover -s tests",
+      "python app\\mt5_robot_lab_app.py --self-test",
+      "python app\\mt5_robot_lab_app.py --operator-gate-self-test",
+      "python app\\mt5_robot_lab_app.py --preview-real-mt5-smoke-gate",
+      "python tools\\publication_guard.py .",
+      "python factory\\mvp_factory.py --self-test",
+      "python factory\\mvp_factory.py --list",
+      "python factory\\mvp_factory.py --next",
+      "git diff --check"
+    ]
   }
 ]

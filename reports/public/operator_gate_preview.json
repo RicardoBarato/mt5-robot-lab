@@ -1,0 +1,19 @@
+{
+  "approval_phrase_matched": false,
+  "backtest_real_run": false,
+  "created_at": "2026-06-28T18:15:24+00:00",
+  "execution_allowed": false,
+  "max_backtests": 1,
+  "metaeditor_found": false,
+  "mt5_detected": false,
+  "mt5_real_run": false,
+  "no_credentials_stored": true,
+  "operator_confirmed": false,
+  "real_execution_requested": false,
+  "reason": "Real MT5 smoke execution requires explicit operator approval.",
+  "smoke_only": true,
+  "status": "blocked_by_operator_gate",
+  "strategy_tester_run": false,
+  "terminal_found": false,
+  "tournament_100_run": false
+}

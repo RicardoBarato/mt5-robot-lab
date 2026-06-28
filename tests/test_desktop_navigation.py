@@ -13,8 +13,8 @@ class DesktopNavigationTests(unittest.TestCase):
         self.config = load_app_config(ROOT / "config" / "app.default.json")
         self.screens = build_screen_registry(self.config)
 
-    def test_screen_registry_has_11_screens(self) -> None:
-        self.assertEqual(len(self.screens), 11)
+    def test_screen_registry_has_12_screens(self) -> None:
+        self.assertEqual(len(self.screens), 12)
 
     def test_ids_are_unique_and_ordered(self) -> None:
         ids = [screen.id for screen in self.screens]
@@ -46,6 +46,13 @@ class DesktopNavigationTests(unittest.TestCase):
         cards = dict(lab_screen.cards)
         self.assertEqual(cards["Path"], "E:\\ea-xau")
         self.assertEqual(cards["Write access"], "not used by this MVP")
+
+    def test_real_mt5_smoke_gate_is_preview_only(self) -> None:
+        gate_screen = next(screen for screen in self.screens if screen.id == "real_mt5_smoke_gate")
+        cards = dict(gate_screen.cards)
+        self.assertEqual(cards["Operator approval"], "required")
+        self.assertEqual(cards["Max backtests"], "1")
+        self.assertIn("Preview Real MT5 Smoke Requirements", gate_screen.primary_action)
 
     def test_intelligence_mode_default_is_local_auto(self) -> None:
         self.assertEqual(self.config.default_intelligence_mode, "local_auto")
