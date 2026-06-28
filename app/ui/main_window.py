@@ -8,6 +8,13 @@ from tkinter import messagebox
 
 from app.core.app_config import load_app_config
 from app.core.mt5_detection import detect_mt5
+from app.core.tournament_config import (
+    default_tournament_config,
+    load_local_config,
+    save_local_config,
+    validate_tournament_config,
+    write_public_preview,
+)
 from app.ui.design_tokens import COLORS, FONT_SECTION, FONT_SMALL, FONT_SUBTITLE, FONT_TITLE, SPACING
 from app.ui.screens import NavigationController, ScreenDefinition, build_screen_registry
 from app.ui.widgets import action_button, option_card, status_card
@@ -19,6 +26,8 @@ class DesktopNavigationShell:
     def __init__(self, root: tk.Tk, project_root: Path) -> None:
         self.project_root = project_root
         self.config = load_app_config(project_root / "config" / "app.default.json")
+        self.tournament_config = default_tournament_config()
+        self.local_tournament_config_path = project_root / "config" / "local.tournament.json"
         self.screens = build_screen_registry(self.config)
         self.controller = NavigationController(self.screens)
         self.root = root
@@ -198,6 +207,21 @@ class DesktopNavigationShell:
                 justify="left",
             ).pack(anchor="w", pady=(0, SPACING["sm"]))
 
+        if screen.id in {"tournament_setup", "settings"}:
+            wizard_actions = tk.Frame(body, bg=COLORS["surface"], pady=SPACING["md"])
+            wizard_actions.pack(fill="x", pady=(SPACING["md"], 0))
+            actions = (
+                ("Save Config", self._save_config),
+                ("Load Config", self._load_config),
+                ("Reset Defaults", self._reset_defaults),
+                ("Validate Config", self._validate_config),
+                ("Prepare Dry-Run Packet", self._prepare_dry_run_packet),
+            )
+            for label, command in actions:
+                action_button(wizard_actions, label, command, primary=label == "Prepare Dry-Run Packet").pack(
+                    side="left", padx=(0, SPACING["sm"])
+                )
+
     def _render_footer(self, screen: ScreenDefinition) -> None:
         action_button(self.footer, "Previous", self._previous).pack(side="left", padx=(0, SPACING["sm"]))
         action_button(self.footer, "Next", self._next, primary=True).pack(side="left", padx=(0, SPACING["sm"]))
@@ -222,10 +246,39 @@ class DesktopNavigationShell:
                 f"metaeditor64.exe: {result.metaeditor64 or 'not found'}",
             )
             return
+        if screen.id == "tournament_setup":
+            self._validate_config()
+            return
         if screen.id == "export_spreadsheet":
             messagebox.showinfo("Reports", str(self.project_root / "reports" / "public"))
             return
         messagebox.showinfo(screen.title, f"{screen.primary_action} is a placeholder in MVP-001.")
+
+    def _save_config(self) -> None:
+        path = save_local_config(self.tournament_config, self.local_tournament_config_path)
+        messagebox.showinfo("Save Config", f"Local tournament config saved to {path}")
+
+    def _load_config(self) -> None:
+        if not self.local_tournament_config_path.exists():
+            messagebox.showinfo("Load Config", "No local tournament config exists yet.")
+            return
+        self.tournament_config = load_local_config(self.local_tournament_config_path)
+        messagebox.showinfo("Load Config", "Local tournament config loaded.")
+
+    def _reset_defaults(self) -> None:
+        self.tournament_config = default_tournament_config()
+        messagebox.showinfo("Reset Defaults", "Tournament defaults restored.")
+
+    def _validate_config(self) -> None:
+        validate_tournament_config(self.tournament_config)
+        messagebox.showinfo("Validate Config", "Tournament configuration is valid.")
+
+    def _prepare_dry_run_packet(self) -> None:
+        written = write_public_preview(self.tournament_config, self.project_root / "reports" / "public")
+        messagebox.showinfo(
+            "Prepare Dry-Run Packet",
+            f"Preview generated:\n{written['md']}\n{written['json']}",
+        )
 
 
 def launch_app(project_root: Path) -> None:

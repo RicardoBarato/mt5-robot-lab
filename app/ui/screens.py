@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from app.core.app_config import AppConfig
+from app.core.tournament_config import default_tournament_config
 
 
 @dataclass(frozen=True)
@@ -138,6 +139,20 @@ class NavigationController:
 def build_screen_registry(config: AppConfig) -> list[ScreenDefinition]:
     """Build the ordered product screen registry without opening the GUI."""
 
+    tournament = default_tournament_config()
+    tournament_review = (
+        f"Lab: {tournament.lab_name}",
+        f"Symbol: {tournament.requested_symbol}",
+        f"Timeframe: {tournament.timeframe}",
+        f"Years: {tournament.backtest_years}",
+        f"Initial balance: USD {tournament.initial_balance_usd}",
+        f"Max backtests: {tournament.max_backtests}",
+        f"Champion count: {tournament.champion_count}",
+        f"Intelligence mode: {tournament.intelligence_mode}",
+        f"Outputs: {', '.join(tournament.output_formats)}",
+        "MT5 real run: disabled in this MVP",
+    )
+
     return [
         ScreenDefinition(
             id="welcome",
@@ -157,9 +172,9 @@ def build_screen_registry(config: AppConfig) -> list[ScreenDefinition]:
             title="Lab Selection",
             subtitle="Choose the external robot laboratory used by the desktop product.",
             cards=(
-                ("Lab", "XAU Robot Lab"),
-                ("Path", config.default_lab_path),
-                ("Status", "external lab reference"),
+                ("Lab", tournament.lab_name),
+                ("Path", tournament.lab_path),
+                ("Role", "external XAUUSD ranking archive"),
                 ("Write access", "not used by this MVP"),
             ),
             body_lines=("The app displays the external lab reference but does not edit E:\\ea-xau.",),
@@ -183,8 +198,9 @@ def build_screen_registry(config: AppConfig) -> list[ScreenDefinition]:
             title="Symbol and Timeframe",
             subtitle="Select the requested asset and timeframe before any future smoke.",
             cards=(
-                ("Symbol", config.default_symbol),
-                ("Timeframe", config.default_timeframe),
+                ("requested_symbol", tournament.requested_symbol),
+                ("broker_symbol", "optional"),
+                ("timeframe", tournament.timeframe),
                 ("Symbol presets", ", ".join(SYMBOL_PRESETS)),
                 ("Timeframes", ", ".join(TIMEFRAME_PRESETS)),
             ),
@@ -204,13 +220,14 @@ def build_screen_registry(config: AppConfig) -> list[ScreenDefinition]:
             title="Tournament Setup",
             subtitle="Review dry-run tournament defaults.",
             cards=(
-                ("Backtest years", str(config.default_backtest_years)),
-                ("Initial balance USD", str(config.default_initial_balance_usd)),
-                ("Max backtests", str(config.default_max_backtests)),
-                ("Champion count", str(config.default_champion_count)),
+                ("Backtest years", str(tournament.backtest_years)),
+                ("Initial balance USD", str(tournament.initial_balance_usd)),
+                ("Max backtests", str(tournament.max_backtests)),
+                ("Champion count", str(tournament.champion_count)),
+                ("Output formats", ", ".join(tournament.output_formats)),
             ),
-            body_lines=("These are setup defaults only. No 100-run tournament starts in this MVP.",),
-            primary_action="Continue",
+            body_lines=("Tournament Review:", *tournament_review),
+            primary_action="Validate Config",
         ),
         ScreenDefinition(
             id="running_backtests",
@@ -265,7 +282,10 @@ def build_screen_registry(config: AppConfig) -> list[ScreenDefinition]:
             subtitle="Product boundaries and local configuration.",
             cards=(
                 ("Config path", "config/app.default.json"),
+                ("Local tournament config", "config/local.tournament.json"),
                 ("Reports path", "reports/public"),
+                ("MT5 terminal path", "placeholder only"),
+                ("MT5 MetaEditor path", "placeholder only"),
                 ("Codex assisted mode", "optional"),
                 ("CLI required for end user", str(config.cli_required_for_end_user).lower()),
             ),

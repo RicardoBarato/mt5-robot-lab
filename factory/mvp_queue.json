@@ -83,7 +83,7 @@
       "config_validation",
       "user_input_validation"
     ],
-    "status": "planned",
+    "status": "completed",
     "title": "Tournament Config Wizard",
     "type": "desktop_ui",
     "validation_commands": [

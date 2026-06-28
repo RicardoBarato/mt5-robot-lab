@@ -1,0 +1,23 @@
+{
+  "backtest_years": 2,
+  "broker_symbol": "",
+  "champion_count": 10,
+  "codex_authorized": false,
+  "codex_enabled": false,
+  "initial_balance_usd": 10000,
+  "intelligence_mode": "local_auto",
+  "lab_id": "ea-xau",
+  "lab_name": "XAU Robot Lab",
+  "lab_path": "E:\\ea-xau",
+  "max_backtests": 100,
+  "mt5_metaeditor_path": "",
+  "mt5_terminal_path": "",
+  "output_formats": [
+    "csv",
+    "md",
+    "xlsx"
+  ],
+  "requested_symbol": "XAUUSD",
+  "timeframe": "M5",
+  "timeframe_minutes": 5
+}

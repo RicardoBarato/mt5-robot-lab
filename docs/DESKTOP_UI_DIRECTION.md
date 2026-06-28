@@ -52,3 +52,16 @@ MVP-001 adds a sidebar navigation model with 11 product screens:
 
 The active screen is highlighted. Screen content uses dark cards, clear primary
 actions and placeholders for future real MT5 workflows.
+
+## Tournament Wizard UX
+
+MVP-002 keeps the dark premium navigation shell and adds safe wizard actions on
+Tournament Setup and Settings:
+
+- Save Config;
+- Load Config;
+- Reset Defaults;
+- Validate Config;
+- Prepare Dry-Run Packet.
+
+The actions are local and do not launch MT5 or a real backtest.
