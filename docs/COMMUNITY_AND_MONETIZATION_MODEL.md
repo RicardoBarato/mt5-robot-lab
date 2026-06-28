@@ -67,3 +67,19 @@ Before any future ad integration:
 Any premium feature should be separate from the open-source research core. The
 public repository should continue to disclose its limitations and should not
 hide required risk data behind paid access.
+
+## Responsible monetization boundary
+
+Responsible monetization may exist in the future, but it must not change the
+risk disclosure model.
+
+Policy direction:
+
+- donations are permitted;
+- GitHub Sponsors or Donate links may exist;
+- future ads may exist on ranking pages after policy review;
+- the project must not ask users to click ads;
+- ads should stay visually and structurally separate from benchmark content;
+- future premium analytics may exist;
+- monetization does not change the risk warning;
+- monetization does not turn a ranking into a financial recommendation.

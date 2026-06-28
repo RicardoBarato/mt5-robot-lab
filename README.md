@@ -132,6 +132,24 @@ The leaderboard is a specification only. This repository does not create an
 online service, does not upload submissions, does not implement payments or ads
 and does not claim real trading performance.
 
+## Open software, official ranking
+
+MT5 Robot Lab is open software for local MT5 strategy tournament research. The
+official online ranking and verified badges are separate project-controlled
+services planned for the future.
+
+Policy documents:
+
+- `docs/LICENSING_POLICY.md`
+- `docs/BRAND_AND_TRADEMARK_POLICY.md`
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
+- `docs/SUBMISSION_TERMS_DRAFT.md`
+- `docs/OFFICIAL_RANKING_GOVERNANCE.md`
+
+MVP-011 does not change the repository license and does not finalize legal
+terms.
+
 ## MT5 Boundary
 
 MetaTrader 5 must be installed separately by the user. This app must not bundle
