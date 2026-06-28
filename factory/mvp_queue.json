@@ -83,7 +83,7 @@
       "config_validation",
       "user_input_validation"
     ],
-    "status": "planned",
+    "status": "completed",
     "title": "Tournament Config Wizard",
     "type": "desktop_ui",
     "validation_commands": [
@@ -130,7 +130,7 @@
       "local_path_handling",
       "credential_boundary"
     ],
-    "status": "planned",
+    "status": "completed",
     "title": "MT5 Detection Real Smoke",
     "type": "mt5_detection",
     "validation_commands": [
@@ -177,7 +177,7 @@
       "broker_alias_variance",
       "history_availability"
     ],
-    "status": "planned",
+    "status": "completed",
     "title": "Symbol Discovery Adapter",
     "type": "mt5_adapter",
     "validation_commands": [
@@ -223,7 +223,7 @@
       "overfitting",
       "unsafe_strategy_perception"
     ],
-    "status": "planned",
+    "status": "completed",
     "title": "Local Mutation Engine Dry-Run",
     "type": "mutation_engine",
     "validation_commands": [
@@ -269,7 +269,7 @@
       "metric_invention",
       "private_artifact_leakage"
     ],
-    "status": "planned",
+    "status": "completed",
     "title": "Champion DNA v2",
     "type": "champion_dna",
     "validation_commands": [
@@ -308,16 +308,16 @@
       "financial-panel-br"
     ],
     "id": "MVP-007",
-    "next_handoff": "MVP-008 Codex Assisted Packet v1",
-    "objective": "Export CSV, Markdown and optional XLSX with rankings, Champion DNA and winning parameters.",
+    "next_handoff": "MVP-008 Champion DNA v2",
+    "objective": "Rank tournament smoke candidates by Wild Mode and Controlled Risk Mode with drawdown tolerance and risk flags.",
     "priority": "P2",
     "risk_flags": [
       "optional_dependency",
       "report_schema_drift"
     ],
-    "status": "planned",
-    "title": "Report Export v2",
-    "type": "reporting",
+    "status": "completed",
+    "title": "Risk Profile Ranking Engine",
+    "type": "risk_ranking",
     "validation_commands": [
       "python -m compileall app tests tools factory",
       "python -m unittest discover -s tests",
@@ -335,15 +335,18 @@
       "reports/public/"
     ],
     "done_criteria": [
-      "Packet is generated as a public-safe artifact",
-      "Codex is optional",
-      "No token or login is stored",
+      "Champion DNA v2 schema is complete",
+      "Parameter diffs and source hashes are generated",
+      "Risk profile and tournament integrations exist",
+      "Public sample artifacts pass guard",
       "Draft PR opened"
     ],
     "expected_files": [
-      "docs/CODEX_ASSISTED_MODE.md",
-      "reports/public/",
-      "tests/"
+      "app/core/champion_dna.py",
+      "docs/CHAMPION_DNA.md",
+      "tests/test_champion_dna_v2.py",
+      "reports/public/sample_champion_dna_v2.json",
+      "reports/public/sample_champion_dna_v2.md"
     ],
     "forbidden_scope": [
       "E:\\ea-xau",
@@ -354,16 +357,17 @@
       "financial-panel-br"
     ],
     "id": "MVP-008",
-    "next_handoff": "MVP-009 Packaging Preparation v1",
-    "objective": "Generate a packet and prompt for Codex assisted mode without installing, logging in or executing Codex automatically.",
-    "priority": "P2",
+    "next_handoff": "MVP-009 Submission Package v1",
+    "objective": "Generate Champion DNA v2 with parameter diffs, source hashes, risk profile integration, public summaries and tournament integration.",
+    "priority": "P1",
     "risk_flags": [
-      "user_consent_boundary",
-      "prompt_private_context"
+      "metric_invention",
+      "private_artifact_leakage",
+      "risk_profile_schema_drift"
     ],
-    "status": "planned",
-    "title": "Codex Assisted Packet v1",
-    "type": "codex_assisted",
+    "status": "completed",
+    "title": "Champion DNA v2",
+    "type": "champion_dna",
     "validation_commands": [
       "python -m compileall app tests tools factory",
       "python -m unittest discover -s tests",
@@ -380,15 +384,16 @@
       "tests/"
     ],
     "done_criteria": [
-      "Packaging plan exists",
-      "No .exe or .zip is created",
-      "No release or tag is created",
+      "Submission package manifest exists",
+      "Local result hashes are included",
+      "No private files are packaged",
       "Draft PR opened"
     ],
     "expected_files": [
-      "docs/PACKAGING_STRATEGY.md",
-      "docs/WINDOWS_INSTALLER_STRATEGY.md",
-      "docs/PORTABLE_ZIP_STRATEGY.md"
+      "app/core/",
+      "docs/",
+      "tests/",
+      "reports/public/"
     ],
     "forbidden_scope": [
       "E:\\ea-xau",
@@ -399,16 +404,16 @@
       "financial-panel-br"
     ],
     "id": "MVP-009",
-    "next_handoff": "MVP-010 Real MT5 Adapter Smoke Plan",
-    "objective": "Prepare local build planning for PyInstaller and Inno Setup without generating real .exe or .zip artifacts.",
-    "priority": "P3",
+    "next_handoff": "MVP-010 Online Leaderboard Spec",
+    "objective": "Generate a future upload package with manifest, local result hashes and public-safe metadata for online ranking submission.",
+    "priority": "P2",
     "risk_flags": [
-      "release_boundary",
-      "binary_artifacts"
+      "public_upload_boundary",
+      "manifest_schema_drift"
     ],
     "status": "planned",
-    "title": "Packaging Preparation v1",
-    "type": "packaging_plan",
+    "title": "Submission Package v1",
+    "type": "submission_package",
     "validation_commands": [
       "python -m compileall app tests tools factory",
       "python -m unittest discover -s tests",
@@ -425,15 +430,14 @@
       "tests/"
     ],
     "done_criteria": [
-      "Real smoke plan exists",
-      "No real backtest is executed",
-      "Credentials remain out of scope",
+      "Leaderboard categories are documented",
+      "No service is deployed",
+      "No private data is published",
       "Draft PR opened"
     ],
     "expected_files": [
-      "docs/MT5_INSTALLATION_BOUNDARY.md",
-      "docs/MT5_SYMBOL_DISCOVERY.md",
-      "tests/"
+      "docs/",
+      "reports/public/"
     ],
     "forbidden_scope": [
       "E:\\ea-xau",
@@ -444,16 +448,16 @@
       "financial-panel-br"
     ],
     "id": "MVP-010",
-    "next_handoff": "Director approval for real MT5 smoke mission",
-    "objective": "Prepare plan and stubs for the first real MT5 smoke without executing a real backtest in this mission.",
+    "next_handoff": "MVP-011 Licensing and Contribution Policy",
+    "objective": "Define a public leaderboard specification with categories by asset, timeframe, drawdown, balance and period.",
     "priority": "P3",
     "risk_flags": [
-      "real_mt5_boundary",
-      "broker_account_boundary"
+      "public_claims_boundary",
+      "ranking_abuse_prevention"
     ],
     "status": "planned",
-    "title": "Real MT5 Adapter Smoke Plan",
-    "type": "mt5_adapter_plan",
+    "title": "Online Leaderboard Spec",
+    "type": "leaderboard_spec",
     "validation_commands": [
       "python -m compileall app tests tools factory",
       "python -m unittest discover -s tests",

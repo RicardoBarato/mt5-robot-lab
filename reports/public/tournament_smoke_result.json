@@ -31,7 +31,8 @@
     "trades": 0,
     "winrate": 0
   },
-  "created_at": "2026-06-28T15:34:01+00:00",
+  "champion_dna_v2": "champion_xauusd_base_seed_e00d496de154_wild",
+  "created_at": "2026-06-28T15:48:50+00:00",
   "loop_execution": false,
   "mt5_real_run": false,
   "ranking_metric": "profit",

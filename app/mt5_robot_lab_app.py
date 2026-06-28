@@ -14,7 +14,16 @@ if __package__ is None:
 from app.core.app_config import load_app_config, validate_app_config
 from app.core.candidate_generator import DEFAULT_SEED, generate_candidates, save_candidates
 from app.core.candidate_runner import run_xauusd_base_seed_smoke
-from app.core.champion_dna import ChampionDNA, sample_champion_dna, write_champion_artifacts
+from app.core.champion_dna import (
+    ChampionDNA,
+    hash_source_text,
+    make_public_champion_summary,
+    parameter_diff,
+    sample_champion_dna,
+    save_champion_dna,
+    validate_champion_dna,
+    write_champion_artifacts,
+)
 from app.core.export_reports import export_sample_summary
 from app.core.intelligence_modes import validate_intelligence_modes
 from app.core.lab_registry import load_lab_registry
@@ -58,9 +67,21 @@ def run_self_test() -> dict[str, object]:
     dna = sample_champion_dna()
     if not isinstance(dna, ChampionDNA):
         raise AssertionError("Champion DNA sample did not build")
+    validate_champion_dna(dna)
+    if len(hash_source_text("sample")) != 64:
+        raise AssertionError("Champion DNA hash_source_text must return SHA-256 hex")
+    diff = parameter_diff({"ATR_period": 14}, {"ATR_period": 21})
+    if diff[0]["parameter"] != "ATR_period":
+        raise AssertionError("Champion DNA parameter_diff did not report ATR_period")
+    public_summary = make_public_champion_summary(dna)
+    if "password" in public_summary.lower() or "token" in public_summary.lower():
+        raise AssertionError("Champion DNA public summary contains sensitive text")
+    if dna.risk_mode != "wild" or dna.max_drawdown_tolerated_pct != 100.0:
+        raise AssertionError("Champion DNA sample must cover wild risk mode")
 
     artifact_root = PROJECT_ROOT / "reports" / "public" / "sample_champion_dna"
     written = write_champion_artifacts(dna, artifact_root)
+    dna_v2_artifacts = save_champion_dna(dna, PROJECT_ROOT / "reports" / "public")
     exports = export_sample_summary(PROJECT_ROOT / "reports" / "public")
 
     return {
@@ -74,6 +95,7 @@ def run_self_test() -> dict[str, object]:
         "gui_required_for_self_test": False,
         "codex_required": config.codex_required,
         "champion_artifacts": {key: str(value) for key, value in written.items()},
+        "champion_dna_v2": {key: str(value) for key, value in dna_v2_artifacts.items()},
         "exports": {key: str(value) for key, value in exports.items()},
     }
 

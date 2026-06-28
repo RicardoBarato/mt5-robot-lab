@@ -13,11 +13,11 @@ EXPORT_COLUMNS = [
     "rank",
     "candidate_id",
     "lab_id",
-    "seed_family",
-    "symbol",
+    "source_seed_id",
+    "requested_symbol",
     "broker_symbol",
     "timeframe",
-    "years_tested",
+    "backtest_years",
     "initial_balance_usd",
     "net_profit_usd",
     "final_balance_usd",
@@ -28,6 +28,8 @@ EXPORT_COLUMNS = [
     "martingale_used",
     "grid_used",
     "no_stop_used",
+    "risk_mode",
+    "max_drawdown_tolerated_pct",
     "intelligence_mode",
     "source_file",
     "report_path",
@@ -37,7 +39,7 @@ EXPORT_COLUMNS = [
 
 def _row(dna: ChampionDNA) -> dict[str, object]:
     payload = asdict(dna)
-    payload["source_file"] = payload.pop("source_mq5")
+    payload["source_file"] = payload.get("source_seed_file") or payload.get("candidate_file") or ""
     return {column: payload.get(column, "") for column in EXPORT_COLUMNS}
 
 
