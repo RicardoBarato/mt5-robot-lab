@@ -21,6 +21,23 @@ FORBIDDEN_PATTERNS = [
     ".env.*",
 ]
 
+OPERATOR_GATE_ARTIFACTS = {
+    "reports/public/operator_gate_preview.json",
+    "reports/public/operator_gate_preview.md",
+}
+
+OPERATOR_GATE_FORBIDDEN_TERMS = [
+    "password",
+    "token",
+    "secret",
+    "account_number",
+    "broker_password",
+    "real account",
+    ".env",
+    ".set",
+    ".ex5",
+]
+
 FORBIDDEN_CLAIMS = [
     "guaranteed profit",
     "guaranteed live trading",
@@ -63,6 +80,7 @@ def scan(root: Path) -> list[dict[str, str]]:
     for path in root.rglob("*"):
         if path.is_dir() or should_skip(path, root):
             continue
+        rel_text = path.relative_to(root).as_posix()
         reason = is_forbidden(path, root)
         if reason:
             findings.append({"file": str(path.relative_to(root)), "reason": reason})
@@ -71,6 +89,11 @@ def scan(root: Path) -> list[dict[str, str]]:
             for claim in FORBIDDEN_CLAIMS:
                 if claim in text:
                     findings.append({"file": str(path.relative_to(root)), "reason": f"forbidden_claim:{claim}"})
+        if rel_text in OPERATOR_GATE_ARTIFACTS:
+            text = path.read_text(encoding="utf-8", errors="ignore").lower()
+            for term in OPERATOR_GATE_FORBIDDEN_TERMS:
+                if term in text:
+                    findings.append({"file": rel_text, "reason": f"operator_gate_forbidden_term:{term}"})
     licensing_policy = root / "docs" / "LICENSING_POLICY.md"
     if licensing_policy.exists():
         text = licensing_policy.read_text(encoding="utf-8", errors="ignore").lower()

@@ -156,6 +156,21 @@ MetaTrader 5 must be installed separately by the user. This app must not bundle
 MT5, broker installers, credentials, account details, raw reports or private
 logs.
 
+## Real MT5 Smoke Operator Gate
+
+MVP-012 adds an explicit operator approval gate for future one-run real MT5 smoke
+execution. By default, runners remain blocked and safe.
+
+Safe preview commands:
+
+```powershell
+python app\mt5_robot_lab_app.py --operator-gate-self-test
+python app\mt5_robot_lab_app.py --preview-real-mt5-smoke-gate
+```
+
+The preview does not launch MT5, does not run Strategy Tester and does not run a
+real backtest.
+
 ## Development Validation
 
 ```powershell

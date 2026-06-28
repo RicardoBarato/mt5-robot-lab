@@ -15,17 +15,20 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-009 | Submission Package v1 | P2 | completed |
 | MVP-010 | Online Leaderboard Spec | P3 | completed |
 | MVP-011 | Licensing and Contribution Policy | P2 | completed |
+| MVP-012 | Real MT5 Smoke Operator Gate | high | completed |
 
 Use:
 
 ```powershell
 python factory\mvp_factory.py --list
 python factory\mvp_factory.py --next
-python factory\mvp_factory.py --generate-prompt MVP-010
+python factory\mvp_factory.py --generate-prompt MVP-012
 ```
 
 The initial 10-MVP queue was completed after `MVP-010 Online Leaderboard Spec`.
 MVP-011 extends the queue with licensing, brand, contribution, submission and
-official ranking governance.
+official ranking governance. MVP-012 adds explicit approval gates for future
+real MT5 smoke execution.
 
-Recommended next step: `MVP-012 Real MT5 Smoke Operator Gate`.
+The next recommended step after human review is `MVP-013 Real MT5 Smoke
+Execution`.

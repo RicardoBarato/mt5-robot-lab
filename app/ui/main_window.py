@@ -222,6 +222,12 @@ class DesktopNavigationShell:
                 f"metaeditor64.exe: {result.metaeditor64 or 'not found'}",
             )
             return
+        if screen.id == "real_mt5_smoke_gate":
+            messagebox.showinfo(
+                "Real MT5 Smoke Gate",
+                "Preview only. No MT5 launch, no Strategy Tester and no backtest execution in this MVP.",
+            )
+            return
         if screen.id == "export_spreadsheet":
             messagebox.showinfo("Reports", str(self.project_root / "reports" / "public"))
             return

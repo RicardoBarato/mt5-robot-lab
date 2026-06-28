@@ -13,3 +13,12 @@ Conceptual mapping:
 
 If symbols or history are unavailable, the app should ask the user to open MT5
 and connect a demo account. Passwords are not stored.
+
+## Operator Gate Boundary
+
+Symbol discovery is separate from real execution. Detection can identify common
+broker mappings and future MT5 availability, but it does not approve a real MT5
+smoke run.
+
+MVP-012 requires a separate operator gate before any future real local smoke
+execution. The gate keeps CI safe and blocks 100-run tournaments by default.

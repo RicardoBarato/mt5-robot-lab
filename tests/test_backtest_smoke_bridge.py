@@ -44,6 +44,14 @@ class BacktestSmokeBridgeTests(unittest.TestCase):
         self.assertEqual(result.symbol, "XAUUSD")
         self.assertEqual(result.timeframe, "M5")
 
+    def test_runner_blocks_real_execution_without_operator_gate(self) -> None:
+        result = run_mt5_smoke(allow_real_execution=True)
+        payload = result.public_payload()
+        self.assertEqual(result.status, "blocked_by_operator_gate")
+        self.assertFalse(payload["mt5_real_run"])
+        self.assertFalse(payload["backtest_real_run"])
+        self.assertEqual(payload["reason"], "Real MT5 smoke execution requires explicit operator approval.")
+
     def test_strategy_tester_command_shape(self) -> None:
         command = build_strategy_tester_command("C:/MT5/terminal64.exe", "C:/Temp/smoke.ini")
         self.assertEqual(command, ["C:/MT5/terminal64.exe", "/config:C:/Temp/smoke.ini"])
