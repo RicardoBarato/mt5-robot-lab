@@ -159,7 +159,7 @@ class DesktopNavigationShell:
         )
         badge.pack(side="right", anchor="n")
         tk.Label(badge, text="NO REAL MT5", bg=COLORS["surface_alt"], fg=COLORS["accent_green"], font=FONT_SECTION).pack()
-        tk.Label(badge, text="MVP-001", bg=COLORS["surface_alt"], fg=COLORS["text_secondary"], font=FONT_SMALL).pack()
+        tk.Label(badge, text="safe diagnostics", bg=COLORS["surface_alt"], fg=COLORS["text_secondary"], font=FONT_SMALL).pack()
 
     def _render_screen_body(self, screen: ScreenDefinition) -> None:
         cards = tk.Frame(self.content, bg=COLORS["background"])
