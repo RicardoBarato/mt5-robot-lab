@@ -1,0 +1,6 @@
+# PyInstaller placeholder for future MT5 Robot Lab packaging.
+#
+# This is not an active release script.
+
+APP_NAME = "MT5 Robot Lab"
+ENTRYPOINT = "app/mt5_robot_lab_app.py"

@@ -1,0 +1,10 @@
+; Inno Setup placeholder for future MT5 Robot Lab installer.
+; Do not use before release review.
+
+[Setup]
+AppName=MT5 Robot Lab
+AppVersion=0.1.0
+DefaultDirName={autopf}\MT5 Robot Lab
+OutputBaseFilename=MT5-Robot-Lab-Setup
+
+; MT5 and Codex are not bundled.

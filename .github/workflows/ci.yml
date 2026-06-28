@@ -1,0 +1,26 @@
+name: public-safety-ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: public-safety-ci
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile Python
+        run: python -m compileall app tests tools
+      - name: Unit tests
+        run: python -m unittest discover -s tests
+      - name: App self-test
+        run: python app\mt5_robot_lab_app.py --self-test
+      - name: Publication guard
+        run: python tools\publication_guard.py .

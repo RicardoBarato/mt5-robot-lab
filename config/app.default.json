@@ -1,0 +1,34 @@
+{
+  "product_name": "MT5 Robot Lab",
+  "default_lab": "ea-xau",
+  "default_lab_path": "E:\\ea-xau",
+  "default_symbol": "XAUUSD",
+  "default_timeframe": "M5",
+  "default_backtest_years": 2,
+  "default_initial_balance_usd": 10000,
+  "default_max_backtests": 100,
+  "default_champion_count": 10,
+  "default_intelligence_mode": "local_auto",
+  "supported_intelligence_modes": [
+    "local_auto",
+    "codex_assisted",
+    "seeds_only"
+  ],
+  "supported_timeframes": [
+    "M1",
+    "M5",
+    "M15",
+    "M30",
+    "H1",
+    "H4",
+    "D1"
+  ],
+  "output_formats": [
+    "xlsx",
+    "csv",
+    "md"
+  ],
+  "mt5_installer_bundled": false,
+  "codex_required": false,
+  "cli_required_for_end_user": false
+}

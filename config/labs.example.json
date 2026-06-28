@@ -1,0 +1,12 @@
+{
+  "labs": [
+    {
+      "id": "ea-xau",
+      "name": "XAU Robot Lab",
+      "path": "E:\\ea-xau",
+      "role": "XAUUSD robot laboratory and ranking archive",
+      "default_symbol": "XAUUSD",
+      "default_timeframe": "M5"
+    }
+  ]
+}

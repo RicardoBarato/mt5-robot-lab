@@ -1,0 +1,5 @@
+{
+  "mt5_terminal_path": "<select terminal64.exe locally>",
+  "mt5_metaeditor_path": "<select metaeditor64.exe locally>",
+  "notes": "Copy to config/local.json for local-only settings. Do not commit real paths or credentials."
+}
