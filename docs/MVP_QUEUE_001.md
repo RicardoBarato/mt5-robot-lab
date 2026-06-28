@@ -14,6 +14,7 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-008 | Champion DNA v2 | P1 | completed |
 | MVP-009 | Submission Package v1 | P2 | completed |
 | MVP-010 | Online Leaderboard Spec | P3 | completed |
+| MVP-011 | Licensing and Contribution Policy | P2 | completed |
 
 Use:
 
@@ -23,5 +24,8 @@ python factory\mvp_factory.py --next
 python factory\mvp_factory.py --generate-prompt MVP-010
 ```
 
-The initial 10-MVP queue is now complete after `MVP-010 Online Leaderboard Spec`.
-Recommended extension: `MVP-011 Licensing and Contribution Policy`.
+The initial 10-MVP queue was completed after `MVP-010 Online Leaderboard Spec`.
+MVP-011 extends the queue with licensing, brand, contribution, submission and
+official ranking governance.
+
+Recommended next step: `MVP-012 Real MT5 Smoke Operator Gate`.

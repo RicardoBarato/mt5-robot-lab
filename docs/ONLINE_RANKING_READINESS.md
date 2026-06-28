@@ -50,6 +50,15 @@ Before online submission is enabled, the project should implement:
 - `docs/COMMUNITY_AND_MONETIZATION_MODEL.md`
 - `docs/LICENSING_AND_BRAND_BOUNDARY.md`
 
+## Open software, official ranking
+
+MT5 Robot Lab is open software for local MT5 strategy tournament research. The
+official online ranking and verified badges are separate project-controlled
+services planned for the future.
+
+MVP-011 adds the policy boundary for licensing direction, brand usage,
+contribution rules, submission terms draft and official ranking governance.
+
 ## Disclosure
 
 Backtests and smoke samples are research artifacts. They are not promises of

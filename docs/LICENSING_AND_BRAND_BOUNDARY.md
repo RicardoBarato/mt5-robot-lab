@@ -13,7 +13,7 @@ advice and does not approve any robot for live trading.
 Future community submissions should not imply:
 
 - official endorsement by MT5 Robot Lab;
-- guaranteed profitability;
+- certainty of profit;
 - live account approval;
 - broker affiliation;
 - MetaQuotes affiliation;
@@ -31,7 +31,7 @@ Avoid wording:
 
 ```text
 official profitable robot
-guaranteed winner
+sure-win robot
 approved live strategy
 ```
 

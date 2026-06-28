@@ -21,6 +21,14 @@ FORBIDDEN_PATTERNS = [
     ".env.*",
 ]
 
+FORBIDDEN_CLAIMS = [
+    "guaranteed profit",
+    "guaranteed live trading",
+    "profit guaranteed",
+    "guaranteed winner",
+    "risk-free trading",
+]
+
 SKIP_DIRS = {
     ".git",
     "__pycache__",
@@ -58,6 +66,23 @@ def scan(root: Path) -> list[dict[str, str]]:
         reason = is_forbidden(path, root)
         if reason:
             findings.append({"file": str(path.relative_to(root)), "reason": reason})
+        if path.suffix.lower() in {".md", ".txt"}:
+            text = path.read_text(encoding="utf-8", errors="ignore").lower()
+            for claim in FORBIDDEN_CLAIMS:
+                if claim in text:
+                    findings.append({"file": str(path.relative_to(root)), "reason": f"forbidden_claim:{claim}"})
+    licensing_policy = root / "docs" / "LICENSING_POLICY.md"
+    if licensing_policy.exists():
+        text = licensing_policy.read_text(encoding="utf-8", errors="ignore").lower()
+        if "not legal advice" not in text:
+            findings.append({"file": "docs/LICENSING_POLICY.md", "reason": "missing_not_legal_advice"})
+        if "do not restrict commercial use" not in text:
+            findings.append({"file": "docs/LICENSING_POLICY.md", "reason": "missing_commercial_use_boundary"})
+    submission_terms = root / "docs" / "SUBMISSION_TERMS_DRAFT.md"
+    if submission_terms.exists():
+        text = submission_terms.read_text(encoding="utf-8", errors="ignore").lower()
+        if "draft" not in text or "not final legal terms" not in text:
+            findings.append({"file": "docs/SUBMISSION_TERMS_DRAFT.md", "reason": "submission_terms_not_clearly_draft"})
     return findings
 
 

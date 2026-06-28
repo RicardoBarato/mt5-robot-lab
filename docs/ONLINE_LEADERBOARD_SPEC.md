@@ -133,6 +133,15 @@ Leaderboard entries must not contain:
 - `.set` files;
 - `.ex5` files.
 
+## Open software, official ranking
+
+MT5 Robot Lab is open software for local MT5 strategy tournament research. The
+official online ranking and verified badges are separate project-controlled
+services planned for the future.
+
+Local software use does not require upload. Future official ranking submission
+is optional and depends on validated public-safe packages.
+
 ## MVP-010 Result
 
 The MVP-010 implementation creates a local schema and sample files only:

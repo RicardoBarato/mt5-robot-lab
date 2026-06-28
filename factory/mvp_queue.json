@@ -474,5 +474,64 @@
       "python tools\\publication_guard.py .",
       "git diff --check"
     ]
+  },
+  {
+    "allowed_scope": [
+      "E:\\mt5-robot-lab",
+      "docs/",
+      "tests/",
+      "tools/",
+      "reports/public/",
+      "factory/"
+    ],
+    "done_criteria": [
+      "Licensing policy is documented as a proposal, not legal advice",
+      "Brand and official ranking boundaries are documented",
+      "Contribution and code of conduct rules are public-safe",
+      "Submission terms remain draft-only",
+      "Publication guard and tests cover policy claims",
+      "Draft PR opened"
+    ],
+    "expected_files": [
+      "docs/LICENSING_POLICY.md",
+      "docs/BRAND_AND_TRADEMARK_POLICY.md",
+      "CONTRIBUTING.md",
+      "CODE_OF_CONDUCT.md",
+      "docs/SUBMISSION_TERMS_DRAFT.md",
+      "docs/OFFICIAL_RANKING_GOVERNANCE.md",
+      "tests/test_policy_docs.py",
+      "reports/public/MVP_011_LICENSING_CONTRIBUTION_POLICY_REPORT.md"
+    ],
+    "forbidden_scope": [
+      "E:\\ea-xau",
+      "RicardoBarato/ea-xau",
+      "PayoffGrid",
+      "RB Risk Engine AI",
+      "ONPN11",
+      "financial-panel-br"
+    ],
+    "id": "MVP-011",
+    "next_handoff": "MVP-012 Real MT5 Smoke Operator Gate",
+    "objective": "Consolidate licensing, brand, contribution, community submission, official ranking and responsible monetization policies.",
+    "priority": "P2",
+    "risk_flags": [
+      "legal_advice_boundary",
+      "open_source_license_confusion",
+      "brand_misuse",
+      "profit_claim_boundary"
+    ],
+    "status": "completed",
+    "title": "Licensing and Contribution Policy",
+    "type": "policy_governance",
+    "validation_commands": [
+      "python -m compileall app tests tools factory",
+      "python -m unittest discover -s tests",
+      "python app\\mt5_robot_lab_app.py --self-test",
+      "python tools\\publication_guard.py .",
+      "python factory\\mvp_factory.py --self-test",
+      "python factory\\mvp_factory.py --list",
+      "python factory\\mvp_factory.py --next",
+      "git diff --check"
+    ]
   }
 ]
