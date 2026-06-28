@@ -115,6 +115,23 @@ reports/public/submission_package_sample/
 The package is local only. It is not uploaded, it is not a leaderboard entry and
 it is not a real backtest claim.
 
+## Online Leaderboard Spec
+
+MVP-010 defines the future leaderboard model for benchmark-style rankings by
+asset, broker symbol, timeframe, test window, starting balance, risk mode and
+drawdown tolerance.
+
+Current public-safe sample outputs:
+
+```text
+reports/public/leaderboard_sample.json
+reports/public/leaderboard_sample.md
+```
+
+The leaderboard is a specification only. This repository does not create an
+online service, does not upload submissions, does not implement payments or ads
+and does not claim real trading performance.
+
 ## MT5 Boundary
 
 MetaTrader 5 must be installed separately by the user. This app must not bundle

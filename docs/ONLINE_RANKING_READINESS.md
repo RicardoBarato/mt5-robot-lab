@@ -1,7 +1,7 @@
 # Online Ranking Readiness
 
-MVP-009 prepares the local submission package needed by a future online ranking
-system.
+MVP-009 prepared the local submission package needed by a future online ranking
+system. MVP-010 defines the first public leaderboard specification.
 
 The future leaderboard can use validated packages to compare candidates by:
 
@@ -21,6 +21,9 @@ The future leaderboard can use validated packages to compare candidates by:
 - Local package generation exists.
 - Local package validation exists.
 - Local hashes exist.
+- Local leaderboard schema exists.
+- Public-safe leaderboard samples exist.
+- Ranking categories are documented.
 - No online upload exists.
 - No public leaderboard exists.
 - No service or API is called.
@@ -28,15 +31,24 @@ The future leaderboard can use validated packages to compare candidates by:
 
 ## Future Requirements
 
-Before online submission is enabled, the project should define:
+Before online submission is enabled, the project should implement:
 
 - accepted package versions;
 - server-side validation rules;
 - duplicate detection;
 - anti-tamper checks;
-- ranking categories;
 - abuse prevention;
 - disclosure rules for backtests and smoke samples.
+- user identity or display-name policy;
+- replay or witness validation for high-ranking entries.
+
+## MVP-010 Documents
+
+- `docs/ONLINE_LEADERBOARD_SPEC.md`
+- `docs/LEADERBOARD_CATEGORIES.md`
+- `docs/SUBMISSION_VALIDATION_MODEL.md`
+- `docs/COMMUNITY_AND_MONETIZATION_MODEL.md`
+- `docs/LICENSING_AND_BRAND_BOUNDARY.md`
 
 ## Disclosure
 
