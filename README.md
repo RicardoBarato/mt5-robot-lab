@@ -51,6 +51,14 @@ of this project.
 
 Codex is not required and must not be installed, logged in or executed silently.
 
+## Desktop UI Foundation
+
+The first desktop UI pass uses a dark premium Windows-style layout with status
+cards, an MT5 detection action, tournament configuration placeholders,
+intelligence mode selection and a Champion DNA preview area. The user-facing
+goal is to avoid manual CLI usage for normal workflows while keeping real MT5
+execution disabled until the adapter is explicitly implemented.
+
 ## Champion DNA
 
 Champion DNA records the source, parameters, metrics, risk flags and code-change
