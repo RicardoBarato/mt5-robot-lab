@@ -74,13 +74,34 @@ def rank_by_risk_profile(candidates: list[dict[str, Any]], dd_max_tolerated: flo
                 "drawdown": candidate.get("drawdown", 0),
                 "trades": candidate.get("trades", 0),
                 "risk_flags": candidate.get("risk_flags", []),
+                "risk_profile": profile_id,
+                "risk_mode": "wild" if profile_id == "wild" else "controlled_risk",
                 "profile_id": profile_id,
                 "profile_label": effective_profile["label"],
                 "max_drawdown_tolerated": effective_profile["max_drawdown"],
+                "max_drawdown_tolerated_pct": effective_profile["max_drawdown"],
+                "ranking_profile": "wild_profit" if profile_id == "wild" else "controlled_risk",
                 "profile_allowed": allowed,
                 "profile_rejection_reasons": rejection_reasons,
+                "accepted_by_profile": allowed,
+                "rejected_by_profile_reason": rejection_reasons,
                 "ranking_metric": "profit",
             }
+            if profile_id == "wild":
+                row["ranking_reason"] = (
+                    "Wild Mode accepted this candidate because profit ranked highest and max drawdown "
+                    f"tolerance was {effective_profile['max_drawdown']}%."
+                )
+            elif allowed:
+                row["ranking_reason"] = (
+                    "Controlled Risk accepted this candidate inside "
+                    f"{effective_profile['max_drawdown']}% max drawdown tolerance with no disallowed risk flags."
+                )
+            else:
+                row["ranking_reason"] = (
+                    "Controlled Risk rejected or downgraded this candidate because "
+                    f"{', '.join(rejection_reasons) if rejection_reasons else 'profile constraints were not met'}."
+                )
             rows.append(row)
 
         ranked = sorted(rows, key=lambda item: (item["profile_allowed"], float(item["profit"]), item["candidate_id"]), reverse=True)

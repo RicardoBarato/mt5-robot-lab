@@ -1,0 +1,90 @@
+{
+  "backtest_real_run": false,
+  "backtest_years": 2.0,
+  "broker_symbol": "XAUUSD",
+  "candidate_file": "candidates/sample_xau_candidate_001.json",
+  "candidate_hash": "ba4c220a106d18d503db8995dc26aa02a553579d16fd4139d5fd7d377abd4052",
+  "candidate_id": "sample_xau_candidate_001",
+  "champion_id": "champion_sample_xau_candidate_001_wild",
+  "code_changes_summary": "No source code copied; smoke candidate parameters only.",
+  "codex_authorized": false,
+  "codex_used": false,
+  "created_at": "2026-06-28T15:50:25+00:00",
+  "expected_payoff": 12.5,
+  "final_balance_usd": 11250.0,
+  "generated_from_candidate_id": "sample_xau_candidate_001",
+  "generation_number": 1,
+  "grid_used": true,
+  "initial_balance_usd": 10000.0,
+  "intelligence_mode": "local_auto",
+  "lab_id": "ea-xau",
+  "lab_name": "XAU Robot Lab",
+  "largest_loss_streak": 6,
+  "martingale_used": true,
+  "max_drawdown_pct": 7.0,
+  "max_drawdown_tolerated_pct": 100.0,
+  "max_drawdown_usd": 700.0,
+  "mt5_real_run": false,
+  "mutation_mode": "programmatic_local_mutation",
+  "net_profit_usd": 1250.0,
+  "no_stop_used": false,
+  "notes": "Bootstrap sample.",
+  "parameter_changes": [
+    {
+      "after": 18,
+      "before": 25,
+      "change_type": "modified",
+      "parameter": "ADX_min",
+      "risk_impact": "neutral"
+    },
+    {
+      "after": 21,
+      "before": 14,
+      "change_type": "modified",
+      "parameter": "ATR_period",
+      "risk_impact": "neutral"
+    },
+    {
+      "after": 3.5,
+      "before": 2.0,
+      "change_type": "modified",
+      "parameter": "TP_R",
+      "risk_impact": "profit_aggressive"
+    },
+    {
+      "after": true,
+      "before": false,
+      "change_type": "modified",
+      "parameter": "use_grid",
+      "risk_impact": "risk_increase"
+    },
+    {
+      "after": true,
+      "before": false,
+      "change_type": "modified",
+      "parameter": "use_martingale",
+      "risk_impact": "risk_increase"
+    }
+  ],
+  "profit_factor": 1.35,
+  "rank": 1,
+  "ranking_profile": "wild_profit",
+  "ranking_reason": "Wild Mode accepted this candidate because profit ranked highest and max drawdown tolerance was 100.0%.",
+  "report_path": "reports/public/mt5_robot_lab_sample_summary.md",
+  "requested_symbol": "XAUUSD",
+  "risk_flags": [
+    "grid_enabled",
+    "martingale_enabled"
+  ],
+  "risk_mode": "wild",
+  "risk_profile": "wild",
+  "source_mq5_hash": "1823c2fd62227f3c3c39528618e67bfc070feb2a4d0ffa48b63a7e7287634617",
+  "source_seed_file": "embedded_default_seed",
+  "source_seed_id": "xauusd_base_seed",
+  "status": "smoke_or_dry_run",
+  "test_run_id": "sample_run",
+  "timeframe": "M5",
+  "timeframe_minutes": 5,
+  "total_trades": 100,
+  "win_rate": 42.0
+}

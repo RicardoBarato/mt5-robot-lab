@@ -78,9 +78,21 @@ python factory\mvp_factory.py --generate-prompt MVP-001
 
 ## Champion DNA
 
-Champion DNA records the source, parameters, metrics, risk flags and code-change
-summary behind each ranked robot candidate. It is a research ledger, not a live
-trading approval.
+Champion DNA v2 records the source seed, candidate hash, source hash,
+parameters, parameter diffs, metrics, risk profile, drawdown tolerance, risk
+flags and public summary behind each ranked robot candidate. It is a research
+ledger, not a live trading approval.
+
+Current public-safe sample outputs:
+
+```text
+reports/public/sample_champion_dna_v2.json
+reports/public/sample_champion_dna_v2.md
+```
+
+Champion DNA v2 integrates with the smoke tournament engine and risk profile
+ranking. Smoke/dry-run records explicitly keep `mt5_real_run=false` and
+`backtest_real_run=false`.
 
 ## Exports
 
