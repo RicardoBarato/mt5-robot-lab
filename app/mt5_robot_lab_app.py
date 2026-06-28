@@ -16,6 +16,7 @@ from app.core.champion_dna import ChampionDNA, sample_champion_dna, write_champi
 from app.core.export_reports import export_sample_summary
 from app.core.intelligence_modes import validate_intelligence_modes
 from app.core.lab_registry import load_lab_registry
+from app.core.mt5_detection import generate_diagnostics
 from app.core.symbol_mapping import TIMEFRAME_MINUTES
 from app.ui.main_window import launch_app
 from app.ui.screens import INTELLIGENCE_MODE_OPTIONS, NavigationController, build_screen_registry
@@ -76,6 +77,7 @@ def run_self_test() -> dict[str, object]:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="MT5 Robot Lab")
     parser.add_argument("--self-test", action="store_true", help="Run non-GUI validation")
+    parser.add_argument("--mt5-self-test", action="store_true", help="Run safe MT5 detection diagnostics")
     return parser
 
 
@@ -84,6 +86,10 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.self_test:
         print(json.dumps(run_self_test(), indent=2, sort_keys=True))
+        return 0
+    if args.mt5_self_test:
+        result = generate_diagnostics(PROJECT_ROOT / "reports" / "public")
+        print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     launch_app(PROJECT_ROOT)
     return 0

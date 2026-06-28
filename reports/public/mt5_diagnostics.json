@@ -1,0 +1,23 @@
+{
+  "backtest_real_run": false,
+  "credentials_requested": false,
+  "credentials_stored": false,
+  "metaeditor_found": false,
+  "metaeditor_path": "",
+  "mt5_installed": false,
+  "real_mt5_run": false,
+  "scanned_locations": [
+    "C:\\Program Files\\MetaTrader 5",
+    "C:\\Program Files\\MetaQuotes\\MetaTrader 5",
+    "C:\\Program Files (x86)\\MetaTrader 5",
+    "C:\\Program Files (x86)\\MetaQuotes\\MetaTrader 5",
+    "%USERPROFILE%\\AppData\\Local\\Programs\\MetaTrader 5",
+    "%USERPROFILE%\\AppData\\Local\\MetaQuotes\\Terminal",
+    "%USERPROFILE%\\AppData\\Roaming\\MetaQuotes\\Terminal"
+  ],
+  "status": "not ready",
+  "strategy_tester_run": false,
+  "symbol_scan_mode": "safe_mock_common_mappings",
+  "terminal_found": false,
+  "terminal_path": ""
+}
