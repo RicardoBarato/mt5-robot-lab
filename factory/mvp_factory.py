@@ -31,7 +31,7 @@ REQUIRED_FIELDS = {
     "next_handoff",
 }
 
-VALID_STATUSES = {"planned", "active", "done", "blocked", "paused"}
+VALID_STATUSES = {"planned", "active", "in_progress", "done", "completed", "blocked", "paused"}
 REQUIRED_FORBIDDEN_TERMS = {"ea-xau", "PayoffGrid", "ONPN11"}
 
 
@@ -78,7 +78,7 @@ def find_mvp(queue: list[dict[str, Any]], mvp_id: str) -> dict[str, Any]:
 
 def next_mvp(queue: list[dict[str, Any]]) -> dict[str, Any] | None:
     for item in queue:
-        if item["status"] in {"planned", "active"}:
+        if item["status"] in {"planned", "active", "in_progress"}:
             return item
     return None
 
@@ -109,6 +109,16 @@ def mark_status(mvp_id: str, status: str) -> dict[str, str]:
         raise KeyError(f"MVP not found in status file: {mvp_id}")
     statuses[mvp_id] = status
     write_json(STATUS_PATH, statuses)
+    queue = load_queue()
+    found = False
+    for item in queue:
+        if item["id"] == mvp_id:
+            item["status"] = status
+            found = True
+            break
+    if not found:
+        raise KeyError(f"MVP not found in queue file: {mvp_id}")
+    write_json(QUEUE_PATH, queue)
     return statuses
 
 

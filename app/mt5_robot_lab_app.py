@@ -18,6 +18,7 @@ from app.core.intelligence_modes import validate_intelligence_modes
 from app.core.lab_registry import load_lab_registry
 from app.core.symbol_mapping import TIMEFRAME_MINUTES
 from app.ui.main_window import launch_app
+from app.ui.screens import INTELLIGENCE_MODE_OPTIONS, NavigationController, build_screen_registry
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -29,6 +30,21 @@ def run_self_test() -> dict[str, object]:
     validate_intelligence_modes(config.supported_intelligence_modes, config.default_intelligence_mode)
     if config.default_timeframe not in TIMEFRAME_MINUTES:
         raise AssertionError("Default timeframe is not supported")
+
+    screens = build_screen_registry(config)
+    if len(screens) != 11:
+        raise AssertionError("Desktop navigation must expose 11 screens")
+    controller = NavigationController(screens)
+    if controller.current_screen != "welcome":
+        raise AssertionError("Default screen must be welcome")
+    if controller.next_screen().id != "lab_selection":
+        raise AssertionError("next_screen did not advance to lab_selection")
+    if controller.previous_screen().id != "welcome":
+        raise AssertionError("previous_screen did not return to welcome")
+    if controller.go_to_screen("settings").id != "settings":
+        raise AssertionError("go_to_screen did not navigate to settings")
+    if {option["mode"] for option in INTELLIGENCE_MODE_OPTIONS} != {"local_auto", "codex_assisted", "seeds_only"}:
+        raise AssertionError("Intelligence mode screen must contain exactly 3 modes")
 
     labs = load_lab_registry(PROJECT_ROOT / "config" / "labs.example.json")
     if not labs:
@@ -46,7 +62,12 @@ def run_self_test() -> dict[str, object]:
         "self_test": "passed",
         "product_name": config.product_name,
         "default_lab": config.default_lab,
+        "default_screen": screens[0].id,
         "labs_loaded": [lab.id for lab in labs],
+        "screens": [screen.id for screen in screens],
+        "real_mt5_required": False,
+        "gui_required_for_self_test": False,
+        "codex_required": config.codex_required,
         "champion_artifacts": {key: str(value) for key, value in written.items()},
         "exports": {key: str(value) for key, value in exports.items()},
     }

@@ -9,194 +9,226 @@ from tkinter import messagebox
 from app.core.app_config import load_app_config
 from app.core.mt5_detection import detect_mt5
 from app.ui.design_tokens import COLORS, FONT_SECTION, FONT_SMALL, FONT_SUBTITLE, FONT_TITLE, SPACING
-from app.ui.screens import CHAMPION_DNA_PLACEHOLDER, INTELLIGENCE_MODE_OPTIONS
+from app.ui.screens import NavigationController, ScreenDefinition, build_screen_registry
 from app.ui.widgets import action_button, option_card, status_card
 
 
-def launch_app(project_root: Path) -> None:
-    config = load_app_config(project_root / "config" / "app.default.json")
-    root = tk.Tk()
-    root.title("MT5 Robot Lab")
-    root.geometry("1160x760")
-    root.minsize(1040, 680)
-    root.configure(bg=COLORS["background"])
+class DesktopNavigationShell:
+    """Tkinter shell for the headless navigation registry."""
 
-    shell = tk.Frame(root, bg=COLORS["background"], padx=SPACING["xl"], pady=SPACING["lg"])
-    shell.pack(fill="both", expand=True)
+    def __init__(self, root: tk.Tk, project_root: Path) -> None:
+        self.project_root = project_root
+        self.config = load_app_config(project_root / "config" / "app.default.json")
+        self.screens = build_screen_registry(self.config)
+        self.controller = NavigationController(self.screens)
+        self.root = root
+        self.nav_buttons: dict[str, tk.Button] = {}
 
-    header = tk.Frame(shell, bg=COLORS["background"])
-    header.pack(fill="x")
-    title_area = tk.Frame(header, bg=COLORS["background"])
-    title_area.pack(side="left", fill="x", expand=True)
-    tk.Label(
-        title_area,
-        text="MT5 Robot Lab",
-        bg=COLORS["background"],
-        fg=COLORS["text_primary"],
-        font=FONT_TITLE,
-    ).pack(anchor="w")
-    tk.Label(
-        title_area,
-        text="Local Strategy Tournament for MetaTrader 5",
-        bg=COLORS["background"],
-        fg=COLORS["accent_gold"],
-        font=FONT_SUBTITLE,
-    ).pack(anchor="w", pady=(SPACING["xs"], 0))
-    tk.Label(
-        title_area,
-        text="Desktop scaffold only: no real MT5 run, no real backtest, no live trading.",
-        bg=COLORS["background"],
-        fg=COLORS["text_secondary"],
-        font=FONT_SMALL,
-    ).pack(anchor="w", pady=(SPACING["xs"], 0))
+        self.root.title("MT5 Robot Lab")
+        self.root.geometry("1180x760")
+        self.root.minsize(1080, 700)
+        self.root.configure(bg=COLORS["background"])
 
-    badge = tk.Frame(
-        header,
-        bg=COLORS["surface_alt"],
-        padx=SPACING["md"],
-        pady=SPACING["sm"],
-        highlightbackground=COLORS["border"],
-        highlightthickness=1,
-    )
-    badge.pack(side="right", anchor="n")
-    tk.Label(badge, text="BOOTSTRAP MODE", bg=COLORS["surface_alt"], fg=COLORS["accent_green"], font=FONT_SECTION).pack()
-    tk.Label(badge, text="dry-run only", bg=COLORS["surface_alt"], fg=COLORS["text_secondary"], font=FONT_SMALL).pack()
+        self.shell = tk.Frame(root, bg=COLORS["background"], padx=SPACING["lg"], pady=SPACING["lg"])
+        self.shell.pack(fill="both", expand=True)
 
-    grid = tk.Frame(shell, bg=COLORS["background"], pady=SPACING["lg"])
-    grid.pack(fill="x")
-    cards = [
-        ("MT5 Status", "Not detected"),
-        ("Selected Lab", config.default_lab),
-        ("Symbol / Timeframe", f"{config.default_symbol} / {config.default_timeframe}"),
-        ("Initial Balance", f"USD {config.default_initial_balance_usd:,}"),
-        ("Max Backtests", str(config.default_max_backtests)),
-        ("Champion Count", str(config.default_champion_count)),
-        ("Intelligence Mode", config.default_intelligence_mode),
-    ]
-    for index, (title, value) in enumerate(cards):
-        card = status_card(grid, title, value)
-        card.grid(row=index // 4, column=index % 4, padx=SPACING["xs"], pady=SPACING["xs"], sticky="nsew")
-    for column in range(4):
-        grid.columnconfigure(column, weight=1)
-
-    actions = tk.Frame(
-        shell,
-        bg=COLORS["surface"],
-        padx=SPACING["md"],
-        pady=SPACING["md"],
-        highlightbackground=COLORS["border"],
-        highlightthickness=1,
-    )
-    actions.pack(fill="x", pady=(0, SPACING["lg"]))
-
-    def detect() -> None:
-        result = detect_mt5()
-        messagebox.showinfo(
-            "MT5 detection",
-            f"terminal64.exe: {result.terminal64 or 'not found'}\n"
-            f"metaeditor64.exe: {result.metaeditor64 or 'not found'}",
-        )
-
-    buttons = [
-        ("Detect MT5", detect, True),
-        (
-            "Configure Tournament",
-            lambda: messagebox.showinfo("Configure", "Tournament setup screen is planned for the next product pass."),
-            False,
-        ),
-        (
-            "Run Dry-Run Smoke",
-            lambda: messagebox.showinfo("Dry-run", "Dry-run smoke remains non-MT5 and validation-only in this scaffold."),
-            False,
-        ),
-        (
-            "Prepare Codex Packet",
-            lambda: messagebox.showinfo(
-                "Codex", "Codex assisted mode is optional and requires explicit user authorization."
-            ),
-            False,
-        ),
-        ("Open Reports Folder", lambda: messagebox.showinfo("Reports", str(project_root / "reports" / "public")), False),
-        ("Exit", root.destroy, False),
-    ]
-    for label, command, primary in buttons:
-        action_button(actions, label, command, primary=primary).pack(side="left", padx=(0, SPACING["sm"]))
-
-    content = tk.Frame(shell, bg=COLORS["background"])
-    content.pack(fill="both", expand=True)
-
-    intelligence = tk.Frame(content, bg=COLORS["background"])
-    intelligence.grid(row=0, column=0, sticky="nsew", padx=(0, SPACING["md"]))
-    tk.Label(
-        intelligence,
-        text="Modo de Inteligencia",
-        bg=COLORS["background"],
-        fg=COLORS["text_primary"],
-        font=FONT_SECTION,
-    ).pack(anchor="w", pady=(0, SPACING["sm"]))
-    for option in INTELLIGENCE_MODE_OPTIONS:
-        option_card(
-            intelligence,
-            option["marker"],
-            option["title"],
-            option["description"],
-            selected=bool(option["selected"]),
-        ).pack(fill="x", pady=(0, SPACING["sm"]))
-
-    champion = tk.Frame(
-        content,
-        bg=COLORS["surface"],
-        padx=SPACING["md"],
-        pady=SPACING["md"],
-        highlightbackground=COLORS["border"],
-        highlightthickness=1,
-    )
-    champion.grid(row=0, column=1, sticky="nsew")
-    tk.Label(champion, text="Champion DNA", bg=COLORS["surface"], fg=COLORS["text_primary"], font=FONT_SECTION).pack(
-        anchor="w"
-    )
-    tk.Label(
-        champion,
-        text="Best candidate summary will appear here after a dry-run or tournament.",
-        bg=COLORS["surface"],
-        fg=COLORS["text_secondary"],
-        font=FONT_SMALL,
-        wraplength=420,
-        justify="left",
-    ).pack(anchor="w", pady=(SPACING["xs"], SPACING["md"]))
-    for label, value in CHAMPION_DNA_PLACEHOLDER:
-        row = tk.Frame(champion, bg=COLORS["surface"])
-        row.pack(fill="x", pady=SPACING["xs"])
-        tk.Label(
-            row,
-            text=label,
-            width=18,
-            anchor="w",
+        self.sidebar = tk.Frame(
+            self.shell,
             bg=COLORS["surface"],
-            fg=COLORS["text_secondary"],
-            font=FONT_SMALL,
-        ).pack(side="left")
+            padx=SPACING["sm"],
+            pady=SPACING["md"],
+            highlightbackground=COLORS["border"],
+            highlightthickness=1,
+            width=250,
+        )
+        self.sidebar.pack(side="left", fill="y", padx=(0, SPACING["lg"]))
+        self.sidebar.pack_propagate(False)
+
+        self.main = tk.Frame(self.shell, bg=COLORS["background"])
+        self.main.pack(side="left", fill="both", expand=True)
+
+        self.header = tk.Frame(self.main, bg=COLORS["background"])
+        self.header.pack(fill="x", pady=(0, SPACING["lg"]))
+
+        self.content = tk.Frame(self.main, bg=COLORS["background"])
+        self.content.pack(fill="both", expand=True)
+
+        self.footer = tk.Frame(self.main, bg=COLORS["background"])
+        self.footer.pack(fill="x", pady=(SPACING["lg"], 0))
+
+        self._build_sidebar()
+        self._render_current_screen()
+
+    def _build_sidebar(self) -> None:
         tk.Label(
-            row,
-            text=value,
-            anchor="w",
+            self.sidebar,
+            text="MT5 Robot Lab",
             bg=COLORS["surface"],
             fg=COLORS["text_primary"],
+            font=FONT_SECTION,
+        ).pack(anchor="w", pady=(0, SPACING["xs"]))
+        tk.Label(
+            self.sidebar,
+            text="Desktop Navigation v2",
+            bg=COLORS["surface"],
+            fg=COLORS["accent_gold"],
             font=FONT_SMALL,
-            wraplength=300,
-        ).pack(side="left", fill="x", expand=True)
+        ).pack(anchor="w", pady=(0, SPACING["md"]))
 
-    content.columnconfigure(0, weight=1)
-    content.columnconfigure(1, weight=1)
-    content.rowconfigure(0, weight=1)
+        for screen in self.screens:
+            button = tk.Button(
+                self.sidebar,
+                text=screen.title,
+                command=lambda screen_id=screen.id: self._go_to(screen_id),
+                bg=COLORS["surface"],
+                fg=COLORS["text_secondary"],
+                activebackground=COLORS["surface_alt"],
+                activeforeground=COLORS["text_primary"],
+                relief="flat",
+                borderwidth=0,
+                anchor="w",
+                padx=SPACING["sm"],
+                pady=SPACING["sm"],
+                font=FONT_SMALL,
+                cursor="hand2",
+            )
+            button.pack(fill="x", pady=1)
+            self.nav_buttons[screen.id] = button
 
-    footer = tk.Label(
-        shell,
-        text="Research software foundation. Not financial advice. No execution approval.",
-        bg=COLORS["background"],
-        fg=COLORS["text_secondary"],
-        font=FONT_SMALL,
-    )
-    footer.pack(anchor="w", pady=(SPACING["md"], 0))
+    def _go_to(self, screen_id: str) -> None:
+        self.controller.go_to_screen(screen_id)
+        self._render_current_screen()
 
+    def _next(self) -> None:
+        self.controller.next_screen()
+        self._render_current_screen()
+
+    def _previous(self) -> None:
+        self.controller.previous_screen()
+        self._render_current_screen()
+
+    def _clear(self, frame: tk.Frame) -> None:
+        for child in frame.winfo_children():
+            child.destroy()
+
+    def _update_nav_state(self) -> None:
+        for screen_id, button in self.nav_buttons.items():
+            active = screen_id == self.controller.current_screen
+            button.configure(
+                bg=COLORS["surface_alt"] if active else COLORS["surface"],
+                fg=COLORS["accent_gold"] if active else COLORS["text_secondary"],
+            )
+
+    def _render_current_screen(self) -> None:
+        self._clear(self.header)
+        self._clear(self.content)
+        self._clear(self.footer)
+        self._update_nav_state()
+        screen = self.controller.get_current_definition()
+        self._render_header(screen)
+        self._render_screen_body(screen)
+        self._render_footer(screen)
+
+    def _render_header(self, screen: ScreenDefinition) -> None:
+        title_area = tk.Frame(self.header, bg=COLORS["background"])
+        title_area.pack(side="left", fill="x", expand=True)
+        tk.Label(
+            title_area,
+            text=screen.title,
+            bg=COLORS["background"],
+            fg=COLORS["text_primary"],
+            font=FONT_TITLE,
+        ).pack(anchor="w")
+        tk.Label(
+            title_area,
+            text=screen.subtitle,
+            bg=COLORS["background"],
+            fg=COLORS["accent_gold"],
+            font=FONT_SUBTITLE,
+            wraplength=760,
+            justify="left",
+        ).pack(anchor="w", pady=(SPACING["xs"], 0))
+
+        badge = tk.Frame(
+            self.header,
+            bg=COLORS["surface_alt"],
+            padx=SPACING["md"],
+            pady=SPACING["sm"],
+            highlightbackground=COLORS["border"],
+            highlightthickness=1,
+        )
+        badge.pack(side="right", anchor="n")
+        tk.Label(badge, text="NO REAL MT5", bg=COLORS["surface_alt"], fg=COLORS["accent_green"], font=FONT_SECTION).pack()
+        tk.Label(badge, text="MVP-001", bg=COLORS["surface_alt"], fg=COLORS["text_secondary"], font=FONT_SMALL).pack()
+
+    def _render_screen_body(self, screen: ScreenDefinition) -> None:
+        cards = tk.Frame(self.content, bg=COLORS["background"])
+        cards.pack(fill="x", pady=(0, SPACING["md"]))
+        for index, (title, value) in enumerate(screen.cards):
+            card = status_card(cards, title, value)
+            card.grid(row=index // 2, column=index % 2, padx=SPACING["xs"], pady=SPACING["xs"], sticky="nsew")
+        cards.columnconfigure(0, weight=1)
+        cards.columnconfigure(1, weight=1)
+
+        body = tk.Frame(
+            self.content,
+            bg=COLORS["surface"],
+            padx=SPACING["md"],
+            pady=SPACING["md"],
+            highlightbackground=COLORS["border"],
+            highlightthickness=1,
+        )
+        body.pack(fill="both", expand=True)
+
+        if screen.id == "intelligence_mode":
+            for title, value in screen.cards:
+                selected = title == "Local automatico"
+                marker = "[\u2713]" if selected else "[ ]"
+                option_card(body, marker, title, value, selected=selected).pack(fill="x", pady=(0, SPACING["sm"]))
+            return
+
+        for line in screen.body_lines:
+            tk.Label(
+                body,
+                text=line,
+                bg=COLORS["surface"],
+                fg=COLORS["text_primary"],
+                font=FONT_SUBTITLE,
+                wraplength=780,
+                justify="left",
+            ).pack(anchor="w", pady=(0, SPACING["sm"]))
+
+    def _render_footer(self, screen: ScreenDefinition) -> None:
+        action_button(self.footer, "Previous", self._previous).pack(side="left", padx=(0, SPACING["sm"]))
+        action_button(self.footer, "Next", self._next, primary=True).pack(side="left", padx=(0, SPACING["sm"]))
+        action_button(self.footer, screen.primary_action, lambda: self._primary_action(screen), primary=True).pack(
+            side="left", padx=(0, SPACING["sm"])
+        )
+        action_button(self.footer, "Settings", lambda: self._go_to("settings")).pack(side="left", padx=(0, SPACING["sm"]))
+        action_button(self.footer, "Exit", self.root.destroy).pack(side="right")
+
+    def _primary_action(self, screen: ScreenDefinition) -> None:
+        if screen.id == "welcome":
+            self._go_to("lab_selection")
+            return
+        if screen.id == "settings":
+            self._go_to("welcome")
+            return
+        if screen.id == "mt5_setup":
+            result = detect_mt5()
+            messagebox.showinfo(
+                "MT5 detection",
+                f"terminal64.exe: {result.terminal64 or 'not found'}\n"
+                f"metaeditor64.exe: {result.metaeditor64 or 'not found'}",
+            )
+            return
+        if screen.id == "export_spreadsheet":
+            messagebox.showinfo("Reports", str(self.project_root / "reports" / "public"))
+            return
+        messagebox.showinfo(screen.title, f"{screen.primary_action} is a placeholder in MVP-001.")
+
+
+def launch_app(project_root: Path) -> None:
+    root = tk.Tk()
+    DesktopNavigationShell(root, project_root)
     root.mainloop()

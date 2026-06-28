@@ -59,6 +59,11 @@ intelligence mode selection and a Champion DNA preview area. The user-facing
 goal is to avoid manual CLI usage for normal workflows while keeping real MT5
 execution disabled until the adapter is explicitly implemented.
 
+MVP-001 adds Desktop Navigation v2 with 11 in-app screens: Welcome, Lab
+Selection, MT5 Setup, Symbol and Timeframe, Intelligence Mode, Tournament Setup,
+Running Backtests, Champions Ranking, Champion DNA, Export Spreadsheet and
+Settings. The same screen registry is validated in headless self-tests.
+
 ## Grand MVP Factory
 
 MT5 Robot Lab uses a Grand MVP Factory workflow to evolve the desktop app
