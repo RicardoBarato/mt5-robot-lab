@@ -37,7 +37,7 @@ class MvpFactoryTests(unittest.TestCase):
         queue = load_queue()
         item = next_mvp(queue)
         self.assertIsNotNone(item)
-        self.assertEqual(item["id"], "MVP-009")
+        self.assertEqual(item["id"], "MVP-010")
 
     def test_generate_prompt_renders_mvp_001(self) -> None:
         queue = load_queue()
@@ -54,7 +54,7 @@ class MvpFactoryTests(unittest.TestCase):
             capture_output=True,
             text=True,
         )
-        self.assertIn("MVP-009", result.stdout)
+        self.assertIn("MVP-010", result.stdout)
 
     def test_cli_generate_prompt_works(self) -> None:
         result = subprocess.run(

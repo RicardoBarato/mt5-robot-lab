@@ -1,0 +1,13 @@
+{
+  "backtest_years": 2.0,
+  "broker_symbol": "XAUUSD",
+  "initial_balance_usd": 10000.0,
+  "lab_id": "ea-xau",
+  "lab_name": "XAU Robot Lab",
+  "local_only": true,
+  "product_name": "MT5 Robot Lab",
+  "requested_symbol": "XAUUSD",
+  "timeframe": "M5",
+  "timeframe_minutes": 5,
+  "upload_ready": false
+}

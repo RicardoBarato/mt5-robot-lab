@@ -379,9 +379,10 @@
   {
     "allowed_scope": [
       "E:\\mt5-robot-lab",
+      "app/core/",
       "docs/",
-      "packaging/",
-      "tests/"
+      "tests/",
+      "reports/public/"
     ],
     "done_criteria": [
       "Submission package manifest exists",
@@ -411,7 +412,7 @@
       "public_upload_boundary",
       "manifest_schema_drift"
     ],
-    "status": "planned",
+    "status": "completed",
     "title": "Submission Package v1",
     "type": "submission_package",
     "validation_commands": [
