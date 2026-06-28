@@ -1,0 +1,36 @@
+{
+  "backtest_run": false,
+  "candidate_id": "xauusd_base_seed_ac00bfc6742a",
+  "changed_parameters": [
+    "lot_multiplier",
+    "risk_percent",
+    "use_martingale"
+  ],
+  "constraints_applied": true,
+  "created_at": "2026-06-28T15:02:48+00:00",
+  "mt5_real_run": false,
+  "mutation_origin": "martingale_research_flagged",
+  "parameters": {
+    "ADX_min": 25,
+    "ATR_period": 14,
+    "SL": 350.0,
+    "TP_R": 2.0,
+    "break_even": true,
+    "lot_multiplier": 1.5,
+    "risk_percent": 0.25,
+    "trailing_stop": false,
+    "use_grid": false,
+    "use_martingale": true,
+    "use_session_filter": true
+  },
+  "risk_flags": [
+    "martingale_enabled"
+  ],
+  "seed_id": "xauusd_base_seed",
+  "seed_trace": {
+    "source_seed_id": "xauusd_base_seed",
+    "strategy_family": "xau_trend_breakout",
+    "symbol": "XAUUSD",
+    "timeframe": "M5"
+  }
+}

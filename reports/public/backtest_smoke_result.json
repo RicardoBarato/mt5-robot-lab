@@ -1,0 +1,18 @@
+{
+  "candidate_id": "xauusd_base_seed",
+  "command": [],
+  "drawdown": 0,
+  "initial_balance_usd": 10000,
+  "loop_execution": false,
+  "mt5_real_execution": false,
+  "profit": 0,
+  "profit_factor": 0,
+  "reason": "real_mt5_execution_not_authorized_for_validation",
+  "status": "smoke_run",
+  "strategy_tester_executed": false,
+  "symbol": "XAUUSD",
+  "terminal_path": "",
+  "timeframe": "M5",
+  "trades": 0,
+  "winrate": 0
+}

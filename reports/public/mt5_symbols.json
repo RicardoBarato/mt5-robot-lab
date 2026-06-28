@@ -1,0 +1,30 @@
+{
+  "history_available": false,
+  "metaeditor_found": false,
+  "mt5_account_connected": false,
+  "mt5_account_required": true,
+  "mt5_connected": false,
+  "symbol_detection_method": "mock_common_broker_mappings_no_terminal_execution",
+  "symbol_scan_mode": "safe_mock_common_mappings",
+  "symbols": [
+    "XAUUSD",
+    "XAUUSD.",
+    "XAUUSDm",
+    "GOLD",
+    "GOLDmicro",
+    "US30",
+    "US30.cash",
+    "DJ30",
+    "USTEC",
+    "USTEC.cash",
+    "NAS100",
+    "US100",
+    "EURUSD",
+    "GBPUSD",
+    "BTCUSD",
+    "BTCUSD.",
+    "BTCUSDm"
+  ],
+  "symbols_loaded": true,
+  "terminal_found": false
+}

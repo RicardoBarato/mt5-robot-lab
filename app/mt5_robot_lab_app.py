@@ -12,11 +12,16 @@ if __package__ is None:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.core.app_config import load_app_config, validate_app_config
+from app.core.candidate_generator import DEFAULT_SEED, generate_candidates, save_candidates
+from app.core.candidate_runner import run_xauusd_base_seed_smoke
 from app.core.champion_dna import ChampionDNA, sample_champion_dna, write_champion_artifacts
 from app.core.export_reports import export_sample_summary
 from app.core.intelligence_modes import validate_intelligence_modes
 from app.core.lab_registry import load_lab_registry
+from app.core.mt5_detection import generate_diagnostics
+from app.core.risk_profile_ranking import generate_risk_profile_report
 from app.core.symbol_mapping import TIMEFRAME_MINUTES
+from app.core.tournament_engine import run_tournament
 from app.ui.main_window import launch_app
 from app.ui.screens import INTELLIGENCE_MODE_OPTIONS, NavigationController, build_screen_registry
 
@@ -76,6 +81,11 @@ def run_self_test() -> dict[str, object]:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="MT5 Robot Lab")
     parser.add_argument("--self-test", action="store_true", help="Run non-GUI validation")
+    parser.add_argument("--mt5-self-test", action="store_true", help="Run safe MT5 detection diagnostics")
+    parser.add_argument("--backtest-smoke-self-test", action="store_true", help="Write one safe smoke backtest result")
+    parser.add_argument("--candidate-generator-self-test", action="store_true", help="Generate safe candidate JSON artifacts")
+    parser.add_argument("--tournament-smoke-self-test", action="store_true", help="Run the safe MVP-006 tournament smoke")
+    parser.add_argument("--risk-profile-self-test", action="store_true", help="Rank tournament candidates by risk profile")
     return parser
 
 
@@ -84,6 +94,44 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.self_test:
         print(json.dumps(run_self_test(), indent=2, sort_keys=True))
+        return 0
+    if args.mt5_self_test:
+        result = generate_diagnostics(PROJECT_ROOT / "reports" / "public")
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.backtest_smoke_self_test:
+        result = run_xauusd_base_seed_smoke(PROJECT_ROOT / "reports" / "public", allow_real_execution=False)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.candidate_generator_self_test:
+        candidates = generate_candidates(DEFAULT_SEED)
+        result = save_candidates(candidates, PROJECT_ROOT / "candidates")
+        print(
+            json.dumps(
+                {
+                    "status": "OK",
+                    "candidate_count": len(result.candidates),
+                    "files": result.files,
+                    "log_path": result.log_path,
+                    "mt5_real_run": False,
+                    "backtest_run": False,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.tournament_smoke_self_test:
+        result = run_tournament(PROJECT_ROOT)
+        print(json.dumps(result.__dict__, indent=2, sort_keys=True))
+        return 0
+    if args.risk_profile_self_test:
+        run_tournament(PROJECT_ROOT)
+        result = generate_risk_profile_report(
+            PROJECT_ROOT / "reports" / "public" / "tournament_ranking.json",
+            PROJECT_ROOT / "reports" / "public" / "risk_profile_ranking.json",
+        )
+        print(json.dumps(result.__dict__, indent=2, sort_keys=True))
         return 0
     launch_app(PROJECT_ROOT)
     return 0
