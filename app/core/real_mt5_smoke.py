@@ -17,6 +17,7 @@ from typing import Callable
 from app.core.mt5_detection import build_local_mt5_environment_status, redact_public_path
 from app.core.mt5_runner import MT5SmokeConfig, MT5SmokeExecutionError, MT5SmokeRunResult, run_mt5_smoke
 from app.core.operator_gate import APPROVAL_PHRASE_PT, approve_operator_gate, create_operator_approval_request
+from app.core.real_mt5_result_capture import create_capture_context, write_capture_manifest
 
 
 DEFAULT_SYMBOL = "XAUUSD"
@@ -150,11 +151,17 @@ def execute_one_run_real_mt5_smoke(
     approval_phrase: str,
     symbol: str = DEFAULT_SYMBOL,
     timeframe: str = DEFAULT_TIMEFRAME,
+    run_id: str | None = None,
     runner: Callable[..., MT5SmokeRunResult] = run_mt5_smoke,
     environment_override: dict[str, object] | None = None,
 ) -> dict[str, object]:
-    private_dir = project_root / PRIVATE_SMOKE_DIR
-    private_dir.mkdir(parents=True, exist_ok=True)
+    capture_context = create_capture_context(
+        project_root,
+        run_id=run_id,
+        requested_symbol=symbol,
+        requested_timeframe=timeframe,
+    )
+    private_dir = capture_context.run_dir
     environment = environment_override or build_local_mt5_environment_status()
     private_environment_path = private_dir / "environment_sanitized.json"
     private_environment_path.write_text(json.dumps(environment, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -229,6 +236,15 @@ def execute_one_run_real_mt5_smoke(
             strategy_tester_run = False
             backtest_real_run = False
             ea_executed = False
+
+    write_capture_manifest(
+        capture_context,
+        return_code=0 if status == "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED" else None,
+        capture_status="process_completed" if attempted else "not_attempted",
+        parse_status="pending_report_discovery",
+        requested_symbol=symbol,
+        requested_timeframe=timeframe,
+    )
 
     summary = RealMT5SmokeSummary(
         result_status=status,

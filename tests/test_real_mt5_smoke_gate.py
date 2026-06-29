@@ -73,6 +73,7 @@ class RealMT5SmokeGateTests(unittest.TestCase):
             payload = json.loads(public_json.read_text(encoding="utf-8"))
             public_text = public_json.read_text(encoding="utf-8") + public_md.read_text(encoding="utf-8")
             private_dir_exists = private_dir.exists()
+            local_manifests = list(private_dir.glob("*/run_manifest.local.json"))
 
         self.assertEqual(result["status"], "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED")
         self.assertTrue(payload["operator_gate_approved"])
@@ -81,6 +82,7 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertEqual(payload["runs_attempted"], 1)
         self.assertEqual(payload["real_smoke_runs"], 1)
         self.assertTrue(private_dir_exists)
+        self.assertEqual(len(local_manifests), 1)
         for marker in ["C:\\Users\\", "C:/Users/", "file://", "\\\\server\\"]:
             self.assertNotIn(marker, public_text)
 
