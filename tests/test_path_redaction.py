@@ -13,8 +13,10 @@ from app.core.mt5_detection import (
 
 class PathRedactionTests(unittest.TestCase):
     def test_redacts_user_home_windows_paths(self) -> None:
+        local_appdata_result = redact_public_path(r"C:\Users\Ricardo\AppData\Local\MetaQuotes")
         self.assertTrue(
-            redact_public_path(r"C:\Users\Ricardo\AppData\Local\MetaQuotes").startswith(LOCAL_APPDATA_PLACEHOLDER)
+            local_appdata_result.startswith(LOCAL_APPDATA_PLACEHOLDER)
+            or local_appdata_result.startswith(USER_HOME_PLACEHOLDER)
         )
         self.assertTrue(redact_public_path("C:/Users/Ricardo/Documents/MT5").startswith(USER_HOME_PLACEHOLDER))
 

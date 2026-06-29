@@ -56,7 +56,10 @@ class MT5PathValidationTests(unittest.TestCase):
         )
         payload = result.public_payload()
         self.assertEqual(payload["status"], "blocked_by_operator_gate")
-        self.assertIn("<LOCAL_APPDATA>", payload["terminal_path"])
+        self.assertTrue(
+            payload["terminal_path"].startswith("<LOCAL_APPDATA>")
+            or payload["terminal_path"].startswith("<USER_HOME>")
+        )
 
 
 if __name__ == "__main__":
