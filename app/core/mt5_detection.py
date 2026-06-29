@@ -359,6 +359,29 @@ def detect_mt5(
     )
 
 
+def resolve_mt5_execution_paths(
+    roots: list[Path] | None = None,
+    *,
+    terminal_path: str | None = None,
+    metaeditor_path: str | None = None,
+    config_path: Path | None = None,
+) -> tuple[Path | None, Path | None]:
+    """Return raw executable paths for local execution without public output."""
+
+    config = load_local_mt5_config(config_path)
+    configured_terminal = terminal_path or config.get("terminal_path")
+    configured_metaeditor = metaeditor_path or config.get("metaeditor_path")
+    terminal, _terminal_error = _manual_executable(configured_terminal, "terminal64.exe")
+    metaeditor, _metaeditor_error = _manual_executable(configured_metaeditor, "metaeditor64.exe")
+
+    scan_roots = roots if roots is not None else _dedupe_paths([*common_mt5_roots(), *e_drive_mt5_roots()])
+    if terminal is None:
+        terminal, _terminal_scanned = _find_file("terminal64.exe", scan_roots)
+    if metaeditor is None:
+        metaeditor, _metaeditor_scanned = _find_file("metaeditor64.exe", scan_roots)
+    return terminal, metaeditor
+
+
 def scan_symbols(detection: MT5DetectionResult | None = None) -> dict[str, object]:
     result = detection or detect_mt5()
     # Safe mode does not connect to MT5. It returns common broker mappings only.
