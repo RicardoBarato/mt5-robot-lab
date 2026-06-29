@@ -6,8 +6,11 @@ Local Strategy Tournament for MetaTrader 5.
 local MetaTrader 5 robot tournaments across symbols, timeframes, test windows,
 balance sizes and intelligence modes.
 
-This repository is a bootstrap scaffold. It does not run real MT5 yet, does not
-perform live trading and does not promise profit.
+This repository is an advanced technical MVP and MVP factory. A gated one-run
+real MT5 smoke has been executed under Operator Gate controls. The project has
+not yet captured a parseable official Strategy Tester report and has not run
+multi-run tournaments or 100-backtest optimization. It does not perform live
+trading and does not promise profit.
 
 ## Product Vision
 
@@ -57,7 +60,7 @@ The first desktop UI pass uses a dark premium Windows-style layout with status
 cards, an MT5 detection action, tournament configuration placeholders,
 intelligence mode selection and a Champion DNA preview area. The user-facing
 goal is to avoid manual CLI usage for normal workflows while keeping real MT5
-execution disabled until the adapter is explicitly implemented.
+execution behind Operator Gate controls and limited smoke boundaries.
 
 MVP-001 adds Desktop Navigation v2 with 11 in-app screens: Welcome, Lab
 Selection, MT5 Setup, Symbol and Timeframe, Intelligence Mode, Tournament Setup,
@@ -180,6 +183,23 @@ submission package scanning and CI coverage.
 Self-tests write temporary runtime artifacts under ignored `runs/self_tests/`
 paths. They must not modify tracked `reports/public` files.
 
+## Real MT5 Smoke State
+
+MVP-013C executed the first gated one-run local MT5 smoke. MVP-014B then
+integrated the capture/parser contract and recorded the current state:
+
+- execution-level smoke worked under the explicit Operator Gate;
+- raw local artifacts remain private and ignored by Git;
+- the public summary is sanitized;
+- no credentials, account details or broker server details are stored;
+- the official Strategy Tester report was not captured;
+- no parseable real result exists yet;
+- 100-backtest tournaments remain blocked.
+
+The next required technical step is `MVP-014C - MT5 Strategy Tester Report Export
+Configuration`, focused only on fixing or defining official report export before
+any controlled multi-run smoke.
+
 ## Development Validation
 
 ```powershell
@@ -196,5 +216,9 @@ git status --short
 
 ## Status
 
-Bootstrap only. No real MT5 run, no real backtest, no installer, no portable zip
-and no financial recommendation.
+Advanced technical MVP, not a final product. The project has a desktop
+foundation, MVP factory, Operator Gate, publication guard, public/private
+artifact boundary and one gated real MT5 smoke attempt. Official report capture
+is still unresolved, no parseable real Strategy Tester report has been captured,
+no multi-run tournament has been run, no 100-backtest optimization has been run,
+no installer or portable zip exists and nothing is a financial recommendation.

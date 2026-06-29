@@ -573,6 +573,34 @@
     "id": "MVP-012",
     "next_handoff": "MVP-013 Real MT5 Smoke Execution",
     "objective": "Create explicit operator approval gates for future real MT5 smoke execution without running real MT5 by default.",
+    "post_mvp_012_status_register": [
+      {
+        "id": "MVP-013C",
+        "status": "completed_or_in_pr",
+        "title": "One-run Real MT5 Smoke Execution"
+      },
+      {
+        "id": "MVP-013D",
+        "status": "completed_or_reviewed",
+        "title": "Real Smoke Result Review"
+      },
+      {
+        "id": "MVP-014A",
+        "status": "completed",
+        "title": "Real Smoke Result Capture and Parser"
+      },
+      {
+        "id": "MVP-014B",
+        "status": "in_pr_no_report_found",
+        "title": "One-run Real Capture Smoke"
+      },
+      {
+        "id": "MVP-014C",
+        "objective": "Fix or define how MT5 Strategy Tester should export official reports so that the next one-run real smoke can capture a parseable report.",
+        "status": "recommended_next",
+        "title": "MT5 Strategy Tester Report Export Configuration"
+      }
+    ],
     "priority": "high",
     "risk_flags": [
       "accidental_real_mt5_execution",
