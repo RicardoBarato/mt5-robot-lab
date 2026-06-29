@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import subprocess
 from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,7 @@ from app.core.backtest_parser import BacktestMetrics, empty_smoke_metrics
 from app.core.mt5_detection import (
     detect_mt5,
     redact_public_path,
+    resolve_mt5_execution_paths,
     validate_mt5_executable_path,
     validate_tester_config_path,
 )
@@ -63,16 +65,74 @@ class MT5SmokeRunResult:
         return payload
 
 
+class MT5SmokeExecutionError(RuntimeError):
+    def __init__(self, message: str, *, attempted_process: bool, strategy_tester_requested: bool) -> None:
+        super().__init__(message)
+        self.attempted_process = attempted_process
+        self.strategy_tester_requested = strategy_tester_requested
+
+
 def _clean_number(value: object) -> int | float:
     if isinstance(value, float) and value.is_integer():
         return int(value)
     return value  # type: ignore[return-value]
 
 
-def build_strategy_tester_command(terminal_path: str, tester_config_path: str) -> list[str]:
+def build_strategy_tester_command(
+    terminal_path: str,
+    tester_config_path: str,
+    *,
+    allowed_roots: list[Path] | None = None,
+) -> list[str]:
     terminal = validate_mt5_executable_path(terminal_path, "terminal64.exe")
-    tester_config = validate_tester_config_path(tester_config_path)
+    tester_config = validate_tester_config_path(tester_config_path, allowed_roots=allowed_roots)
     return [str(terminal), f"/config:{tester_config}"]
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def _write_private_execution_artifacts(
+    private_artifact_dir: Path | None,
+    *,
+    command: list[str],
+    completed: subprocess.CompletedProcess[str] | None = None,
+    error: BaseException | None = None,
+) -> None:
+    if private_artifact_dir is None:
+        return
+    private_artifact_dir.mkdir(parents=True, exist_ok=True)
+    sanitized_command = [
+        redact_public_path(command[0]) if command else "",
+        command[1].split(":", 1)[0] + ":" + redact_public_path(command[1].split(":", 1)[1])
+        if len(command) > 1 and command[1].startswith("/config:")
+        else (command[1] if len(command) > 1 else ""),
+    ]
+    manifest = {
+        "created_at": _utc_now(),
+        "command_sanitized": sanitized_command,
+        "raw_stdout_private_file": "stdout.txt",
+        "raw_stderr_private_file": "stderr.txt",
+        "returncode": completed.returncode if completed is not None else None,
+        "error_type": type(error).__name__ if error else "",
+        "error_message": str(error) if error else "",
+        "credentials_stored": False,
+    }
+    (private_artifact_dir / "execution_manifest.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    (private_artifact_dir / "stdout.txt").write_text(
+        completed.stdout if completed is not None else "",
+        encoding="utf-8",
+        errors="ignore",
+    )
+    (private_artifact_dir / "stderr.txt").write_text(
+        completed.stderr if completed is not None else "",
+        encoding="utf-8",
+        errors="ignore",
+    )
 
 
 def run_mt5_smoke(
@@ -82,6 +142,8 @@ def run_mt5_smoke(
     operator_gate: dict[str, Any] | None = None,
     terminal_path: str | None = None,
     tester_config_path: str | None = None,
+    tester_config_allowed_roots: list[Path] | None = None,
+    private_artifact_dir: Path | None = None,
     metrics: BacktestMetrics | None = None,
 ) -> MT5SmokeRunResult:
     smoke_config = config or MT5SmokeConfig()
@@ -90,7 +152,8 @@ def run_mt5_smoke(
 
     parsed_metrics = metrics or empty_smoke_metrics()
     detection = detect_mt5()
-    terminal = terminal_path or detection.terminal_path
+    raw_terminal, _raw_metaeditor = resolve_mt5_execution_paths()
+    terminal = terminal_path or (str(raw_terminal) if raw_terminal else "")
     terminal_public = redact_public_path(terminal)
     command: list[str] = []
 
@@ -135,14 +198,45 @@ def run_mt5_smoke(
         )
 
     if not terminal:
-        raise RuntimeError("MT5 terminal64.exe path is required for real execution")
+        raise MT5SmokeExecutionError(
+            "MT5 terminal64.exe path is required for real execution",
+            attempted_process=False,
+            strategy_tester_requested=False,
+        )
     if not tester_config_path:
-        raise ValueError("tester_config_path is required for real Strategy Tester execution")
+        raise MT5SmokeExecutionError(
+            "tester_config_path is required for real Strategy Tester execution",
+            attempted_process=False,
+            strategy_tester_requested=False,
+        )
 
-    command = build_strategy_tester_command(terminal, tester_config_path)
-    completed = subprocess.run(command, check=False, capture_output=True, text=True, timeout=smoke_config.timeout_seconds)
+    command = build_strategy_tester_command(
+        terminal,
+        tester_config_path,
+        allowed_roots=tester_config_allowed_roots,
+    )
+    try:
+        completed = subprocess.run(
+            command,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=smoke_config.timeout_seconds,
+        )
+    except subprocess.TimeoutExpired as exc:
+        _write_private_execution_artifacts(private_artifact_dir, command=command, error=exc)
+        raise MT5SmokeExecutionError(
+            f"MT5 Strategy Tester smoke timed out after {smoke_config.timeout_seconds} seconds",
+            attempted_process=True,
+            strategy_tester_requested=True,
+        ) from exc
+    _write_private_execution_artifacts(private_artifact_dir, command=command, completed=completed)
     if completed.returncode != 0:
-        raise RuntimeError(f"MT5 Strategy Tester smoke failed with exit code {completed.returncode}")
+        raise MT5SmokeExecutionError(
+            f"MT5 Strategy Tester smoke failed with exit code {completed.returncode}",
+            attempted_process=True,
+            strategy_tester_requested=True,
+        )
 
     return MT5SmokeRunResult(
         symbol=smoke_config.symbol,

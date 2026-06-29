@@ -39,6 +39,7 @@ from app.core.operator_gate import (
     make_operator_gate_summary,
     write_operator_gate_preview,
 )
+from app.core.real_mt5_smoke import execute_one_run_real_mt5_smoke
 from app.core.risk_profile_ranking import generate_risk_profile_report
 from app.core.symbol_mapping import TIMEFRAME_MINUTES
 from app.core.submission_package import create_submission_package, validate_submission_package
@@ -242,6 +243,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--operator-gate-self-test", action="store_true", help="Run safe operator gate validation")
     parser.add_argument("--preview-real-mt5-smoke-gate", action="store_true", help="Write safe operator gate preview artifacts")
     parser.add_argument("--detect-mt5-local", action="store_true", help="Write safe local MT5 environment verification")
+    parser.add_argument("--run-real-mt5-smoke", action="store_true", help="Run one explicitly approved local MT5 smoke")
+    parser.add_argument("--operator-approval-phrase", default="", help="Exact operator approval phrase for real smoke")
     parser.add_argument("--mt5-terminal-path", default="", help="Optional manual terminal64.exe path for safe detection only")
     parser.add_argument("--mt5-metaeditor-path", default="", help="Optional manual metaeditor64.exe path for safe detection only")
     return parser
@@ -305,6 +308,10 @@ def main(argv: list[str] | None = None) -> int:
             terminal_path=args.mt5_terminal_path or None,
             metaeditor_path=args.mt5_metaeditor_path or None,
         )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.run_real_mt5_smoke:
+        result = execute_one_run_real_mt5_smoke(PROJECT_ROOT, approval_phrase=args.operator_approval_phrase)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     launch_app(PROJECT_ROOT)
