@@ -50,3 +50,7 @@ python app\mt5_robot_lab_app.py --detect-mt5-local
 This command only verifies local MT5 readiness and writes sanitized public
 status files. It does not launch MT5, does not run Strategy Tester and does not
 store account, server or credential data.
+
+If MT5 is installed in a custom folder, copy `config/mt5.local.example.json` to
+the ignored local file `config/mt5.local.json`, then set the real local paths for
+`terminal64.exe` and `metaeditor64.exe`. Do not commit the local config.

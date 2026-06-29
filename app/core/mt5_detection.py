@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import os
 import re
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Iterable
 
@@ -56,6 +56,17 @@ _PRIVATE_TEXT_PATTERNS = [
     re.compile(r"(?i)%localappdata%"),
 ]
 
+LOCAL_MT5_CONFIG_PATH = Path("config") / "mt5.local.json"
+E_DRIVE_PROBABLE_ROOTS = [
+    Path("E:/MetaTrader 5"),
+    Path("E:/MT5"),
+    Path("E:/Tickmill MT5"),
+    Path("E:/Tickmill MetaTrader 5"),
+    Path("E:/Program Files/MetaTrader 5"),
+    Path("E:/MetaQuotes"),
+    Path("E:/MetaQuotes/Terminal"),
+]
+
 
 @dataclass(frozen=True)
 class MT5DetectionResult:
@@ -66,6 +77,11 @@ class MT5DetectionResult:
     mt5_installed: bool
     status: str
     scanned_locations: list[str]
+    local_config_loaded: bool = False
+    custom_terminal_path_configured: bool = False
+    custom_metaeditor_path_configured: bool = False
+    custom_path_errors: list[str] = field(default_factory=list)
+    e_drive_detection_enabled: bool = True
 
     @property
     def terminal64(self) -> str | None:
@@ -125,6 +141,21 @@ def common_mt5_roots() -> list[Path]:
     return unique
 
 
+def e_drive_mt5_roots() -> list[Path]:
+    return list(E_DRIVE_PROBABLE_ROOTS)
+
+
+def _dedupe_paths(paths: Iterable[Path]) -> list[Path]:
+    unique: list[Path] = []
+    seen: set[str] = set()
+    for path in paths:
+        key = str(path).lower()
+        if key not in seen:
+            unique.append(path)
+            seen.add(key)
+    return unique
+
+
 def _iter_limited_candidates(root: Path, filename: str) -> Iterable[Path]:
     yield root / filename
     terminal_root = root.name.lower() == "terminal"
@@ -150,6 +181,32 @@ def _find_file(filename: str, roots: list[Path] | None = None) -> tuple[Path | N
             except OSError:
                 continue
     return None, scanned
+
+
+def load_local_mt5_config(config_path: Path | None = None) -> dict[str, str]:
+    path = config_path or LOCAL_MT5_CONFIG_PATH
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return {"_error": f"local_config_unreadable:{exc}"}
+    if not isinstance(payload, dict):
+        return {"_error": "local_config_must_be_json_object"}
+    return {
+        key: str(payload.get(key, "") or "")
+        for key in ("terminal_path", "metaeditor_path")
+        if payload.get(key)
+    }
+
+
+def _manual_executable(path_value: str | None, expected_name: str) -> tuple[Path | None, str | None]:
+    if not path_value:
+        return None, None
+    try:
+        return validate_mt5_executable_path(path_value, expected_name), None
+    except (OSError, ValueError) as exc:
+        return None, f"{expected_name}:{exc}"
 
 
 def _placeholder_with_suffix(placeholder: str, suffix: str) -> str:
@@ -193,7 +250,8 @@ def redact_public_path(path: Path | str | None) -> str:
         suffix = stripped[match.end() :] if match else ""
         return _placeholder_with_suffix(USER_HOME_PLACEHOLDER, suffix)
     if _WINDOWS_PATH_RE.match(stripped):
-        return WINDOWS_PATH_PLACEHOLDER
+        basename = Path(stripped).name
+        return _placeholder_with_suffix(WINDOWS_PATH_PLACEHOLDER, basename)
     if "appdata" in lowered:
         return WINDOWS_PATH_PLACEHOLDER
     return stripped
@@ -246,18 +304,42 @@ def validate_tester_config_path(path: str | Path, allowed_roots: list[Path] | No
 
 
 def find_terminal(roots: list[Path] | None = None) -> str:
-    terminal, _ = _find_file("terminal64.exe", roots)
-    return _public_path(terminal)
+    return detect_mt5(roots).terminal_path
 
 
 def find_metaeditor(roots: list[Path] | None = None) -> str:
-    metaeditor, _ = _find_file("metaeditor64.exe", roots)
-    return _public_path(metaeditor)
+    return detect_mt5(roots).metaeditor_path
 
 
-def detect_mt5(roots: list[Path] | None = None) -> MT5DetectionResult:
-    terminal, terminal_scanned = _find_file("terminal64.exe", roots)
-    metaeditor, metaeditor_scanned = _find_file("metaeditor64.exe", roots)
+def detect_mt5(
+    roots: list[Path] | None = None,
+    *,
+    terminal_path: str | None = None,
+    metaeditor_path: str | None = None,
+    config_path: Path | None = None,
+) -> MT5DetectionResult:
+    config = load_local_mt5_config(config_path)
+    local_config_loaded = bool(config)
+    custom_path_errors: list[str] = []
+    if config.get("_error"):
+        custom_path_errors.append(str(config["_error"]))
+
+    configured_terminal = terminal_path or config.get("terminal_path")
+    configured_metaeditor = metaeditor_path or config.get("metaeditor_path")
+    terminal, terminal_error = _manual_executable(configured_terminal, "terminal64.exe")
+    metaeditor, metaeditor_error = _manual_executable(configured_metaeditor, "metaeditor64.exe")
+    if terminal_error:
+        custom_path_errors.append(terminal_error)
+    if metaeditor_error:
+        custom_path_errors.append(metaeditor_error)
+
+    scan_roots = roots if roots is not None else _dedupe_paths([*common_mt5_roots(), *e_drive_mt5_roots()])
+    terminal_scanned: list[str] = []
+    metaeditor_scanned: list[str] = []
+    if terminal is None:
+        terminal, terminal_scanned = _find_file("terminal64.exe", scan_roots)
+    if metaeditor is None:
+        metaeditor, metaeditor_scanned = _find_file("metaeditor64.exe", scan_roots)
     scanned = list(dict.fromkeys([*terminal_scanned, *metaeditor_scanned]))
     terminal_found = terminal is not None
     metaeditor_found = metaeditor is not None
@@ -269,6 +351,11 @@ def detect_mt5(roots: list[Path] | None = None) -> MT5DetectionResult:
         mt5_installed=terminal_found or metaeditor_found,
         status="ready" if terminal_found and metaeditor_found else "not ready",
         scanned_locations=scanned,
+        local_config_loaded=local_config_loaded,
+        custom_terminal_path_configured=bool(configured_terminal),
+        custom_metaeditor_path_configured=bool(configured_metaeditor),
+        custom_path_errors=custom_path_errors,
+        e_drive_detection_enabled=roots is None,
     )
 
 
@@ -289,9 +376,16 @@ def scan_symbols(detection: MT5DetectionResult | None = None) -> dict[str, objec
     }
 
 
-def generate_diagnostics(output_dir: Path, roots: list[Path] | None = None) -> dict[str, object]:
+def generate_diagnostics(
+    output_dir: Path,
+    roots: list[Path] | None = None,
+    *,
+    terminal_path: str | None = None,
+    metaeditor_path: str | None = None,
+    config_path: Path | None = None,
+) -> dict[str, object]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    detection = detect_mt5(roots)
+    detection = detect_mt5(roots, terminal_path=terminal_path, metaeditor_path=metaeditor_path, config_path=config_path)
     symbols = scan_symbols(detection)
     diagnostics = {
         "mt5_installed": detection.mt5_installed,
@@ -307,6 +401,11 @@ def generate_diagnostics(output_dir: Path, roots: list[Path] | None = None) -> d
         "credentials_requested": False,
         "credentials_stored": False,
         "symbol_scan_mode": symbols["symbol_scan_mode"],
+        "local_config_loaded": detection.local_config_loaded,
+        "custom_terminal_path_configured": detection.custom_terminal_path_configured,
+        "custom_metaeditor_path_configured": detection.custom_metaeditor_path_configured,
+        "custom_path_errors": detection.custom_path_errors,
+        "e_drive_detection_enabled": detection.e_drive_detection_enabled,
     }
 
     diagnostics_path = output_dir / "mt5_diagnostics.json"
@@ -345,8 +444,14 @@ def generate_diagnostics(output_dir: Path, roots: list[Path] | None = None) -> d
     }
 
 
-def build_local_mt5_environment_status(roots: list[Path] | None = None) -> dict[str, object]:
-    detection = detect_mt5(roots)
+def build_local_mt5_environment_status(
+    roots: list[Path] | None = None,
+    *,
+    terminal_path: str | None = None,
+    metaeditor_path: str | None = None,
+    config_path: Path | None = None,
+) -> dict[str, object]:
+    detection = detect_mt5(roots, terminal_path=terminal_path, metaeditor_path=metaeditor_path, config_path=config_path)
     symbols = scan_symbols(detection)
     ready_for_real_smoke = bool(detection.terminal_found and detection.metaeditor_found)
     return {
@@ -376,6 +481,11 @@ def build_local_mt5_environment_status(roots: list[Path] | None = None) -> dict[
         "credentials_stored": False,
         "broker_server_stored": False,
         "paths_sanitized": True,
+        "local_config_loaded": detection.local_config_loaded,
+        "custom_terminal_path_configured": detection.custom_terminal_path_configured,
+        "custom_metaeditor_path_configured": detection.custom_metaeditor_path_configured,
+        "custom_path_errors": detection.custom_path_errors,
+        "e_drive_detection_enabled": detection.e_drive_detection_enabled,
     }
 
 
@@ -389,6 +499,8 @@ def _local_environment_markdown(status: dict[str, object]) -> str:
         f"- Terminal path sanitized: {status['terminal_path_sanitized'] or 'not found'}",
         f"- MetaEditor path sanitized: {status['metaeditor_path_sanitized'] or 'not found'}",
         f"- Symbol scan mode: {status['symbol_scan_mode']}",
+        f"- Local config loaded: {str(status['local_config_loaded']).lower()}",
+        f"- E-drive detection enabled: {str(status['e_drive_detection_enabled']).lower()}",
         f"- Operator gate required: {str(status['operator_gate_required']).lower()}",
         f"- Ready for real smoke: {str(status['ready_for_real_smoke']).lower()}",
         "- MT5 real run: false",
@@ -404,19 +516,60 @@ def _local_environment_markdown(status: dict[str, object]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def write_local_mt5_environment_status(output_dir: Path, roots: list[Path] | None = None) -> dict[str, object]:
+def _custom_path_report_markdown(status: dict[str, object]) -> str:
+    lines = [
+        "# MVP-013B2 Custom MT5 Path Detection Report",
+        "",
+        f"- MT5 detected: {str(status['mt5_detected']).lower()}",
+        f"- Terminal found: {str(status['terminal_found']).lower()}",
+        f"- MetaEditor found: {str(status['metaeditor_found']).lower()}",
+        f"- Terminal path sanitized: {status['terminal_path_sanitized'] or 'not found'}",
+        f"- MetaEditor path sanitized: {status['metaeditor_path_sanitized'] or 'not found'}",
+        f"- Local config loaded: {str(status['local_config_loaded']).lower()}",
+        f"- E-drive detection enabled: {str(status['e_drive_detection_enabled']).lower()}",
+        f"- Symbol scan mode: {status['symbol_scan_mode']}",
+        f"- Operator gate required: {str(status['operator_gate_required']).lower()}",
+        f"- Ready for real smoke: {str(status['ready_for_real_smoke']).lower()}",
+        "- MT5 real run: false",
+        "- Strategy Tester run: false",
+        "- Backtest real run: false",
+        "- EA executed: false",
+        "- Credentials stored: false",
+        "",
+        "This report supports custom MT5 installation paths, including E-drive candidates.",
+        "It does not launch MT5, does not run Strategy Tester and does not store broker login details.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def write_local_mt5_environment_status(
+    output_dir: Path,
+    roots: list[Path] | None = None,
+    *,
+    terminal_path: str | None = None,
+    metaeditor_path: str | None = None,
+    config_path: Path | None = None,
+) -> dict[str, object]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    status = build_local_mt5_environment_status(roots)
+    status = build_local_mt5_environment_status(
+        roots,
+        terminal_path=terminal_path,
+        metaeditor_path=metaeditor_path,
+        config_path=config_path,
+    )
     json_path = output_dir / "local_mt5_environment_status.json"
     markdown_path = output_dir / "local_mt5_environment_status.md"
+    report_path = output_dir / "MVP_013B2_CUSTOM_MT5_PATH_DETECTION_REPORT.md"
     json_path.write_text(json.dumps(status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     markdown_path.write_text(_local_environment_markdown(status), encoding="utf-8")
+    report_path.write_text(_custom_path_report_markdown(status), encoding="utf-8")
     return {
         "status": "OK",
         "environment": status,
         "files": {
             "json": str(json_path),
             "markdown": str(markdown_path),
+            "custom_path_report": str(report_path),
         },
     }
 
