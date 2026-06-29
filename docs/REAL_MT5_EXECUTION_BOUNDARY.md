@@ -109,3 +109,21 @@ Current recorded state:
 
 Controlled multi-run execution is blocked until MVP-014C fixes or defines
 official report export/capture.
+
+## MT5 Close After Run Policy
+
+Every future gated real smoke or real backtest must record:
+
+```text
+mt5_close_policy=always_after_real_run
+mt5_close_attempted=<true_or_false>
+mt5_closed_after_run=<true_or_false>
+mt5_close_method=<method>
+manual_close_required=<true_or_false>
+```
+
+Após a execução real, o MT5 será fechado para manter o ambiente limpo e evitar processos presos.
+
+The app may close only MT5 processes started and controlled by the app. If the
+terminal was already open and external to the run, the summary must record
+`mt5_external_process_detected=true` and `manual_close_required=true`.

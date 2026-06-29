@@ -15,6 +15,7 @@ This path is limited to:
 - no tournament;
 - no 100-backtest run;
 - no stored credentials.
+- MT5 close-after-run lifecycle recorded.
 
 ## Operator Gate
 
@@ -39,6 +40,14 @@ The runner must also confirm:
 - `smoke_only=true`;
 - `tournament_100_run=false`;
 - `credentials_stored=false`.
+- `mt5_close_policy=always_after_real_run`.
+
+Approving the real smoke also authorizes the app to close the MT5 instance it
+started and controlled for that execution.
+
+```text
+Após a execução real, o MT5 será fechado para manter o ambiente limpo e evitar processos presos.
+```
 
 ## Artifact Boundary
 
@@ -68,6 +77,18 @@ The one-run capture smoke recorded:
 - raw artifacts private;
 - official report file found: false;
 - parse status: no_report_found.
+
+Future real runs must also record the MT5 close lifecycle fields:
+
+```text
+mt5_close_attempted
+mt5_closed_after_run
+mt5_close_method
+mt5_close_error
+mt5_process_owned_by_app
+mt5_external_process_detected
+manual_close_required
+```
 
 Controlled multi-run smoke remains blocked until report capture/export is fixed.
 

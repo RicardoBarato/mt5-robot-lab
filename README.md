@@ -194,7 +194,22 @@ integrated the capture/parser contract and recorded the current state:
 - no credentials, account details or broker server details are stored;
 - the official Strategy Tester report was not captured;
 - no parseable real result exists yet;
+- the close-after-real-run policy is now mandatory for every future real run;
 - 100-backtest tournaments remain blocked.
+
+## MT5 Close After Real Run
+
+Every future gated real smoke or real backtest must use:
+
+```text
+mt5_close_policy=always_after_real_run
+```
+
+Após a execução real, o MT5 será fechado para manter o ambiente limpo e evitar processos presos.
+
+The app may close only the MT5 process it starts and controls. If MT5 was
+already open outside the app, the run must record `manual_close_required=true`
+instead of terminating that external session.
 
 The next required technical step is `MVP-014C - MT5 Strategy Tester Report Export
 Configuration`, focused only on fixing or defining official report export before

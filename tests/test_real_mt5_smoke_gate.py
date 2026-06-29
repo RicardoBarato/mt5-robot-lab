@@ -35,6 +35,14 @@ def _fake_success_runner(*args, **kwargs) -> MT5SmokeRunResult:
         terminal_path="<WINDOWS_PATH_REDACTED>\\terminal64.exe",
         command=["<WINDOWS_PATH_REDACTED>\\terminal64.exe", "/config:<WINDOWS_PATH_REDACTED>\\mvp_013c_smoke.ini"],
         reason="single_strategy_tester_smoke_completed",
+        mt5_close_policy="always_after_real_run",
+        mt5_close_attempted=True,
+        mt5_closed_after_run=True,
+        mt5_close_method="owned_process_already_closed",
+        mt5_close_error="",
+        mt5_process_owned_by_app=True,
+        mt5_external_process_detected=False,
+        manual_close_required=False,
     )
 
 
@@ -103,6 +111,11 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertEqual(payload["real_smoke_runs"], 1)
         self.assertEqual(capture_payload["parse_status"], "no_report_found")
         self.assertFalse(capture_payload["report_file_found"])
+        self.assertEqual(payload["mt5_close_policy"], "always_after_real_run")
+        self.assertTrue(payload["mt5_close_attempted"])
+        self.assertTrue(payload["mt5_closed_after_run"])
+        self.assertEqual(capture_payload["mt5_close_policy"], "always_after_real_run")
+        self.assertFalse(capture_payload["manual_close_required"])
         self.assertTrue(private_dir_exists)
         self.assertEqual(len(local_manifests), 1)
         for marker in ["C:\\Users\\", "C:/Users/", "file://", "\\\\server\\"]:

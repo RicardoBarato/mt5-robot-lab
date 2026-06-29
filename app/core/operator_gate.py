@@ -70,6 +70,8 @@ def default_operator_gate() -> dict[str, Any]:
         "mt5_real_run": False,
         "backtest_real_run": False,
         "strategy_tester_run": False,
+        "mt5_close_policy": "always_after_real_run",
+        "mt5_close_after_run_authorized": False,
         "reason": BLOCKED_REASON,
     }
 
@@ -93,6 +95,10 @@ def create_operator_approval_request(config: Any, mt5_diagnostics: Any) -> dict[
             "max_backtests": int(config_data.get("max_backtests", 1) or 1),
             "tournament_100_run": bool(config_data.get("tournament_100_run", False)),
             "no_credentials_stored": not bool(config_data.get("credentials_stored", False)),
+            "mt5_close_policy": config_data.get("mt5_close_policy", "always_after_real_run"),
+            "mt5_close_after_run_authorized": bool(
+                config_data.get("mt5_close_after_run_authorized", config_data.get("real_execution_requested", False))
+            ),
         }
     )
     return validate_operator_approval_request(gate)
@@ -166,6 +172,8 @@ def make_operator_gate_summary(gate_state: dict[str, Any]) -> dict[str, Any]:
         "approval_phrase_matched": gate["approval_phrase_matched"],
         "mt5_real_run": False,
         "backtest_real_run": False,
+        "mt5_close_policy": gate.get("mt5_close_policy", "always_after_real_run"),
+        "mt5_close_after_run_authorized": bool(gate.get("mt5_close_after_run_authorized", False)),
         "reason": gate["reason"],
     }
 
@@ -197,6 +205,10 @@ def _operator_gate_markdown(summary: dict[str, Any]) -> str:
             f"- Tournament 100 run: {str(summary['tournament_100_run']).lower()}",
             "- MT5 real run: false",
             "- Backtest real run: false",
+            f"- MT5 close policy: {summary['mt5_close_policy']}",
+            f"- MT5 close after run authorized: {str(summary['mt5_close_after_run_authorized']).lower()}",
+            "",
+            "Após a execução real, o MT5 será fechado para manter o ambiente limpo e evitar processos presos.",
             "",
             "This preview does not launch MT5, does not run Strategy Tester and does not store credentials.",
         ]
