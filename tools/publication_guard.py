@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import fnmatch
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -91,13 +92,44 @@ SKIP_DIRS = {
     "venv",
 }
 
+SKIP_PREFIXES = {
+    "reports/private/",
+    "runs/",
+}
+
 
 def should_skip(path: Path, root: Path) -> bool:
     try:
         rel = path.relative_to(root)
     except ValueError:
         return True
-    return bool(set(rel.parts) & SKIP_DIRS)
+    rel_text = rel.as_posix()
+    if bool(set(rel.parts) & SKIP_DIRS):
+        return True
+    if any(rel_text.startswith(prefix) for prefix in SKIP_PREFIXES):
+        return True
+    return _is_git_ignored(path, root) and not _is_public_scan_path(rel_text)
+
+
+def _is_git_ignored(path: Path, root: Path) -> bool:
+    if not (root / ".git").exists():
+        return False
+    try:
+        rel = path.relative_to(root).as_posix()
+    except ValueError:
+        return True
+    completed = subprocess.run(
+        ["git", "check-ignore", "-q", "--", rel],
+        cwd=root,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return completed.returncode == 0
+
+
+def _is_public_scan_path(rel_text: str) -> bool:
+    return rel_text == "README.md" or any(rel_text.startswith(prefix) for prefix in SCAN_ROOTS)
 
 
 def is_forbidden(path: Path, root: Path) -> str | None:
@@ -107,8 +139,6 @@ def is_forbidden(path: Path, root: Path) -> str | None:
         return "forbidden_name"
     if any(fnmatch.fnmatch(path.name, pattern) for pattern in FORBIDDEN_PATTERNS):
         return "forbidden_pattern"
-    if rel_text.startswith("reports/private/") and path.name != ".gitkeep":
-        return "private_report_artifact"
     return None
 
 

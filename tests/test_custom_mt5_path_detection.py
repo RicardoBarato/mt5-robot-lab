@@ -44,6 +44,12 @@ class CustomMT5PathDetectionTests(unittest.TestCase):
         self.assertTrue(any("terminal64.exe" in item for item in result.custom_path_errors))
         self.assertTrue(any("metaeditor64.exe" in item for item in result.custom_path_errors))
 
+    def test_empty_roots_disable_system_autodetection(self) -> None:
+        result = detect_mt5([])
+        self.assertFalse(result.terminal_found)
+        self.assertFalse(result.metaeditor_found)
+        self.assertEqual(result.scanned_locations, [])
+
     def test_reads_local_config_without_requiring_real_config_file(self) -> None:
         with self._fake_mt5_root() as tmpdir:
             root = Path(tmpdir)

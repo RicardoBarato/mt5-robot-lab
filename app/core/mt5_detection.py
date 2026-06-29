@@ -170,7 +170,7 @@ def _iter_limited_candidates(root: Path, filename: str) -> Iterable[Path]:
 
 
 def _find_file(filename: str, roots: list[Path] | None = None) -> tuple[Path | None, list[str]]:
-    scan_roots = roots or common_mt5_roots()
+    scan_roots = common_mt5_roots() if roots is None else roots
     scanned: list[str] = []
     for root in scan_roots:
         scanned.append(_public_path(root))

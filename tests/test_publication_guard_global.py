@@ -24,6 +24,30 @@ class PublicationGuardGlobalTests(unittest.TestCase):
             findings = scan(root)
         self.assertTrue(any(item["reason"].startswith("private_path") for item in findings))
 
+    def test_ignores_private_reports_by_default(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            private = root / "reports" / "private"
+            private.mkdir(parents=True)
+            (private / "local_mt5_environment_status.local.json").write_text(
+                '{"token": "local-only"}\n',
+                encoding="utf-8",
+            )
+            findings = scan(root)
+        self.assertEqual(findings, [])
+
+    def test_reports_public_still_scanned(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            public = root / "reports" / "public"
+            public.mkdir(parents=True)
+            (public / "local_mt5_environment_status.json").write_text(
+                '{"token": "public-leak"}\n',
+                encoding="utf-8",
+            )
+            findings = scan(root)
+        self.assertTrue(any("sensitive_term:token" in item["reason"] for item in findings))
+
     def test_allows_policy_wording_for_sensitive_terms(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
