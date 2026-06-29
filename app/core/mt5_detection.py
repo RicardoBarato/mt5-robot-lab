@@ -345,5 +345,81 @@ def generate_diagnostics(output_dir: Path, roots: list[Path] | None = None) -> d
     }
 
 
+def build_local_mt5_environment_status(roots: list[Path] | None = None) -> dict[str, object]:
+    detection = detect_mt5(roots)
+    symbols = scan_symbols(detection)
+    ready_for_real_smoke = bool(detection.terminal_found and detection.metaeditor_found)
+    return {
+        "mt5_detected": detection.mt5_installed,
+        "terminal_found": detection.terminal_found,
+        "metaeditor_found": detection.metaeditor_found,
+        "terminal_path_sanitized": detection.terminal_path,
+        "metaeditor_path_sanitized": detection.metaeditor_path,
+        "status": detection.status,
+        "scanned_locations_sanitized": detection.scanned_locations,
+        "symbol_scan_mode": symbols["symbol_scan_mode"],
+        "symbol_detection_method": symbols["symbol_detection_method"],
+        "symbols_available_or_mapped": symbols["symbols"],
+        "operator_gate_required": True,
+        "ready_for_real_smoke": ready_for_real_smoke,
+        "readiness_reason": (
+            "terminal64.exe_and_metaeditor64.exe_detected_operator_gate_still_required"
+            if ready_for_real_smoke
+            else "terminal64.exe_or_metaeditor64.exe_not_detected"
+        ),
+        "mt5_real_run": False,
+        "backtest_real_run": False,
+        "strategy_tester_run": False,
+        "ea_executed": False,
+        "tournament_100_run": False,
+        "credentials_requested": False,
+        "credentials_stored": False,
+        "broker_server_stored": False,
+        "paths_sanitized": True,
+    }
+
+
+def _local_environment_markdown(status: dict[str, object]) -> str:
+    lines = [
+        "# Local MT5 Environment Verification",
+        "",
+        f"- MT5 detected: {str(status['mt5_detected']).lower()}",
+        f"- Terminal found: {str(status['terminal_found']).lower()}",
+        f"- MetaEditor found: {str(status['metaeditor_found']).lower()}",
+        f"- Terminal path sanitized: {status['terminal_path_sanitized'] or 'not found'}",
+        f"- MetaEditor path sanitized: {status['metaeditor_path_sanitized'] or 'not found'}",
+        f"- Symbol scan mode: {status['symbol_scan_mode']}",
+        f"- Operator gate required: {str(status['operator_gate_required']).lower()}",
+        f"- Ready for real smoke: {str(status['ready_for_real_smoke']).lower()}",
+        "- MT5 real run: false",
+        "- Strategy Tester run: false",
+        "- Backtest real run: false",
+        "- EA executed: false",
+        "- 100-test tournament: false",
+        "- Credentials stored: false",
+        "",
+        "This verification only detects the local environment and common broker symbol mappings.",
+        "It does not launch MT5, does not run Strategy Tester and does not store broker login details.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def write_local_mt5_environment_status(output_dir: Path, roots: list[Path] | None = None) -> dict[str, object]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    status = build_local_mt5_environment_status(roots)
+    json_path = output_dir / "local_mt5_environment_status.json"
+    markdown_path = output_dir / "local_mt5_environment_status.md"
+    json_path.write_text(json.dumps(status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    markdown_path.write_text(_local_environment_markdown(status), encoding="utf-8")
+    return {
+        "status": "OK",
+        "environment": status,
+        "files": {
+            "json": str(json_path),
+            "markdown": str(markdown_path),
+        },
+    }
+
+
 def symbol_discovery_stub() -> dict[str, object]:
     return scan_symbols()

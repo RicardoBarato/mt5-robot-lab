@@ -38,3 +38,15 @@ O MT5 Robot Lab não armazena senha, conta, servidor ou credenciais. O usuário 
 The environment is ready for the next mission only when every checklist item is
 manually confirmed by the operator. If any item is missing, MVP-013 must remain
 blocked.
+
+## Local Environment Verification
+
+After manual setup, the operator may run:
+
+```powershell
+python app\mt5_robot_lab_app.py --detect-mt5-local
+```
+
+This command only verifies local MT5 readiness and writes sanitized public
+status files. It does not launch MT5, does not run Strategy Tester and does not
+store account, server or credential data.

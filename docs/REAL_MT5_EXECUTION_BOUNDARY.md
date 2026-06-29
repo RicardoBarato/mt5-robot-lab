@@ -72,3 +72,12 @@ MVP-013A adds additional pre-real-execution controls:
 - stronger submission-package scanning before public package validation.
 
 These controls still do not launch MT5 and do not run Strategy Tester.
+
+## MVP-013B Local Environment Verification
+
+MVP-013B may detect local `terminal64.exe` and `metaeditor64.exe`, write
+sanitized public readiness artifacts and report common broker symbol mappings.
+
+It still must not launch MT5, Strategy Tester, an EA, a real backtest or a
+tournament. A detected terminal is only a readiness signal. The Operator Gate
+remains required before any future one-run real smoke.
