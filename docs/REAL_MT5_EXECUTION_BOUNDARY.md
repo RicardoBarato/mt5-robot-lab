@@ -81,3 +81,13 @@ sanitized public readiness artifacts and report common broker symbol mappings.
 It still must not launch MT5, Strategy Tester, an EA, a real backtest or a
 tournament. A detected terminal is only a readiness signal. The Operator Gate
 remains required before any future one-run real smoke.
+
+## MVP-013B2 Custom Path Detection
+
+MVP-013B2 may read ignored local config from `config/mt5.local.json` or accept
+manual path arguments for safe detection only. It may also check a limited list
+of likely E-drive MT5 folders.
+
+This still does not approve or execute a smoke run. Basename, suffix and file
+existence must pass before a path can be treated as detected, and all public
+outputs must sanitize local paths.

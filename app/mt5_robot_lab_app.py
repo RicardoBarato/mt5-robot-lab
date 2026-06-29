@@ -242,6 +242,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--operator-gate-self-test", action="store_true", help="Run safe operator gate validation")
     parser.add_argument("--preview-real-mt5-smoke-gate", action="store_true", help="Write safe operator gate preview artifacts")
     parser.add_argument("--detect-mt5-local", action="store_true", help="Write safe local MT5 environment verification")
+    parser.add_argument("--mt5-terminal-path", default="", help="Optional manual terminal64.exe path for safe detection only")
+    parser.add_argument("--mt5-metaeditor-path", default="", help="Optional manual metaeditor64.exe path for safe detection only")
     return parser
 
 
@@ -298,7 +300,11 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(preview, indent=2, sort_keys=True))
         return 0
     if args.detect_mt5_local:
-        result = write_local_mt5_environment_status(PROJECT_ROOT / "reports" / "public")
+        result = write_local_mt5_environment_status(
+            PROJECT_ROOT / "reports" / "public",
+            terminal_path=args.mt5_terminal_path or None,
+            metaeditor_path=args.mt5_metaeditor_path or None,
+        )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     launch_app(PROJECT_ROOT)
