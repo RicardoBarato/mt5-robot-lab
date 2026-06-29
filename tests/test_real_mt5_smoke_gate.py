@@ -78,6 +78,7 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertTrue(payload["operator_gate_approved"])
         self.assertTrue(payload["mt5_real_run"])
         self.assertTrue(payload["backtest_real_run"])
+        self.assertEqual(payload["runs_attempted"], 1)
         self.assertEqual(payload["real_smoke_runs"], 1)
         self.assertTrue(private_dir_exists)
         for marker in ["C:\\Users\\", "C:/Users/", "file://", "\\\\server\\"]:

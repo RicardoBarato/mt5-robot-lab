@@ -37,6 +37,7 @@ class RealMT5SmokeSummary:
     metaeditor_found: bool
     ready_for_real_smoke: bool
     real_smoke_attempted: bool
+    runs_attempted: int
     real_smoke_runs: int
     mt5_real_run: bool
     backtest_real_run: bool
@@ -121,6 +122,7 @@ def _write_public_summaries(project_root: Path, summary: RealMT5SmokeSummary) ->
         f"- MetaEditor found: {str(summary.metaeditor_found).lower()}",
         f"- Ready for real smoke: {str(summary.ready_for_real_smoke).lower()}",
         f"- Real smoke attempted: {str(summary.real_smoke_attempted).lower()}",
+        f"- Runs attempted: {summary.runs_attempted}",
         f"- Real smoke runs: {summary.real_smoke_runs}",
         f"- MT5 real run: {str(summary.mt5_real_run).lower()}",
         f"- Backtest real run: {str(summary.backtest_real_run).lower()}",
@@ -236,6 +238,7 @@ def execute_one_run_real_mt5_smoke(
         metaeditor_found=bool(environment["metaeditor_found"]),
         ready_for_real_smoke=ready_for_real_smoke,
         real_smoke_attempted=attempted,
+        runs_attempted=1 if attempted else 0,
         real_smoke_runs=1 if attempted else 0,
         mt5_real_run=mt5_real_run,
         backtest_real_run=backtest_real_run,

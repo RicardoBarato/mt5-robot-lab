@@ -15,6 +15,7 @@
   "real_smoke_attempted": true,
   "real_smoke_runs": 1,
   "result_status": "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED",
+  "runs_attempted": 1,
   "sanitized_terminal_detected": true,
   "smoke_only": true,
   "strategy_tester_run": true,

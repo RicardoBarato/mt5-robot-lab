@@ -7,6 +7,7 @@
 - MetaEditor found: true
 - Ready for real smoke: true
 - Real smoke attempted: true
+- Runs attempted: 1
 - Real smoke runs: 1
 - MT5 real run: true
 - Backtest real run: true
