@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Callable
 
 from app.core.mt5_detection import build_local_mt5_environment_status, redact_public_path
+from app.core.mt5_process_control import make_mt5_close_summary
 from app.core.mt5_report_parser import ParsedMT5Report, parse_mt5_report
 from app.core.mt5_runner import MT5SmokeConfig, MT5SmokeExecutionError, MT5SmokeRunResult, run_mt5_smoke
 from app.core.operator_gate import APPROVAL_PHRASE_PT, approve_operator_gate, create_operator_approval_request
@@ -60,6 +61,14 @@ class RealMT5SmokeSummary:
     raw_artifacts_private: bool
     public_summary_created: bool
     failure_reason: str
+    mt5_close_policy: str = "not_applicable"
+    mt5_close_attempted: bool = False
+    mt5_closed_after_run: bool = False
+    mt5_close_method: str = "not_applicable"
+    mt5_close_error: str = ""
+    mt5_process_owned_by_app: bool = False
+    mt5_external_process_detected: bool = False
+    manual_close_required: bool = False
 
     def to_public_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -139,6 +148,11 @@ def _write_public_summaries(project_root: Path, summary: RealMT5SmokeSummary) ->
         f"- Timeframe requested: {summary.timeframe_requested}",
         f"- Credentials stored: {str(summary.credentials_stored).lower()}",
         f"- Paths sanitized: {str(summary.paths_sanitized).lower()}",
+        f"- MT5 close policy: {summary.mt5_close_policy}",
+        f"- MT5 close attempted: {str(summary.mt5_close_attempted).lower()}",
+        f"- MT5 closed after run: {str(summary.mt5_closed_after_run).lower()}",
+        f"- MT5 close method: {summary.mt5_close_method}",
+        f"- Manual close required: {str(summary.manual_close_required).lower()}",
         "",
         "Raw local artifacts are kept only under the ignored private smoke folder.",
     ]
@@ -246,6 +260,14 @@ def _write_public_capture_summaries(
         "paths_sanitized": True,
         "raw_artifacts_private": True,
         "failure_reason": summary.failure_reason,
+        "mt5_close_policy": summary.mt5_close_policy,
+        "mt5_close_attempted": summary.mt5_close_attempted,
+        "mt5_closed_after_run": summary.mt5_closed_after_run,
+        "mt5_close_method": summary.mt5_close_method,
+        "mt5_close_error": summary.mt5_close_error,
+        "mt5_process_owned_by_app": summary.mt5_process_owned_by_app,
+        "mt5_external_process_detected": summary.mt5_external_process_detected,
+        "manual_close_required": summary.manual_close_required,
         "parser_warnings": parsed_report.warnings if parsed_report else [],
         "metrics": _metric_payload(parsed_report),
     }
@@ -272,6 +294,11 @@ def _write_public_capture_summaries(
         f"- Timeframe requested: {summary.timeframe_requested}",
         "- Credentials stored: false",
         "- Paths sanitized: true",
+        f"- MT5 close policy: {summary.mt5_close_policy}",
+        f"- MT5 close attempted: {str(summary.mt5_close_attempted).lower()}",
+        f"- MT5 closed after run: {str(summary.mt5_closed_after_run).lower()}",
+        f"- MT5 close method: {summary.mt5_close_method}",
+        f"- Manual close required: {str(summary.manual_close_required).lower()}",
         "",
         "Raw local artifacts remain only in the ignored private smoke folder.",
     ]
@@ -335,6 +362,7 @@ def execute_one_run_real_mt5_smoke(
     strategy_tester_run = False
     backtest_real_run = False
     ea_executed = False
+    close_summary = make_mt5_close_summary(None)
 
     if not ready_for_real_smoke:
         status = "HOLD_MT5_NOT_READY"
@@ -359,6 +387,7 @@ def execute_one_run_real_mt5_smoke(
             strategy_tester_run = bool(result.strategy_tester_executed)
             backtest_real_run = bool(result.strategy_tester_executed)
             ea_executed = bool(result.strategy_tester_executed)
+            close_summary = make_mt5_close_summary(result.public_payload())
         except MT5SmokeExecutionError as exc:
             status = "HOLD_REAL_SMOKE_FAILED_NO_RETRY"
             failure_reason = _sanitize_failure_reason(str(exc), project_root)
@@ -366,6 +395,7 @@ def execute_one_run_real_mt5_smoke(
             strategy_tester_run = bool(exc.strategy_tester_requested)
             backtest_real_run = False
             ea_executed = False
+            close_summary = make_mt5_close_summary(exc.close_summary)
         except Exception as exc:  # noqa: BLE001 - failure must be recorded without retry.
             status = "HOLD_REAL_SMOKE_FAILED_NO_RETRY"
             failure_reason = _sanitize_failure_reason(type(exc).__name__ + ": " + str(exc), project_root)
@@ -381,6 +411,7 @@ def execute_one_run_real_mt5_smoke(
         parse_status="pending_report_discovery",
         requested_symbol=symbol,
         requested_timeframe=timeframe,
+        close_summary=close_summary,
     )
 
     summary = RealMT5SmokeSummary(
@@ -409,6 +440,7 @@ def execute_one_run_real_mt5_smoke(
         raw_artifacts_private=True,
         public_summary_created=True,
         failure_reason=failure_reason,
+        **close_summary,
     )
     public_files = _write_public_summaries(project_root, summary)
     report_file = _select_report_file(private_dir, manifest)
@@ -429,6 +461,7 @@ def execute_one_run_real_mt5_smoke(
         parse_status=parse_status,
         requested_symbol=symbol,
         requested_timeframe=timeframe,
+        close_summary=close_summary,
     )
     capture_summary = _write_public_capture_summaries(
         project_root,

@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from app.core.mt5_process_control import default_mt5_close_policy
 from app.core.mt5_runner import MT5SmokeConfig, run_mt5_smoke, write_smoke_result
 
 
@@ -20,5 +21,10 @@ def run_xauusd_base_seed_smoke(
     """Run the single XAUUSD base-seed smoke path and write the public result."""
 
     config = MT5SmokeConfig()
-    result = run_mt5_smoke(config, allow_real_execution=allow_real_execution, operator_gate=operator_gate)
+    result = run_mt5_smoke(
+        config,
+        allow_real_execution=allow_real_execution,
+        operator_gate=operator_gate,
+        close_policy=default_mt5_close_policy(),
+    )
     return write_smoke_result(result, output_dir / DEFAULT_SMOKE_RESULT)

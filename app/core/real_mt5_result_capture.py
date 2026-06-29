@@ -13,6 +13,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
+from app.core.mt5_process_control import make_mt5_close_summary
+
 
 SUPPORTED_REPORT_EXTENSIONS = {".html", ".htm", ".xml", ".csv", ".json"}
 SUPPORTED_LOG_EXTENSIONS = {".txt", ".log", ".journal"}
@@ -40,6 +42,14 @@ class ResultCaptureManifest:
     observed_log_files: list[str]
     capture_status: str
     parse_status: str
+    mt5_close_policy: str = "not_applicable"
+    mt5_close_attempted: bool = False
+    mt5_closed_after_run: bool = False
+    mt5_close_method: str = "not_applicable"
+    mt5_close_error: str = ""
+    mt5_process_owned_by_app: bool = False
+    mt5_external_process_detected: bool = False
+    manual_close_required: bool = False
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -103,6 +113,7 @@ def create_capture_context(
         observed_log_files=[],
         capture_status="initialized",
         parse_status="not_parsed",
+        **make_mt5_close_summary(None),
     )
     manifest_path = run_dir / LOCAL_MANIFEST_NAME
     manifest_path.write_text(json.dumps(manifest.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -142,6 +153,7 @@ def write_capture_manifest(
     parse_status: str,
     requested_symbol: str = "XAUUSD",
     requested_timeframe: str = "M5",
+    close_summary: dict[str, object] | None = None,
 ) -> ResultCaptureManifest:
     artifacts = discover_capture_artifacts(context.run_dir)
     manifest = ResultCaptureManifest(
@@ -156,6 +168,7 @@ def write_capture_manifest(
         observed_log_files=artifacts["observed_log_files"],
         capture_status=capture_status,
         parse_status=parse_status,
+        **make_mt5_close_summary(close_summary),
     )
     context.manifest_path.write_text(json.dumps(manifest.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return manifest

@@ -19,7 +19,8 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-013C | One-run Real MT5 Smoke Execution | high | completed_or_in_pr |
 | MVP-013D | Real Smoke Result Review | high | completed_or_reviewed |
 | MVP-014A | Real Smoke Result Capture and Parser | high | completed |
-| MVP-014B | One-run Real Capture Smoke | high | in_pr_no_report_found |
+| MVP-014B | One-run Real Capture Smoke | high | completed_no_report_found |
+| Hardening | MT5 Close After Real Run Policy | high | in_progress |
 | MVP-014C | MT5 Strategy Tester Report Export Configuration | high | recommended_next |
 
 Use:
@@ -42,6 +43,15 @@ captured.
 
 The next recommended step is `MVP-014C MT5 Strategy Tester Report Export
 Configuration`.
+
+Before MVP-014C, every real execution path must carry the close-after-run
+policy:
+
+```text
+mt5_close_policy=always_after_real_run
+```
+
+Após a execução real, o MT5 será fechado para manter o ambiente limpo e evitar processos presos.
 
 MVP-014C objective:
 

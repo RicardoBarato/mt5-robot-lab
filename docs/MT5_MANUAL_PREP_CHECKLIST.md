@@ -24,6 +24,19 @@ O MT5 Robot Lab não armazena senha, conta, servidor ou credenciais. O usuário 
 11. Smoke real futuro limitado a 1 execução.
 12. 100 backtests continuam bloqueados até outro MVP.
 
+## Close After Real Run
+
+The operator must understand that real execution approval also authorizes MT5
+Robot Lab to close the MT5 instance started and controlled by that execution.
+
+```text
+Após a execução real, o MT5 será fechado para manter o ambiente limpo e evitar processos presos.
+```
+
+If MT5 was already open outside the app, the report must record
+`manual_close_required=true` and the operator must close that external terminal
+manually.
+
 ## What This Prep Does Not Authorize
 
 - It does not authorize live trading.

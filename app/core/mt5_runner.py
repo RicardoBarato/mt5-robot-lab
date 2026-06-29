@@ -22,6 +22,14 @@ from app.core.mt5_detection import (
     validate_mt5_executable_path,
     validate_tester_config_path,
 )
+from app.core.mt5_process_control import (
+    MT5ClosePolicy,
+    close_mt5_after_run,
+    default_mt5_close_policy,
+    find_mt5_processes,
+    make_app_owned_process_info,
+    make_mt5_close_summary,
+)
 from app.core.operator_gate import BLOCKED_REASON, is_real_mt5_execution_allowed
 
 
@@ -53,6 +61,14 @@ class MT5SmokeRunResult:
     terminal_path: str
     command: list[str]
     reason: str
+    mt5_close_policy: str = "not_applicable"
+    mt5_close_attempted: bool = False
+    mt5_closed_after_run: bool = False
+    mt5_close_method: str = "not_applicable"
+    mt5_close_error: str = ""
+    mt5_process_owned_by_app: bool = False
+    mt5_external_process_detected: bool = False
+    manual_close_required: bool = False
 
     def public_payload(self) -> dict[str, object]:
         payload = asdict(self)
@@ -66,10 +82,18 @@ class MT5SmokeRunResult:
 
 
 class MT5SmokeExecutionError(RuntimeError):
-    def __init__(self, message: str, *, attempted_process: bool, strategy_tester_requested: bool) -> None:
+    def __init__(
+        self,
+        message: str,
+        *,
+        attempted_process: bool,
+        strategy_tester_requested: bool,
+        close_summary: dict[str, object] | None = None,
+    ) -> None:
         super().__init__(message)
         self.attempted_process = attempted_process
         self.strategy_tester_requested = strategy_tester_requested
+        self.close_summary = make_mt5_close_summary(close_summary)
 
 
 def _clean_number(value: object) -> int | float:
@@ -99,6 +123,7 @@ def _write_private_execution_artifacts(
     command: list[str],
     completed: subprocess.CompletedProcess[str] | None = None,
     error: BaseException | None = None,
+    close_summary: dict[str, object] | None = None,
 ) -> None:
     if private_artifact_dir is None:
         return
@@ -118,6 +143,7 @@ def _write_private_execution_artifacts(
         "error_type": type(error).__name__ if error else "",
         "error_message": str(error) if error else "",
         "credentials_stored": False,
+        **make_mt5_close_summary(close_summary),
     }
     (private_artifact_dir / "execution_manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n",
@@ -145,6 +171,7 @@ def run_mt5_smoke(
     tester_config_allowed_roots: list[Path] | None = None,
     private_artifact_dir: Path | None = None,
     metrics: BacktestMetrics | None = None,
+    close_policy: MT5ClosePolicy | None = None,
 ) -> MT5SmokeRunResult:
     smoke_config = config or MT5SmokeConfig()
     if smoke_config.max_backtests != 1:
@@ -215,27 +242,87 @@ def run_mt5_smoke(
         tester_config_path,
         allowed_roots=tester_config_allowed_roots,
     )
+    policy = close_policy or default_mt5_close_policy()
+    close_summary = make_mt5_close_summary(None)
+    pre_existing_mt5_processes = find_mt5_processes()
+
+    def with_external_process_state(summary: dict[str, object]) -> dict[str, object]:
+        clean_summary = make_mt5_close_summary(summary)
+        if pre_existing_mt5_processes:
+            clean_summary["mt5_external_process_detected"] = True
+            clean_summary["manual_close_required"] = True
+        return clean_summary
+
+    completed: subprocess.CompletedProcess[str] | None = None
+    process_info = None
     try:
-        completed = subprocess.run(
+        process = subprocess.Popen(
             command,
-            check=False,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=smoke_config.timeout_seconds,
         )
+        process_info = make_app_owned_process_info(process.pid, command[0])
+        try:
+            stdout, stderr = process.communicate(timeout=smoke_config.timeout_seconds)
+        except subprocess.TimeoutExpired as exc:
+            close_summary = with_external_process_state(make_mt5_close_summary(close_mt5_after_run(process_info, policy)))
+            _write_private_execution_artifacts(
+                private_artifact_dir,
+                command=command,
+                error=exc,
+                close_summary=close_summary,
+            )
+            raise MT5SmokeExecutionError(
+                f"MT5 Strategy Tester smoke timed out after {smoke_config.timeout_seconds} seconds",
+                attempted_process=True,
+                strategy_tester_requested=True,
+                close_summary=close_summary,
+            ) from exc
+        completed = subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
     except subprocess.TimeoutExpired as exc:
-        _write_private_execution_artifacts(private_artifact_dir, command=command, error=exc)
+        close_summary = with_external_process_state(make_mt5_close_summary(close_mt5_after_run(process_info, policy)))
+        _write_private_execution_artifacts(
+            private_artifact_dir,
+            command=command,
+            error=exc,
+            close_summary=close_summary,
+        )
         raise MT5SmokeExecutionError(
             f"MT5 Strategy Tester smoke timed out after {smoke_config.timeout_seconds} seconds",
             attempted_process=True,
             strategy_tester_requested=True,
+            close_summary=close_summary,
         ) from exc
-    _write_private_execution_artifacts(private_artifact_dir, command=command, completed=completed)
+    except OSError as exc:
+        close_summary = with_external_process_state(make_mt5_close_summary(close_mt5_after_run(process_info, policy)))
+        _write_private_execution_artifacts(
+            private_artifact_dir,
+            command=command,
+            error=exc,
+            close_summary=close_summary,
+        )
+        raise MT5SmokeExecutionError(
+            "MT5 Strategy Tester smoke process could not be started",
+            attempted_process=False,
+            strategy_tester_requested=True,
+            close_summary=close_summary,
+        ) from exc
+    finally:
+        if completed is not None:
+            close_summary = with_external_process_state(make_mt5_close_summary(close_mt5_after_run(process_info, policy)))
+    _write_private_execution_artifacts(
+        private_artifact_dir,
+        command=command,
+        completed=completed,
+        close_summary=close_summary,
+    )
     if completed.returncode != 0:
         raise MT5SmokeExecutionError(
             f"MT5 Strategy Tester smoke failed with exit code {completed.returncode}",
             attempted_process=True,
             strategy_tester_requested=True,
+            close_summary=close_summary,
         )
 
     return MT5SmokeRunResult(
@@ -255,6 +342,7 @@ def run_mt5_smoke(
         terminal_path=redact_public_path(terminal),
         command=[redact_public_path(command[0]), f"/config:{redact_public_path(command[1].split(':', 1)[1])}"],
         reason="single_strategy_tester_smoke_completed",
+        **close_summary,
     )
 
 

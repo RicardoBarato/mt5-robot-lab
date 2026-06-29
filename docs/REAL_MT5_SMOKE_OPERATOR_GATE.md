@@ -21,6 +21,8 @@ The operator gate prevents accidental execution by requiring:
 - exactly one max backtest;
 - no 100-run tournament;
 - no stored credentials.
+- agreement that the app may close the MT5 instance started and controlled by
+  the approved real run.
 
 ## Required Approval Phrase
 
@@ -34,6 +36,12 @@ Accepted Portuguese phrase:
 
 ```text
 Eu entendo que isso tentara apenas um smoke local do MT5
+```
+
+Close-after-run notice:
+
+```text
+Após a execução real, o MT5 será fechado para manter o ambiente limpo e evitar processos presos.
 ```
 
 ## Execution Classes
@@ -83,6 +91,13 @@ The preview keeps:
 mt5_real_run=false
 backtest_real_run=false
 execution_allowed=false
+```
+
+Approved real runs must also report:
+
+```text
+mt5_close_policy=always_after_real_run
+manual_close_required=<true_or_false>
 ```
 
 ## Login Boundary
