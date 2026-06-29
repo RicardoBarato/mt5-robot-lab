@@ -28,7 +28,7 @@ from app.core.export_reports import export_sample_summary
 from app.core.intelligence_modes import validate_intelligence_modes
 from app.core.lab_registry import load_lab_registry
 from app.core.leaderboard_schema import make_public_leaderboard_sample, validate_leaderboard_entry
-from app.core.mt5_detection import generate_diagnostics
+from app.core.mt5_detection import generate_diagnostics, write_local_mt5_environment_status
 from app.core.operator_gate import (
     APPROVAL_PHRASE_EN,
     APPROVAL_PHRASE_PT,
@@ -241,6 +241,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--risk-profile-self-test", action="store_true", help="Rank tournament candidates by risk profile")
     parser.add_argument("--operator-gate-self-test", action="store_true", help="Run safe operator gate validation")
     parser.add_argument("--preview-real-mt5-smoke-gate", action="store_true", help="Write safe operator gate preview artifacts")
+    parser.add_argument("--detect-mt5-local", action="store_true", help="Write safe local MT5 environment verification")
     return parser
 
 
@@ -295,6 +296,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.preview_real_mt5_smoke_gate:
         preview = write_operator_gate_preview(_self_test_public_root("operator_gate_preview"))
         print(json.dumps(preview, indent=2, sort_keys=True))
+        return 0
+    if args.detect_mt5_local:
+        result = write_local_mt5_environment_status(PROJECT_ROOT / "reports" / "public")
+        print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     launch_app(PROJECT_ROOT)
     return 0
