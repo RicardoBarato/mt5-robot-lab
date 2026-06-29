@@ -11,4 +11,4 @@
 - Strategy Tester run: false
 - Backtest real run: false
 
-No account login, password, token, broker server or order execution is used by this diagnostic.
+No account login, broker server detail or order execution is used by this diagnostic.

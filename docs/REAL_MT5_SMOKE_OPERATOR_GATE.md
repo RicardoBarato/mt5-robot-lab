@@ -74,10 +74,8 @@ These commands do not run MT5 and do not run Strategy Tester.
 
 ## Preview Outputs
 
-```text
-reports/public/operator_gate_preview.json
-reports/public/operator_gate_preview.md
-```
+Self-test preview output is written under ignored `runs/self_tests/` paths.
+Reviewed public previews can be generated only by an explicit future command.
 
 The preview keeps:
 
@@ -96,6 +94,9 @@ does not ask for credentials and does not store credentials.
 
 CI must never run MT5 real execution. CI may run only the operator gate preview
 and self-test.
+
+CI must also keep the working tree clean after self-tests. Runtime artifacts from
+self-tests belong in ignored folders, not in tracked `reports/public` files.
 
 ## Risk Disclosure
 

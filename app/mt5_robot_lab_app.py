@@ -50,7 +50,20 @@ from app.ui.screens import INTELLIGENCE_MODE_OPTIONS, NavigationController, buil
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
+def _self_test_root(name: str) -> Path:
+    root = PROJECT_ROOT / "runs" / "self_tests" / name
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _self_test_public_root(name: str) -> Path:
+    public_root = _self_test_root(name) / "reports" / "public"
+    public_root.mkdir(parents=True, exist_ok=True)
+    return public_root
+
+
 def run_self_test() -> dict[str, object]:
+    public_root = _self_test_public_root("app_self_test")
     config = load_app_config(PROJECT_ROOT / "config" / "app.default.json")
     validate_app_config(config)
     validate_intelligence_modes(config.supported_intelligence_modes, config.default_intelligence_mode)
@@ -93,9 +106,9 @@ def run_self_test() -> dict[str, object]:
     if dna.risk_mode != "wild" or dna.max_drawdown_tolerated_pct != 100.0:
         raise AssertionError("Champion DNA sample must cover wild risk mode")
 
-    artifact_root = PROJECT_ROOT / "reports" / "public" / "sample_champion_dna"
+    artifact_root = public_root / "sample_champion_dna"
     written = write_champion_artifacts(dna, artifact_root)
-    dna_v2_artifacts = save_champion_dna(dna, PROJECT_ROOT / "reports" / "public")
+    dna_v2_artifacts = save_champion_dna(dna, public_root)
     submission_package = create_submission_package(
         dna,
         {
@@ -112,12 +125,12 @@ def run_self_test() -> dict[str, object]:
             "timeframe_minutes": 5,
             "initial_balance_usd": 10000.0,
         },
-        PROJECT_ROOT / "reports" / "public" / "submission_package_sample",
+        public_root / "submission_package_sample",
     )
-    validation = validate_submission_package(PROJECT_ROOT / "reports" / "public" / "submission_package_sample")
+    validation = validate_submission_package(public_root / "submission_package_sample")
     if validation["validation_status"] != "pass":
         raise AssertionError("Submission package validation failed")
-    leaderboard_sample = make_public_leaderboard_sample(PROJECT_ROOT / "reports" / "public")
+    leaderboard_sample = make_public_leaderboard_sample(public_root)
     if leaderboard_sample["mt5_real_run"] or leaderboard_sample["backtest_real_run"] or leaderboard_sample["upload_ready"]:
         raise AssertionError("Leaderboard sample must remain non-real and not upload-ready")
     validate_leaderboard_entry(leaderboard_sample["entries"][0])
@@ -162,7 +175,7 @@ def run_self_test() -> dict[str, object]:
     )
     if approve_operator_gate(credentials, APPROVAL_PHRASE_EN)["execution_allowed"]:
         raise AssertionError("Operator gate must block stored credentials")
-    exports = export_sample_summary(PROJECT_ROOT / "reports" / "public")
+    exports = export_sample_summary(public_root)
 
     return {
         "self_test": "passed",
@@ -238,16 +251,16 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(run_self_test(), indent=2, sort_keys=True))
         return 0
     if args.mt5_self_test:
-        result = generate_diagnostics(PROJECT_ROOT / "reports" / "public")
+        result = generate_diagnostics(_self_test_public_root("mt5_diagnostics"))
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     if args.backtest_smoke_self_test:
-        result = run_xauusd_base_seed_smoke(PROJECT_ROOT / "reports" / "public", allow_real_execution=False)
+        result = run_xauusd_base_seed_smoke(_self_test_public_root("backtest_smoke"), allow_real_execution=False)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     if args.candidate_generator_self_test:
         candidates = generate_candidates(DEFAULT_SEED)
-        result = save_candidates(candidates, PROJECT_ROOT / "candidates")
+        result = save_candidates(candidates, _self_test_root("candidate_generator") / "candidates")
         print(
             json.dumps(
                 {
@@ -264,14 +277,15 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
     if args.tournament_smoke_self_test:
-        result = run_tournament(PROJECT_ROOT)
+        result = run_tournament(_self_test_root("tournament_smoke"))
         print(json.dumps(result.__dict__, indent=2, sort_keys=True))
         return 0
     if args.risk_profile_self_test:
-        run_tournament(PROJECT_ROOT)
+        risk_root = _self_test_root("risk_profile")
+        run_tournament(risk_root)
         result = generate_risk_profile_report(
-            PROJECT_ROOT / "reports" / "public" / "tournament_ranking.json",
-            PROJECT_ROOT / "reports" / "public" / "risk_profile_ranking.json",
+            risk_root / "reports" / "public" / "tournament_ranking.json",
+            risk_root / "reports" / "public" / "risk_profile_ranking.json",
         )
         print(json.dumps(result.__dict__, indent=2, sort_keys=True))
         return 0
@@ -279,7 +293,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(run_operator_gate_self_test(), indent=2, sort_keys=True))
         return 0
     if args.preview_real_mt5_smoke_gate:
-        preview = write_operator_gate_preview(PROJECT_ROOT / "reports" / "public")
+        preview = write_operator_gate_preview(_self_test_public_root("operator_gate_preview"))
         print(json.dumps(preview, indent=2, sort_keys=True))
         return 0
     launch_app(PROJECT_ROOT)

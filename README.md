@@ -171,13 +171,27 @@ python app\mt5_robot_lab_app.py --preview-real-mt5-smoke-gate
 The preview does not launch MT5, does not run Strategy Tester and does not run a
 real backtest.
 
+## Pre-Real MT5 Safety Hardening
+
+MVP-013A keeps real MT5 execution blocked while hardening the boundary around
+public artifacts, self-test outputs, executable path validation, path redaction,
+submission package scanning and CI coverage.
+
+Self-tests write temporary runtime artifacts under ignored `runs/self_tests/`
+paths. They must not modify tracked `reports/public` files.
+
 ## Development Validation
 
 ```powershell
-python -m compileall app tests tools
+python -m compileall app tests tools factory
 python -m unittest discover -s tests
 python app\mt5_robot_lab_app.py --self-test
+python app\mt5_robot_lab_app.py --operator-gate-self-test
+python app\mt5_robot_lab_app.py --preview-real-mt5-smoke-gate
 python tools\publication_guard.py .
+python factory\mvp_factory.py --self-test
+git diff --check
+git status --short
 ```
 
 ## Status

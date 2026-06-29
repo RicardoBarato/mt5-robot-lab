@@ -13,4 +13,4 @@
 - Backtest real run: false
 - Upload ready: false
 
-This is a fictitious public-safe leaderboard sample. It is not a trading signal, recommendation or real account approval.
+This is a fictitious public-safe leaderboard sample. It is not a trading signal, recommendation or operational approval.
