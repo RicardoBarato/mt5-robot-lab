@@ -1,0 +1,32 @@
+{
+  "backtest_real_run": true,
+  "capture_enabled": true,
+  "capture_status": "no_report_found",
+  "credentials_stored": false,
+  "ea_executed": true,
+  "failure_reason": "",
+  "metrics": {},
+  "metrics_extracted": false,
+  "mt5_real_run": true,
+  "observed_log_files": [
+    "stderr.txt",
+    "stdout.txt"
+  ],
+  "observed_report_files": [],
+  "parse_enabled": true,
+  "parse_status": "no_report_found",
+  "parseable": false,
+  "parser_warnings": [],
+  "paths_sanitized": true,
+  "raw_artifacts_private": true,
+  "real_smoke_runs": 1,
+  "report_file_found": false,
+  "result_status": "HOLD_REAL_CAPTURE_SMOKE_NO_REPORT_FOUND",
+  "return_code": 0,
+  "runs_attempted": 1,
+  "smoke_only": true,
+  "strategy_tester_run": true,
+  "symbol_requested": "XAUUSD",
+  "timeframe_requested": "M5",
+  "tournament_100_run": false
+}

@@ -91,3 +91,21 @@ of likely E-drive MT5 folders.
 This still does not approve or execute a smoke run. Basename, suffix and file
 existence must pass before a path can be treated as detected, and all public
 outputs must sanitize local paths.
+
+## MVP-013C and MVP-014B Real Smoke Boundary
+
+MVP-013C allowed one explicit Operator Gate real smoke. MVP-014B reused the same
+one-run boundary with capture enabled.
+
+Current recorded state:
+
+- one-run smoke worked at execution level;
+- Strategy Tester was requested once;
+- no tournament was started;
+- no 100-backtest run was started;
+- raw local artifacts remained private;
+- official Strategy Tester report capture is still not solved;
+- no parseable real report exists yet.
+
+Controlled multi-run execution is blocked until MVP-014C fixes or defines
+official report export/capture.

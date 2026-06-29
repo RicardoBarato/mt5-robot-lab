@@ -10,5 +10,10 @@
   "MVP-009": "completed",
   "MVP-010": "completed",
   "MVP-011": "completed",
-  "MVP-012": "completed"
+  "MVP-012": "completed",
+  "MVP-013C": "completed_or_in_pr",
+  "MVP-013D": "completed_or_reviewed",
+  "MVP-014A": "completed",
+  "MVP-014B": "in_pr_no_report_found",
+  "MVP-014C": "recommended_next"
 }
