@@ -53,8 +53,17 @@ class BacktestSmokeBridgeTests(unittest.TestCase):
         self.assertEqual(payload["reason"], "Real MT5 smoke execution requires explicit operator approval.")
 
     def test_strategy_tester_command_shape(self) -> None:
-        command = build_strategy_tester_command("C:/MT5/terminal64.exe", "C:/Temp/smoke.ini")
-        self.assertEqual(command, ["C:/MT5/terminal64.exe", "/config:C:/Temp/smoke.ini"])
+        runs_root = Path.cwd() / "runs"
+        runs_root.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=runs_root) as tmpdir:
+            root = Path(tmpdir)
+            terminal = root / "terminal64.exe"
+            config = root / "smoke.ini"
+            terminal.write_text("", encoding="utf-8")
+            config.write_text("[Tester]\n", encoding="utf-8")
+            command = build_strategy_tester_command(str(terminal), str(config))
+        self.assertEqual(Path(command[0]).name, "terminal64.exe")
+        self.assertTrue(command[1].startswith("/config:"))
 
     def test_candidate_runner_writes_public_smoke_result(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

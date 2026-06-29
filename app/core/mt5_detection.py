@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
@@ -32,6 +33,27 @@ COMMON_SYMBOLS = [
     "BTCUSD",
     "BTCUSD.",
     "BTCUSDm",
+]
+
+USER_HOME_PLACEHOLDER = "<USER_HOME>"
+LOCAL_APPDATA_PLACEHOLDER = "<LOCAL_APPDATA>"
+APPDATA_PLACEHOLDER = "<APPDATA>"
+WINDOWS_PATH_PLACEHOLDER = "<WINDOWS_PATH_REDACTED>"
+NETWORK_PATH_PLACEHOLDER = "<NETWORK_PATH_REDACTED>"
+FILE_URI_PLACEHOLDER = "<FILE_URI_REDACTED>"
+
+_WINDOWS_PATH_RE = re.compile(r"(?i)^[a-z]:[\\/]")
+_WINDOWS_USERS_RE = re.compile(r"(?i)^[a-z]:[\\/]users[\\/][^\\/]+")
+_UNC_PATH_RE = re.compile(r"^(\\\\|//)[^\\/]+[\\/][^\\/]+")
+_PRIVATE_TEXT_PATTERNS = [
+    re.compile(r"(?i)[a-z]:[\\/]users[\\/]"),
+    re.compile(r"(?i)(\\\\|//)[^\\/\s]+[\\/][^\\/\s]+"),
+    re.compile(r"(?i)file://"),
+    re.compile(r"(?i)\bappdata\b"),
+    re.compile(r"(?i)\bdocuments[\\/]"),
+    re.compile(r"(?i)%userprofile%"),
+    re.compile(r"(?i)%appdata%"),
+    re.compile(r"(?i)%localappdata%"),
 ]
 
 
@@ -130,19 +152,97 @@ def _find_file(filename: str, roots: list[Path] | None = None) -> tuple[Path | N
     return None, scanned
 
 
-def _public_path(path: Path | str | None) -> str:
+def _placeholder_with_suffix(placeholder: str, suffix: str) -> str:
+    suffix = suffix.replace("/", "\\")
+    return placeholder + suffix if suffix.startswith("\\") else placeholder + ("\\" + suffix if suffix else "")
+
+
+def redact_public_path(path: Path | str | None) -> str:
+    """Return a public-safe representation of a local path."""
     if not path:
         return ""
     text = str(path)
-    replacements = {
-        os.environ.get("USERPROFILE", ""): "%USERPROFILE%",
-        os.environ.get("LOCALAPPDATA", ""): "%LOCALAPPDATA%",
-        os.environ.get("APPDATA", ""): "%APPDATA%",
+    stripped = text.strip()
+    lowered = stripped.lower()
+
+    if lowered.startswith("file://"):
+        return FILE_URI_PLACEHOLDER
+    if _UNC_PATH_RE.match(stripped):
+        return NETWORK_PATH_PLACEHOLDER
+
+    env_placeholders = {
+        "%LOCALAPPDATA%": LOCAL_APPDATA_PLACEHOLDER,
+        "%APPDATA%": APPDATA_PLACEHOLDER,
+        "%USERPROFILE%": USER_HOME_PLACEHOLDER,
     }
-    for source, target in replacements.items():
-        if source and text.lower().startswith(source.lower()):
-            return target + text[len(source) :]
-    return text
+    for source, target in env_placeholders.items():
+        if lowered.startswith(source.lower()):
+            return _placeholder_with_suffix(target, stripped[len(source) :])
+
+    replacements = [
+        (os.environ.get("LOCALAPPDATA", ""), LOCAL_APPDATA_PLACEHOLDER),
+        (os.environ.get("APPDATA", ""), APPDATA_PLACEHOLDER),
+        (os.environ.get("USERPROFILE", ""), USER_HOME_PLACEHOLDER),
+    ]
+    for source, target in sorted(((s, t) for s, t in replacements if s), key=lambda item: len(item[0]), reverse=True):
+        if stripped.lower().startswith(source.lower()):
+            return _placeholder_with_suffix(target, stripped[len(source) :])
+
+    if _WINDOWS_USERS_RE.match(stripped):
+        match = _WINDOWS_USERS_RE.match(stripped)
+        suffix = stripped[match.end() :] if match else ""
+        return _placeholder_with_suffix(USER_HOME_PLACEHOLDER, suffix)
+    if _WINDOWS_PATH_RE.match(stripped):
+        return WINDOWS_PATH_PLACEHOLDER
+    if "appdata" in lowered:
+        return WINDOWS_PATH_PLACEHOLDER
+    return stripped
+
+
+def _public_path(path: Path | str | None) -> str:
+    return redact_public_path(path)
+
+
+def is_private_path_text(text: str) -> bool:
+    return any(pattern.search(text) for pattern in _PRIVATE_TEXT_PATTERNS)
+
+
+def validate_mt5_executable_path(path: str | Path, expected_name: str) -> Path:
+    candidate = Path(path)
+    if not str(path).strip():
+        raise ValueError(f"{expected_name} path is required")
+    if candidate.name.lower() != expected_name.lower():
+        raise ValueError(f"Expected {expected_name}, got {candidate.name or 'empty path'}")
+    if candidate.suffix.lower() != ".exe":
+        raise ValueError(f"{expected_name} must be a Windows .exe")
+    if not candidate.exists() or not candidate.is_file():
+        raise FileNotFoundError(f"{expected_name} was not found")
+    return candidate
+
+
+def _is_within(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except ValueError:
+        return False
+
+
+def validate_tester_config_path(path: str | Path, allowed_roots: list[Path] | None = None) -> Path:
+    candidate = Path(path)
+    if not str(path).strip():
+        raise ValueError("tester_config_path is required")
+    if candidate.suffix.lower() in {".set", ".tst", ".ex5", ".env"}:
+        raise ValueError("tester_config_path cannot be a preset, tester file, compiled EA or env file")
+    if candidate.suffix.lower() not in {".ini", ".cfg"}:
+        raise ValueError("tester_config_path must be a local .ini or .cfg file")
+    if not candidate.exists() or not candidate.is_file():
+        raise FileNotFoundError("tester_config_path was not found")
+
+    roots = allowed_roots or [Path.cwd() / "config", Path.cwd() / "runs"]
+    if not any(_is_within(candidate, root) for root in roots):
+        raise ValueError("tester_config_path must stay inside approved local config or ignored run folders")
+    return candidate
 
 
 def find_terminal(roots: list[Path] | None = None) -> str:
@@ -229,7 +329,7 @@ def generate_diagnostics(output_dir: Path, roots: list[Path] | None = None) -> d
         "- Strategy Tester run: false",
         "- Backtest real run: false",
         "",
-        "No account login, password, token, broker server or order execution is used by this diagnostic.",
+        "No account login, broker server detail or order execution is used by this diagnostic.",
     ]
     status_path.write_text("\n".join(status_lines) + "\n", encoding="utf-8")
 

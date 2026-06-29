@@ -17,10 +17,20 @@ jobs:
         with:
           python-version: "3.12"
       - name: Compile Python
-        run: python -m compileall app tests tools
+        run: python -m compileall app tests tools factory
       - name: Unit tests
         run: python -m unittest discover -s tests
       - name: App self-test
         run: python app\mt5_robot_lab_app.py --self-test
+      - name: Operator gate self-test
+        run: python app\mt5_robot_lab_app.py --operator-gate-self-test
+      - name: Real MT5 smoke gate preview self-test
+        run: python app\mt5_robot_lab_app.py --preview-real-mt5-smoke-gate
       - name: Publication guard
         run: python tools\publication_guard.py .
+      - name: MVP factory self-test
+        run: python factory\mvp_factory.py --self-test
+      - name: Whitespace check
+        run: git diff --check
+      - name: Working tree check
+        run: git status --short

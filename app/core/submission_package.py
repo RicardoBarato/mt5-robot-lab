@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from app.core.mt5_detection import is_private_path_text
+
 
 PACKAGE_VERSION = "1.0"
 APP_VERSION = "mvp-009"
@@ -62,18 +64,25 @@ REQUIRED_MANIFEST_FIELDS = {
     "notes",
 }
 
-FORBIDDEN_FILE_PATTERNS = [".env", ".set", ".ex5"]
+FORBIDDEN_FILE_PATTERNS = [".env", ".set", ".ex5", ".tst"]
 FORBIDDEN_TEXT = [
     "password",
     "token",
     "secret",
     "account_number",
     "broker_password",
+    "private_key",
+    "api_key",
+    "real account",
+    "file://",
     ".env",
     ".set",
     ".ex5",
+    ".tst",
 ]
-PRIVATE_PATH_PATTERN = re.compile(r"[A-Za-z]:\\(?!mt5-robot-lab\\reports\\public\\submission_package_sample)", re.IGNORECASE)
+PRIVATE_PATH_PATTERN = re.compile(
+    r"(?i)([A-Za-z]:[\\/]users[\\/]|\\\\[^\\/\s]+[\\/][^\\/\s]+|//[^/\s]+/[^/\s]+|file://|appdata|documents[\\/])"
+)
 
 
 def _utc_now() -> str:
@@ -204,7 +213,7 @@ def scan_submission_for_private_artifacts(package_dir: Path) -> list[dict[str, s
             if term in lowered:
                 findings.append({"file": rel, "reason": "sensitive_string"})
                 break
-        if PRIVATE_PATH_PATTERN.search(text):
+        if PRIVATE_PATH_PATTERN.search(text) or is_private_path_text(text):
             findings.append({"file": rel, "reason": "private_local_path"})
     return findings
 

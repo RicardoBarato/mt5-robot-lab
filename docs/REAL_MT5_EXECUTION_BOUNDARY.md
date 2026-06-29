@@ -58,3 +58,17 @@ MVP-013 may prepare the first real MT5 smoke execution only after human review
 of the gate, local MT5 setup and expected command path.
 
 MVP-013 should still be one smoke run only, not a tournament.
+
+## MVP-013A Hardening
+
+MVP-013A adds additional pre-real-execution controls:
+
+- public artifact scans across app, docs, reports, tools, tests, factory and CI;
+- ignored self-test output folders so validation does not rewrite reviewed
+  public artifacts;
+- strict executable validation for `terminal64.exe` and `metaeditor64.exe`;
+- tester config validation for approved local `.ini` or `.cfg` files only;
+- redaction for local, user-home, app-data, network-share and file-URI paths;
+- stronger submission-package scanning before public package validation.
+
+These controls still do not launch MT5 and do not run Strategy Tester.

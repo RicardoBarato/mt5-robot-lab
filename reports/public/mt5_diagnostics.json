@@ -7,13 +7,10 @@
   "mt5_installed": false,
   "real_mt5_run": false,
   "scanned_locations": [
-    "C:\\Program Files\\MetaTrader 5",
-    "C:\\Program Files\\MetaQuotes\\MetaTrader 5",
-    "C:\\Program Files (x86)\\MetaTrader 5",
-    "C:\\Program Files (x86)\\MetaQuotes\\MetaTrader 5",
-    "%USERPROFILE%\\AppData\\Local\\Programs\\MetaTrader 5",
-    "%USERPROFILE%\\AppData\\Local\\MetaQuotes\\Terminal",
-    "%USERPROFILE%\\AppData\\Roaming\\MetaQuotes\\Terminal"
+    "<WINDOWS_PATH_REDACTED>",
+    "<LOCAL_APPDATA>\\Programs\\MetaTrader 5",
+    "<LOCAL_APPDATA>\\MetaQuotes\\Terminal",
+    "<APPDATA>\\MetaQuotes\\Terminal"
   ],
   "status": "not ready",
   "strategy_tester_run": false,

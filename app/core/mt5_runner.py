@@ -14,7 +14,12 @@ from pathlib import Path
 from typing import Any
 
 from app.core.backtest_parser import BacktestMetrics, empty_smoke_metrics
-from app.core.mt5_detection import detect_mt5
+from app.core.mt5_detection import (
+    detect_mt5,
+    redact_public_path,
+    validate_mt5_executable_path,
+    validate_tester_config_path,
+)
 from app.core.operator_gate import BLOCKED_REASON, is_real_mt5_execution_allowed
 
 
@@ -65,11 +70,9 @@ def _clean_number(value: object) -> int | float:
 
 
 def build_strategy_tester_command(terminal_path: str, tester_config_path: str) -> list[str]:
-    if not terminal_path:
-        raise ValueError("terminal_path is required")
-    if not tester_config_path:
-        raise ValueError("tester_config_path is required")
-    return [terminal_path, f"/config:{tester_config_path}"]
+    terminal = validate_mt5_executable_path(terminal_path, "terminal64.exe")
+    tester_config = validate_tester_config_path(tester_config_path)
+    return [str(terminal), f"/config:{tester_config}"]
 
 
 def run_mt5_smoke(
@@ -88,6 +91,7 @@ def run_mt5_smoke(
     parsed_metrics = metrics or empty_smoke_metrics()
     detection = detect_mt5()
     terminal = terminal_path or detection.terminal_path
+    terminal_public = redact_public_path(terminal)
     command: list[str] = []
 
     if not allow_real_execution:
@@ -105,7 +109,7 @@ def run_mt5_smoke(
             mt5_real_execution=False,
             strategy_tester_executed=False,
             loop_execution=False,
-            terminal_path=terminal,
+            terminal_path=terminal_public,
             command=command,
             reason="real_mt5_execution_not_authorized_for_validation",
         )
@@ -125,13 +129,13 @@ def run_mt5_smoke(
             mt5_real_execution=False,
             strategy_tester_executed=False,
             loop_execution=False,
-            terminal_path=terminal,
+            terminal_path=terminal_public,
             command=command,
             reason=BLOCKED_REASON,
         )
 
     if not terminal:
-        raise RuntimeError("MT5 terminal64.exe was not detected")
+        raise RuntimeError("MT5 terminal64.exe path is required for real execution")
     if not tester_config_path:
         raise ValueError("tester_config_path is required for real Strategy Tester execution")
 
@@ -154,8 +158,8 @@ def run_mt5_smoke(
         mt5_real_execution=True,
         strategy_tester_executed=True,
         loop_execution=False,
-        terminal_path=terminal,
-        command=command,
+        terminal_path=redact_public_path(terminal),
+        command=[redact_public_path(command[0]), f"/config:{redact_public_path(command[1].split(':', 1)[1])}"],
         reason="single_strategy_tester_smoke_completed",
     )
 
