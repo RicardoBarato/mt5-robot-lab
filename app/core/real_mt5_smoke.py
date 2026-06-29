@@ -15,9 +15,10 @@ from pathlib import Path
 from typing import Callable
 
 from app.core.mt5_detection import build_local_mt5_environment_status, redact_public_path
+from app.core.mt5_report_parser import ParsedMT5Report, parse_mt5_report
 from app.core.mt5_runner import MT5SmokeConfig, MT5SmokeExecutionError, MT5SmokeRunResult, run_mt5_smoke
 from app.core.operator_gate import APPROVAL_PHRASE_PT, approve_operator_gate, create_operator_approval_request
-from app.core.real_mt5_result_capture import create_capture_context, write_capture_manifest
+from app.core.real_mt5_result_capture import ResultCaptureManifest, create_capture_context, write_capture_manifest
 
 
 DEFAULT_SYMBOL = "XAUUSD"
@@ -27,6 +28,9 @@ PRIVATE_SMOKE_DIR = Path("reports") / "private" / "real_mt5_smoke"
 PUBLIC_SUMMARY_JSON = Path("reports") / "public" / "real_mt5_smoke_summary.json"
 PUBLIC_SUMMARY_MD = Path("reports") / "public" / "real_mt5_smoke_summary.md"
 PUBLIC_REPORT_MD = Path("reports") / "public" / "MVP_013C_ONE_RUN_REAL_MT5_SMOKE_REPORT.md"
+PUBLIC_CAPTURE_SUMMARY_JSON = Path("reports") / "public" / "real_mt5_capture_smoke_summary.json"
+PUBLIC_CAPTURE_SUMMARY_MD = Path("reports") / "public" / "real_mt5_capture_smoke_summary.md"
+PUBLIC_CAPTURE_REPORT_MD = Path("reports") / "public" / "MVP_014B_ONE_RUN_REAL_CAPTURE_SMOKE_REPORT.md"
 
 
 @dataclass(frozen=True)
@@ -145,6 +149,139 @@ def _write_public_summaries(project_root: Path, summary: RealMT5SmokeSummary) ->
     return {"json": public_json, "markdown": public_md, "report": public_report}
 
 
+def _select_report_file(private_dir: Path, manifest: ResultCaptureManifest) -> Path | None:
+    preferred = [
+        "strategy_tester_report.html",
+        "strategy_tester_report.htm",
+        "strategy_tester_report.xml",
+        "strategy_tester_report.csv",
+        "strategy_tester_report.json",
+    ]
+    observed = set(manifest.observed_report_files)
+    for name in preferred:
+        if name in observed:
+            return private_dir / name
+    return private_dir / manifest.observed_report_files[0] if manifest.observed_report_files else None
+
+
+def _metric_payload(parsed_report: ParsedMT5Report | None) -> dict[str, object]:
+    if parsed_report is None:
+        return {}
+    return {
+        "total_trades": parsed_report.total_trades,
+        "net_profit": parsed_report.net_profit,
+        "gross_profit": parsed_report.gross_profit,
+        "gross_loss": parsed_report.gross_loss,
+        "max_drawdown": parsed_report.max_drawdown,
+        "initial_deposit": parsed_report.initial_deposit,
+        "symbol": parsed_report.symbol,
+        "timeframe": parsed_report.timeframe,
+        "started_at": parsed_report.started_at,
+        "ended_at": parsed_report.ended_at,
+    }
+
+
+def _metrics_extracted(parsed_report: ParsedMT5Report | None) -> bool:
+    if parsed_report is None or not parsed_report.parseable:
+        return False
+    metrics = _metric_payload(parsed_report)
+    return any(value is not None for value in metrics.values())
+
+
+def _capture_result_status(
+    summary: RealMT5SmokeSummary,
+    *,
+    report_file_found: bool,
+    parsed_report: ParsedMT5Report | None,
+) -> str:
+    if summary.result_status == "HOLD_REAL_SMOKE_FAILED_NO_RETRY":
+        return "HOLD_REAL_CAPTURE_SMOKE_FAILED_NO_RETRY"
+    if not summary.real_smoke_attempted:
+        return summary.result_status
+    if not report_file_found:
+        return "HOLD_REAL_CAPTURE_SMOKE_NO_REPORT_FOUND"
+    if parsed_report and parsed_report.parseable:
+        return "PASS_MVP_014B_REAL_CAPTURE_SMOKE_PARSEABLE"
+    return "HOLD_REAL_CAPTURE_SMOKE_UNPARSEABLE"
+
+
+def _write_public_capture_summaries(
+    project_root: Path,
+    *,
+    summary: RealMT5SmokeSummary,
+    manifest: ResultCaptureManifest,
+    parsed_report: ParsedMT5Report | None,
+    report_file_found: bool,
+    parse_status: str,
+) -> dict[str, object]:
+    metrics_extracted = _metrics_extracted(parsed_report)
+    result_status = _capture_result_status(summary, report_file_found=report_file_found, parsed_report=parsed_report)
+    public_json = project_root / PUBLIC_CAPTURE_SUMMARY_JSON
+    public_md = project_root / PUBLIC_CAPTURE_SUMMARY_MD
+    public_report = project_root / PUBLIC_CAPTURE_REPORT_MD
+    public_json.parent.mkdir(parents=True, exist_ok=True)
+    payload: dict[str, object] = {
+        "result_status": result_status,
+        "mt5_real_run": summary.mt5_real_run,
+        "backtest_real_run": summary.backtest_real_run,
+        "strategy_tester_run": summary.strategy_tester_run,
+        "ea_executed": summary.ea_executed,
+        "smoke_only": True,
+        "runs_attempted": summary.runs_attempted,
+        "real_smoke_runs": summary.real_smoke_runs,
+        "tournament_100_run": False,
+        "capture_enabled": True,
+        "parse_enabled": True,
+        "capture_status": manifest.capture_status,
+        "parse_status": parse_status,
+        "parseable": bool(parsed_report.parseable) if parsed_report else False,
+        "metrics_extracted": metrics_extracted,
+        "report_file_found": report_file_found,
+        "observed_report_files": manifest.observed_report_files,
+        "observed_log_files": manifest.observed_log_files,
+        "return_code": manifest.return_code,
+        "symbol_requested": summary.symbol_requested,
+        "timeframe_requested": summary.timeframe_requested,
+        "credentials_stored": False,
+        "paths_sanitized": True,
+        "raw_artifacts_private": True,
+        "failure_reason": summary.failure_reason,
+        "parser_warnings": parsed_report.warnings if parsed_report else [],
+        "metrics": _metric_payload(parsed_report),
+    }
+    public_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    lines = [
+        "# MVP-014B One-Run Real Capture Smoke Summary",
+        "",
+        f"- Result status: {result_status}",
+        f"- MT5 real run: {str(summary.mt5_real_run).lower()}",
+        f"- Backtest real run: {str(summary.backtest_real_run).lower()}",
+        f"- Strategy Tester run: {str(summary.strategy_tester_run).lower()}",
+        f"- EA executed: {str(summary.ea_executed).lower()}",
+        f"- Runs attempted: {summary.runs_attempted}",
+        f"- Real smoke runs: {summary.real_smoke_runs}",
+        "- Tournament 100 run: false",
+        "- Capture enabled: true",
+        "- Parse enabled: true",
+        f"- Capture status: {manifest.capture_status}",
+        f"- Parse status: {parse_status}",
+        f"- Report file found: {str(report_file_found).lower()}",
+        f"- Result parseable: {str(bool(parsed_report.parseable) if parsed_report else False).lower()}",
+        f"- Metrics extracted: {str(metrics_extracted).lower()}",
+        f"- Symbol requested: {summary.symbol_requested}",
+        f"- Timeframe requested: {summary.timeframe_requested}",
+        "- Credentials stored: false",
+        "- Paths sanitized: true",
+        "",
+        "Raw local artifacts remain only in the ignored private smoke folder.",
+    ]
+    if summary.failure_reason:
+        lines.extend(["", f"- Failure reason: {summary.failure_reason}"])
+    public_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    public_report.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return payload
+
+
 def execute_one_run_real_mt5_smoke(
     project_root: Path,
     *,
@@ -237,7 +374,7 @@ def execute_one_run_real_mt5_smoke(
             backtest_real_run = False
             ea_executed = False
 
-    write_capture_manifest(
+    manifest = write_capture_manifest(
         capture_context,
         return_code=0 if status == "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED" else None,
         capture_status="process_completed" if attempted else "not_attempted",
@@ -274,6 +411,33 @@ def execute_one_run_real_mt5_smoke(
         failure_reason=failure_reason,
     )
     public_files = _write_public_summaries(project_root, summary)
+    report_file = _select_report_file(private_dir, manifest)
+    parsed_report = parse_mt5_report(report_file, allowed_root=private_dir) if report_file else None
+    if report_file is None:
+        parse_status = "no_report_found"
+        capture_status = "no_report_found" if attempted else "not_attempted"
+    elif parsed_report and parsed_report.parseable:
+        parse_status = "parse_success"
+        capture_status = "report_found"
+    else:
+        parse_status = parsed_report.result_status if parsed_report else "unsupported_format_or_missing_fields"
+        capture_status = "report_found"
+    manifest = write_capture_manifest(
+        capture_context,
+        return_code=0 if status == "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED" else None,
+        capture_status=capture_status,
+        parse_status=parse_status,
+        requested_symbol=symbol,
+        requested_timeframe=timeframe,
+    )
+    capture_summary = _write_public_capture_summaries(
+        project_root,
+        summary=summary,
+        manifest=manifest,
+        parsed_report=parsed_report,
+        report_file_found=report_file is not None,
+        parse_status=parse_status,
+    )
     (private_dir / "run_summary_sanitized.json").write_text(
         json.dumps(summary.to_public_dict(), indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
@@ -282,6 +446,7 @@ def execute_one_run_real_mt5_smoke(
     return {
         "status": status,
         "summary": summary.to_public_dict(),
+        "capture_summary": capture_summary,
         "public_files": {key: str(value) for key, value in public_files.items()},
         "private_artifact_dir_sanitized": redact_public_path(private_dir),
     }

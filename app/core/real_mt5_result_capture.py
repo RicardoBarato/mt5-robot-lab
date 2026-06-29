@@ -18,6 +18,13 @@ SUPPORTED_REPORT_EXTENSIONS = {".html", ".htm", ".xml", ".csv", ".json"}
 SUPPORTED_LOG_EXTENSIONS = {".txt", ".log", ".journal"}
 PRIVATE_CAPTURE_ROOT = Path("reports") / "private" / "real_mt5_smoke"
 LOCAL_MANIFEST_NAME = "run_manifest.local.json"
+INTERNAL_ARTIFACT_NAMES = {
+    LOCAL_MANIFEST_NAME,
+    "environment_sanitized.json",
+    "operator_gate_manifest.json",
+    "execution_manifest.json",
+    "run_summary_sanitized.json",
+}
 
 
 @dataclass(frozen=True)
@@ -117,7 +124,7 @@ def discover_capture_artifacts(run_dir: Path) -> dict[str, list[str]]:
     for path in sorted(run_dir.iterdir()):
         if not path.is_file():
             continue
-        if path.name == LOCAL_MANIFEST_NAME:
+        if path.name in INTERNAL_ARTIFACT_NAMES:
             continue
         suffix = path.suffix.lower()
         if suffix in SUPPORTED_REPORT_EXTENSIONS:

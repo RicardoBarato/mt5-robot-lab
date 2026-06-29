@@ -38,6 +38,24 @@ def _fake_success_runner(*args, **kwargs) -> MT5SmokeRunResult:
     )
 
 
+def _fake_success_runner_with_report(*args, **kwargs) -> MT5SmokeRunResult:
+    private_artifact_dir = kwargs["private_artifact_dir"]
+    (private_artifact_dir / "strategy_tester_report.html").write_text(
+        "\n".join(
+            [
+                "<p>Status: completed</p>",
+                "<p>Symbol: XAUUSD</p>",
+                "<p>Timeframe: M5</p>",
+                "<p>Total Trades: 7</p>",
+                "<p>Total Net Profit: 42.5</p>",
+                "<p>Max Drawdown: 1.2</p>",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    return _fake_success_runner(*args, **kwargs)
+
+
 class RealMT5SmokeGateTests(unittest.TestCase):
     def test_wrong_phrase_does_not_attempt_runner(self) -> None:
         calls = []
@@ -69,8 +87,10 @@ class RealMT5SmokeGateTests(unittest.TestCase):
             )
             public_json = root / "reports" / "public" / "real_mt5_smoke_summary.json"
             public_md = root / "reports" / "public" / "real_mt5_smoke_summary.md"
+            capture_json = root / "reports" / "public" / "real_mt5_capture_smoke_summary.json"
             private_dir = root / "reports" / "private" / "real_mt5_smoke"
             payload = json.loads(public_json.read_text(encoding="utf-8"))
+            capture_payload = json.loads(capture_json.read_text(encoding="utf-8"))
             public_text = public_json.read_text(encoding="utf-8") + public_md.read_text(encoding="utf-8")
             private_dir_exists = private_dir.exists()
             local_manifests = list(private_dir.glob("*/run_manifest.local.json"))
@@ -81,10 +101,31 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertTrue(payload["backtest_real_run"])
         self.assertEqual(payload["runs_attempted"], 1)
         self.assertEqual(payload["real_smoke_runs"], 1)
+        self.assertEqual(capture_payload["parse_status"], "no_report_found")
+        self.assertFalse(capture_payload["report_file_found"])
         self.assertTrue(private_dir_exists)
         self.assertEqual(len(local_manifests), 1)
         for marker in ["C:\\Users\\", "C:/Users/", "file://", "\\\\server\\"]:
             self.assertNotIn(marker, public_text)
+
+    def test_approved_smoke_parses_local_report_when_present(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            result = execute_one_run_real_mt5_smoke(
+                root,
+                approval_phrase=APPROVAL_PHRASE_PT,
+                runner=_fake_success_runner_with_report,
+                environment_override=READY_ENVIRONMENT,
+            )
+            capture_json = root / "reports" / "public" / "real_mt5_capture_smoke_summary.json"
+            capture_payload = json.loads(capture_json.read_text(encoding="utf-8"))
+
+        self.assertEqual(result["capture_summary"]["parse_status"], "parse_success")
+        self.assertTrue(capture_payload["report_file_found"])
+        self.assertTrue(capture_payload["parseable"])
+        self.assertTrue(capture_payload["metrics_extracted"])
+        self.assertEqual(capture_payload["metrics"]["total_trades"], 7)
+        self.assertEqual(capture_payload["metrics"]["net_profit"], 42.5)
 
 
 if __name__ == "__main__":
