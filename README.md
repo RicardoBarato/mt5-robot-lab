@@ -211,6 +211,37 @@ The app may close only the MT5 process it starts and controls. If MT5 was
 already open outside the app, the run must record `manual_close_required=true`
 instead of terminating that external session.
 
+## Backtest Budget Product Policy
+
+Public and ranking runs use one unified ranking with transparent search budget
+disclosure:
+
+```text
+minimum_public_backtests=10
+default_backtests=10
+recommended_options=10,50,100
+custom_backtests_allowed=true
+custom_backtests_minimum=10
+ranking_mode=single_unified_ranking
+```
+
+Every public/ranking result must show `backtests_requested`,
+`backtests_completed`, `search_budget`, `generation_id` and `candidate_id`.
+One-run execution is internal smoke/dev only and must be marked
+`not_for_ranking`, `not_for_product_claim` and `dev_only`.
+
+Execution must remain sequential:
+
+```text
+sequential_only=true
+max_concurrent_mt5=1
+close_mt5_after_each_backtest=true
+checkpoint_after_each_backtest=true
+pause_stop_supported=true
+```
+
+The system must never open 10, 50 or 100 MT5 terminals at the same time.
+
 The next required technical step is `MVP-014C - MT5 Strategy Tester Report Export
 Configuration`, focused only on fixing or defining official report export before
 any controlled multi-run smoke.

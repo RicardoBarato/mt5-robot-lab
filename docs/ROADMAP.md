@@ -9,8 +9,9 @@
 7. Execute gated one-run MT5 smoke. [completed]
 8. Add result capture/parser contract. [completed]
 9. Execute one-run capture smoke. [in PR: no official report captured]
-10. Fix Strategy Tester report export/capture. [recommended next]
-11. Add installer and portable package after release review. [future]
+10. Add backtest budget product policy. [completed]
+11. Fix Strategy Tester report export/capture. [recommended next]
+12. Add installer and portable package after release review. [future]
 
 ## Current Stage
 
@@ -20,6 +21,8 @@ REAL_MT5_STATUS = one_run_smoke_completed_no_report_captured
 
 NEXT_REQUIRED_STEP = report_export_capture_fix_before_multi_run
 
+BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
+
 ## Recent MVP Status
 
 | MVP | Status | Notes |
@@ -27,8 +30,22 @@ NEXT_REQUIRED_STEP = report_export_capture_fix_before_multi_run
 | MVP-013C | completed_or_in_pr | First gated one-run real MT5 smoke executed. |
 | MVP-013D | completed_or_reviewed | Real smoke result reviewed and documented. |
 | MVP-014A | completed | Capture contract and conservative parser merged. |
-| MVP-014B | in_pr_no_report_found | One real capture smoke ran, but no official Strategy Tester report was found. |
+| MVP-014B | completed_no_report_found | One real capture smoke ran, but no official Strategy Tester report was found. |
+| Policy | completed | Public minimum is 10 backtests, default is 10, options are 10/50/100 and ranking is unified. |
 | MVP-014C | recommended_next | Define/fix Strategy Tester report export before any multi-run smoke. |
+
+## Backtest Budget Policy
+
+- Minimum public backtests: 10.
+- Default backtests: 10.
+- Recommended options: 10, 50, 100.
+- Custom backtests: allowed with minimum 10.
+- Ranking mode: single unified ranking.
+- Transparency fields: `backtests_requested`, `backtests_completed`,
+  `search_budget`, `generation_id`, `candidate_id`.
+- Execution: sequential only, `max_concurrent_mt5=1`.
+- MT5 close policy: close after each backtest.
+- Internal one-run smoke: dev only, not for ranking and not for product claims.
 
 ## MVP-014C Recommended Scope
 
