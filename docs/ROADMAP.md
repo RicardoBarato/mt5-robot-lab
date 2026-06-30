@@ -21,7 +21,7 @@ PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
 REAL_MT5_STATUS = one_run_smoke_completed_no_report_captured
 
-NEXT_REQUIRED_STEP = MVP_014G_one_run_real_retry_after_preflight
+NEXT_REQUIRED_STEP = MVP_014H_runtime_preflight_marker_handoff_diagnosis
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -38,7 +38,8 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014D | failed_no_retry | One real report capture smoke was attempted once and failed with sanitized exit-code evidence. |
 | MVP-014E | completed | Failure diagnosis, legacy alignment notes and preflight blocker added. |
 | MVP-014F | completed | Safe preflight readiness command and public summaries added. |
-| MVP-014G | recommended_next | One-run real retry only after preflight review and Operator Gate approval. |
+| MVP-014G | completed_not_parseable | Retry command blocked before terminal launch because runtime preflight did not receive the accepted readiness marker. |
+| MVP-014H | recommended_next | Diagnose the preflight readiness marker handoff into the real-run runtime path before any retry. |
 
 ## Backtest Budget Policy
 
@@ -96,3 +97,15 @@ Strategy Tester and does not execute an EA.
 
 Next decision: the operator may approve `MVP-014G - One-run Real Retry After
 Preflight` only after reviewing the preflight summaries.
+
+## MVP-014G Result
+
+Title: MVP-014G - One-run Real Retry After Preflight
+
+Result: the Operator Gate was approved and the non-executing preflight passed
+with `ready_for_retry=true`, but the real-run runtime preflight blocked before
+launching MT5 with `compiled_ex5_not_configured`. No Strategy Tester process was
+started, no EA executed and no report was captured.
+
+Next decision: run `MVP-014H - Runtime Gap Diagnosis` before requesting any
+new real retry approval.

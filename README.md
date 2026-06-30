@@ -218,6 +218,11 @@ MVP-014F adds the safe preflight readiness command:
 python app\mt5_robot_lab_app.py --real-mt5-preflight
 ```
 
+MVP-014G received fresh Operator Gate approval after a clean `main` state. The
+retry command stopped before launching MT5 because the runtime preflight did not
+carry the accepted readiness marker into the real-run path. No Strategy Tester
+process started, no EA executed and no official report was captured.
+
 The command writes sanitized public summaries, does not launch MT5, does not
 start Strategy Tester and does not execute an EA. It records
 `ready_for_retry=true` only for the contract-readiness path; the next real run
@@ -287,9 +292,9 @@ Raw Strategy Tester reports must stay under `reports/private/real_mt5_smoke/`.
 Public summaries must stay sanitized. Controlled multi-run execution remains
 blocked until a future one-run smoke captures and parses an official report.
 
-The next required technical step is `MVP-014G - One-run Real Retry After
-Preflight`, still limited to one Operator Gate execution and still blocked from
-multi-run or 10/50/100 public backtests.
+The next required technical step is `MVP-014H - Runtime Gap Diagnosis`, focused
+on the handoff between preflight readiness and the real-run runtime path. It
+remains blocked from multi-run or 10/50/100 public backtests.
 
 ## Development Validation
 
@@ -311,6 +316,7 @@ Advanced technical MVP, not a final product. The project has a desktop
 foundation, MVP factory, Operator Gate, publication guard, public/private
 artifact boundary and one gated real MT5 smoke attempt. Official report capture
 is still unresolved, no parseable real Strategy Tester report has been captured,
-real retry is blocked until preflight passes, no multi-run tournament has been
-run, no 100-backtest optimization has been run, no installer or portable zip
-exists and nothing is a financial recommendation.
+the latest retry command blocked before terminal launch due to a runtime
+preflight marker handoff gap, no multi-run tournament has been run, no
+100-backtest optimization has been run, no installer or portable zip exists and
+nothing is a financial recommendation.
