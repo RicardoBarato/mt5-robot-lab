@@ -16,11 +16,11 @@ from typing import Callable
 
 from app.core.mt5_detection import build_local_mt5_environment_status, redact_public_path
 from app.core.mt5_process_control import make_mt5_close_summary
-from app.core.real_mt5_preflight import RealMT5PreflightConfig, build_real_mt5_preflight_check
 from app.core.mt5_report_parser import ParsedMT5Report, parse_mt5_report
 from app.core.mt5_runner import MT5SmokeConfig, MT5SmokeExecutionError, MT5SmokeRunResult, run_mt5_smoke
 from app.core.operator_gate import APPROVAL_PHRASE_PT, approve_operator_gate, create_operator_approval_request
 from app.core.real_mt5_result_capture import ResultCaptureManifest, create_capture_context, write_capture_manifest
+from app.core.real_mt5_runtime_contract import build_real_mt5_runtime_contract
 from app.core.strategy_tester_report_config import (
     build_strategy_tester_report_contract,
     build_tester_ini_report_lines,
@@ -411,25 +411,29 @@ def execute_one_run_real_mt5_smoke(
 
     config_path, report_contract = _write_private_tester_config(private_dir, symbol=symbol, timeframe=timeframe)
     tester_ini_text = config_path.read_text(encoding="utf-8")
-    preflight_summary = preflight_override or build_real_mt5_preflight_check(
-        RealMT5PreflightConfig(
-            terminal_found=bool(environment["terminal_found"]),
-            metaeditor_found=bool(environment["metaeditor_found"]),
-            expert="Examples\\MACD Sample",
-            expected_ex5_path=str(environment.get("expected_ex5_path", "") or ""),
-            symbol=symbol,
-            period=timeframe,
-            max_backtests=1,
-            smoke_only=True,
-            operator_gate_approved=bool(gate["execution_allowed"]),
-            close_after_run_policy="always_after_real_run",
-            tournament_100_run=False,
-            credentials_stored=False,
-        ),
-        report_contract,
-        {"candidate_id": DEFAULT_CANDIDATE_ID, "expert": "Examples\\MACD Sample"},
+    runtime_contract = build_real_mt5_runtime_contract(
+        project_root,
+        environment=environment,
+        operator_gate_approved=bool(gate["execution_allowed"]),
+        expert_path="Examples\\MACD Sample",
+        symbol=symbol,
+        timeframe=timeframe,
+        run_id=private_dir.name,
+        report_contract=report_contract,
         tester_ini_text=tester_ini_text,
+        max_backtests=1,
+        smoke_only=True,
+        close_after_run_policy="always_after_real_run",
     )
+    preflight_summary = preflight_override or dict(runtime_contract["runtime_preflight"])
+    if not preflight_override and runtime_contract["blocking_issues"]:
+        preflight_summary = {
+            **preflight_summary,
+            "status": "blocked_preflight_failed",
+            "ready_for_real_retry": False,
+            "blocking_issues": list(runtime_contract["blocking_issues"]),
+            "root_cause": runtime_contract["root_cause"],
+        }
     ready_for_real_smoke = bool(
         environment["ready_for_real_smoke"]
         and gate["execution_allowed"]

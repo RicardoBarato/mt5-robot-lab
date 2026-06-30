@@ -77,11 +77,15 @@ MVP-014F added the non-executing preflight readiness command:
 python app\mt5_robot_lab_app.py --real-mt5-preflight
 ```
 
-The next real execution step is:
+MVP-014H added the matching runtime contract dry-run:
 
 ```text
-MVP-014G - One-run Real Retry After Preflight
+python app\mt5_robot_lab_app.py --real-mt5-runtime-dry-run
 ```
 
-MVP-014G is still only one execution. It is not a tournament, not optimization,
+This closes the handoff gap where the preflight readiness marker was accepted
+but not attached to the real-run runtime config. The next real execution step is
+`MVP-014I - One-run Real Retry With Runtime Dry-Run Proven`.
+
+MVP-014I is still only one execution. It is not a tournament, not optimization,
 not 10/50/100 backtests and not a product ranking run.

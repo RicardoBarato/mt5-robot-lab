@@ -12,8 +12,10 @@
 10. Add backtest budget product policy. [completed]
 11. Diagnose real MT5 report-capture failure and add preflight. [completed]
 12. Add safe retry preflight readiness command. [completed]
-13. Retry one-run real smoke only after preflight review and Operator Gate approval. [recommended next]
-14. Add installer and portable package after release review. [future]
+13. Retry one-run real smoke only after preflight review and Operator Gate approval. [completed: blocked before launch]
+14. Add runtime preflight marker handoff dry-run. [completed]
+15. Retry one-run real smoke only after runtime dry-run proof and Operator Gate approval. [recommended next]
+16. Add installer and portable package after release review. [future]
 
 ## Current Stage
 
@@ -21,7 +23,7 @@ PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
 REAL_MT5_STATUS = one_run_smoke_completed_no_report_captured
 
-NEXT_REQUIRED_STEP = MVP_014H_runtime_preflight_marker_handoff_diagnosis
+NEXT_REQUIRED_STEP = MVP_014I_one_run_real_retry_with_runtime_dry_run_proven
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -39,7 +41,8 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014E | completed | Failure diagnosis, legacy alignment notes and preflight blocker added. |
 | MVP-014F | completed | Safe preflight readiness command and public summaries added. |
 | MVP-014G | completed_not_parseable | Retry command blocked before terminal launch because runtime preflight did not receive the accepted readiness marker. |
-| MVP-014H | recommended_next | Diagnose the preflight readiness marker handoff into the real-run runtime path before any retry. |
+| MVP-014H | completed | Runtime contract and dry-run attach the accepted readiness marker into runtime preflight. |
+| MVP-014I | recommended_next | One-run real retry only after preflight, runtime dry-run, clean worktree and fresh Operator Gate approval. |
 
 ## Backtest Budget Policy
 
@@ -109,3 +112,18 @@ started, no EA executed and no report was captured.
 
 Next decision: run `MVP-014H - Runtime Gap Diagnosis` before requesting any
 new real retry approval.
+
+## MVP-014H Result
+
+Title: MVP-014H - Runtime Preflight Marker Handoff Diagnosis
+
+Result: diagnosed the root cause as
+`compiled_ex5_ready_but_not_attached_to_runtime`. The safe preflight accepted
+the local readiness marker, but the real-run runtime preflight previously built
+its config from a different object that did not include the expected compiled
+artifact path. MVP-014H adds an explicit runtime contract and a non-executing
+`--real-mt5-runtime-dry-run` command.
+
+Next decision: `MVP-014I - One-run Real Retry With Runtime Dry-Run Proven` may
+be requested only after `--real-mt5-preflight`, `--real-mt5-runtime-dry-run`, a
+clean worktree and fresh Operator Gate approval.

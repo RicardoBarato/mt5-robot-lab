@@ -20,7 +20,8 @@
   "MVP-014E": "completed",
   "MVP-014F": "completed",
   "MVP-014G": "completed_not_parseable",
-  "MVP-014H": "recommended_next",
+  "MVP-014H": "completed",
+  "MVP-014I": "recommended_next",
   "MILESTONE-014-FAILURE-REVIEW": "completed_by_mvp_014e",
   "MT5_CLOSE_AFTER_REAL_RUN_POLICY": "completed",
   "BACKTEST_BUDGET_PRODUCT_POLICY": "completed"

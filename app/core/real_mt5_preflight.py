@@ -27,6 +27,9 @@ UNKNOWN_EXIT_CODE_CATEGORY = "unknown_terminal_exit"
 PUBLIC_PREFLIGHT_JSON = Path("reports") / "public" / "real_mt5_preflight_summary.json"
 PUBLIC_PREFLIGHT_MD = Path("reports") / "public" / "real_mt5_preflight_summary.md"
 PUBLIC_PREFLIGHT_REPORT = Path("reports") / "public" / "MVP_014F_PREFLIGHT_READINESS_REPORT.md"
+EX5_READINESS_MARKER_RELATIVE_PATH = (
+    Path("runs") / "preflight_readiness" / "mvp_014f" / "compiled" / "MACD Sample.ex5"
+)
 
 
 @dataclass(frozen=True)
@@ -442,14 +445,18 @@ def _build_preflight_tester_ini(report_contract: dict[str, object]) -> str:
     )
 
 
-def _ensure_ignored_preflight_ex5(project_root: Path) -> Path:
+def expected_preflight_ex5_marker_path(project_root: Path) -> Path:
+    return project_root / EX5_READINESS_MARKER_RELATIVE_PATH
+
+
+def ensure_ignored_preflight_ex5_marker(project_root: Path) -> Path:
     """Create an ignored local readiness marker for the EX5 existence check.
 
     The file is under `runs/`, which is ignored by Git. It is not a shipped EA,
     not a compiled strategy claim and not a public artifact.
     """
 
-    ex5_path = project_root / "runs" / "preflight_readiness" / "mvp_014f" / "compiled" / "MACD Sample.ex5"
+    ex5_path = expected_preflight_ex5_marker_path(project_root)
     ex5_path.parent.mkdir(parents=True, exist_ok=True)
     if not ex5_path.exists():
         ex5_path.write_text("local preflight readiness marker; not a compiled product artifact\n", encoding="utf-8")
@@ -503,7 +510,7 @@ def generate_real_mt5_preflight_readiness(project_root: Path) -> dict[str, objec
 
     report_contract = build_strategy_tester_report_contract("mvp_014f_preflight_readiness")
     tester_ini_text = _build_preflight_tester_ini(report_contract)
-    expected_ex5_path = _ensure_ignored_preflight_ex5(project_root)
+    expected_ex5_path = ensure_ignored_preflight_ex5_marker(project_root)
     summary = build_real_mt5_preflight_check(
         RealMT5PreflightConfig(
             terminal_found=True,

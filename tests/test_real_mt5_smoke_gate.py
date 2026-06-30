@@ -5,6 +5,7 @@ from pathlib import Path
 
 from app.core.mt5_runner import MT5SmokeRunResult
 from app.core.operator_gate import APPROVAL_PHRASE_PT
+from app.core.real_mt5_preflight import ensure_ignored_preflight_ex5_marker
 from app.core.real_mt5_smoke import execute_one_run_real_mt5_smoke
 
 
@@ -183,6 +184,21 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertEqual(capture_payload["metrics"]["total_trades"], 7)
         self.assertEqual(capture_payload["metrics"]["net_profit"], 42.5)
 
+    def test_approved_smoke_uses_runtime_contract_marker_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            ensure_ignored_preflight_ex5_marker(root)
+            result = execute_one_run_real_mt5_smoke(
+                root,
+                approval_phrase=APPROVAL_PHRASE_PT,
+                runner=_fake_success_runner,
+                environment_override=READY_ENVIRONMENT,
+            )
+
+        self.assertEqual(result["status"], "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED")
+        self.assertTrue(result["summary"]["ready_for_real_retry"])
+        self.assertEqual(result["summary"]["preflight_blocking_issues"], [])
+
     def test_approved_smoke_blocks_without_compiled_ex5_preflight(self) -> None:
         calls = []
 
@@ -201,7 +217,7 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertEqual(calls, [])
         self.assertEqual(result["status"], "HOLD_REAL_MT5_PREFLIGHT_BLOCKED_NO_RETRY")
         self.assertFalse(result["summary"]["ready_for_real_retry"])
-        self.assertIn("compiled_ex5_not_configured", result["summary"]["preflight_blocking_issues"])
+        self.assertIn("compiled_ex5_marker_missing", result["summary"]["preflight_blocking_issues"])
 
 
 if __name__ == "__main__":

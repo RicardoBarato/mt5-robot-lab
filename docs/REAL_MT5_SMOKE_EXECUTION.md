@@ -151,3 +151,14 @@ execution occurred in MVP-014G.
 
 The next step is `MVP-014H Runtime Gap Diagnosis`, focused on the handoff
 between the accepted preflight readiness marker and the runtime smoke path.
+
+MVP-014H adds a runtime contract and a safe dry-run:
+
+```powershell
+python app\mt5_robot_lab_app.py --real-mt5-runtime-dry-run
+```
+
+The root cause was `compiled_ex5_ready_but_not_attached_to_runtime`: the
+accepted readiness marker existed, but the real-run preflight read a runtime
+configuration that did not carry it. The next real retry is `MVP-014I` and must
+be preceded by both `--real-mt5-preflight` and `--real-mt5-runtime-dry-run`.
