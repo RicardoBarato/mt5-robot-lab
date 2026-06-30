@@ -638,8 +638,14 @@
       {
         "id": "MVP-014H",
         "objective": "Diagnose why the accepted preflight readiness marker is not carried into the real-run runtime preflight before another retry.",
-        "status": "recommended_next",
+        "status": "completed",
         "title": "Runtime Gap Diagnosis"
+      },
+      {
+        "id": "MVP-014I",
+        "objective": "Run one gated real retry only after both the non-executing preflight and runtime dry-run pass, with a clean worktree and fresh Operator Gate approval.",
+        "status": "recommended_next",
+        "title": "One-run Real Retry With Runtime Dry-Run Proven"
       },
       {
         "id": "MILESTONE-014-FAILURE-REVIEW",

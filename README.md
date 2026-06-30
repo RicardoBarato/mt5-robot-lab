@@ -223,6 +223,15 @@ retry command stopped before launching MT5 because the runtime preflight did not
 carry the accepted readiness marker into the real-run path. No Strategy Tester
 process started, no EA executed and no official report was captured.
 
+MVP-014H diagnoses that gap as `compiled_ex5_ready_but_not_attached_to_runtime`
+and adds an explicit runtime contract plus safe runtime dry-run:
+
+```powershell
+python app\mt5_robot_lab_app.py --real-mt5-runtime-dry-run
+```
+
+The dry-run must pass before any new real retry approval.
+
 The command writes sanitized public summaries, does not launch MT5, does not
 start Strategy Tester and does not execute an EA. It records
 `ready_for_retry=true` only for the contract-readiness path; the next real run
@@ -292,9 +301,9 @@ Raw Strategy Tester reports must stay under `reports/private/real_mt5_smoke/`.
 Public summaries must stay sanitized. Controlled multi-run execution remains
 blocked until a future one-run smoke captures and parses an official report.
 
-The next required technical step is `MVP-014H - Runtime Gap Diagnosis`, focused
-on the handoff between preflight readiness and the real-run runtime path. It
-remains blocked from multi-run or 10/50/100 public backtests.
+The next required technical step is `MVP-014I - One-run Real Retry With Runtime
+Dry-Run Proven`, still requiring fresh Operator Gate approval and still blocked
+from multi-run or 10/50/100 public backtests.
 
 ## Development Validation
 
@@ -317,6 +326,7 @@ foundation, MVP factory, Operator Gate, publication guard, public/private
 artifact boundary and one gated real MT5 smoke attempt. Official report capture
 is still unresolved, no parseable real Strategy Tester report has been captured,
 the latest retry command blocked before terminal launch due to a runtime
-preflight marker handoff gap, no multi-run tournament has been run, no
-100-backtest optimization has been run, no installer or portable zip exists and
-nothing is a financial recommendation.
+preflight marker handoff gap, MVP-014H adds a non-executing runtime dry-run to
+prove that handoff before the next retry, no multi-run tournament has been run,
+no 100-backtest optimization has been run, no installer or portable zip exists
+and nothing is a financial recommendation.

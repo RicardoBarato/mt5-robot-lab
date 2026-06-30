@@ -175,3 +175,13 @@ readiness marker, but the real-run runtime preflight blocked with
 `compiled_ex5_not_configured` before launching MT5. The next allowed step is
 `MVP-014H Runtime Gap Diagnosis`; another real retry requires a fresh Operator
 Gate approval after that diagnosis.
+
+MVP-014H fixes the internal handoff by adding a runtime contract. The next real
+retry is not allowed unless all of these pass in order:
+
+```text
+--real-mt5-preflight PASS
+--real-mt5-runtime-dry-run PASS
+Operator Gate fresh approval
+worktree clean
+```
