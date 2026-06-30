@@ -10,8 +10,9 @@
 8. Add result capture/parser contract. [completed]
 9. Execute one-run capture smoke. [completed: failed no retry]
 10. Add backtest budget product policy. [completed]
-11. Fix Strategy Tester report export/capture. [recommended next]
-12. Add installer and portable package after release review. [future]
+11. Diagnose real MT5 report-capture failure and add preflight. [completed]
+12. Retry one-run real smoke only after preflight success. [recommended next]
+13. Add installer and portable package after release review. [future]
 
 ## Current Stage
 
@@ -19,7 +20,7 @@ PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
 REAL_MT5_STATUS = one_run_smoke_completed_no_report_captured
 
-NEXT_REQUIRED_STEP = review_milestone_014_failure_summary_before_retry
+NEXT_REQUIRED_STEP = MVP_014F_one_run_real_retry_with_preflight
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -34,6 +35,8 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | Policy | completed | Public minimum is 10 backtests, default is 10, options are 10/50/100 and ranking is unified. |
 | MVP-014C | completed_in_pr | Defines Strategy Tester report export before any multi-run smoke. |
 | MVP-014D | failed_no_retry | One real report capture smoke was attempted once and failed with sanitized exit-code evidence. |
+| MVP-014E | completed | Failure diagnosis, legacy alignment notes and preflight blocker added. |
+| MVP-014F | recommended_next | One-run real retry only after preflight passes and Operator Gate approval is explicit. |
 
 ## Backtest Budget Policy
 
@@ -67,3 +70,17 @@ The Strategy Tester process returned exit code `3294954941`, no official report
 was found and no retry was attempted.
 
 Next decision: review the failure summary before approving any retry.
+
+## MVP-014E Result
+
+Title: MVP-014E - Real MT5 Failure Diagnosis and Legacy Runner Alignment
+
+Result: the failure was classified as
+`strategy_tester_failed_before_ea`. The previous run had
+`exit_code=3294954941`, no official report and no parsed EA result. MVP-014E
+added a preflight validator for terminal, MetaEditor, expert path, expected
+compiled EX5, private report contract, tester INI flags and close-after-run
+policy.
+
+Next decision: run `MVP-014F - One-run Real Retry With Preflight` only after
+preflight returns `ready_for_real_retry=true`.

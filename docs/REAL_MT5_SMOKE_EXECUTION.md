@@ -1,8 +1,9 @@
 # Real MT5 Smoke Execution
 
-MVP-013C introduces the first controlled local MetaTrader 5 smoke execution path.
-MVP-014B confirms that the one-run smoke worked at execution level, but official
-Strategy Tester report capture is still not solved.
+MVP-013C introduced the first controlled local MetaTrader 5 smoke execution
+path. MVP-014B confirmed that the one-run smoke worked at execution level, but
+official Strategy Tester report capture was not solved. MVP-014D then attempted
+one report-capture smoke and failed without retry.
 
 ## Scope
 
@@ -41,6 +42,11 @@ The runner must also confirm:
 - `tournament_100_run=false`;
 - `credentials_stored=false`.
 - `mt5_close_policy=always_after_real_run`.
+- preflight status is ready;
+- expected expert path is checked;
+- expected compiled EX5 is checked;
+- Strategy Tester report path is private;
+- report export contract is valid.
 
 Approving the real smoke also authorizes the app to close the MT5 instance it
 started and controlled for that execution.
@@ -92,6 +98,22 @@ manual_close_required
 
 Controlled multi-run smoke remains blocked until report capture/export is fixed.
 
+## MVP-014D Failure and MVP-014E Preflight
+
+MVP-014D recorded:
+
+```text
+exit_code=3294954941
+failure_stage=strategy_tester_failed_before_ea
+report_file_found=false
+parse_status=no_report_found
+```
+
+MVP-014E adds a preflight validator. Any retry must stop before launching MT5
+unless the validator confirms terminal readiness, MetaEditor readiness, expert
+path, expected compiled EX5, private report path, tester INI flags,
+Operator Gate approval and close-after-run policy.
+
 ## Failure Policy
 
 If the single run fails, the system records `HOLD_REAL_SMOKE_FAILED_NO_RETRY`.
@@ -109,9 +131,8 @@ This command is not used by CI.
 
 ## Next Required Fix
 
-MVP-014C defines the Strategy Tester report export configuration for the next
-real smoke without running MT5 in that MVP. Future generated tester config must
-include:
+MVP-014C defined the Strategy Tester report export configuration. Future
+generated tester config must include:
 
 ```text
 [Tester]
@@ -120,5 +141,6 @@ ReplaceReport=1
 ShutdownTerminal=1
 ```
 
-The next real smoke remains one execution only and must keep raw reports private
-until the public summary is sanitized.
+The next real smoke is `MVP-014F One-run Real Retry With Preflight`. It remains
+one execution only and must keep raw reports private until the public summary is
+sanitized.

@@ -16,6 +16,39 @@ READY_ENVIRONMENT = {
     "terminal_path_sanitized": "<WINDOWS_PATH_REDACTED>\\terminal64.exe",
 }
 
+READY_PREFLIGHT = {
+    "status": "ready_for_one_run_retry",
+    "ready_for_real_retry": True,
+    "failure_stage": "not_attempted",
+    "exit_code_recorded": None,
+    "exit_code_category": "not_recorded",
+    "expert_path_checked": True,
+    "compiled_ex5_checked": True,
+    "report_export_contract_checked": True,
+    "report_path_privacy_checked": True,
+    "tester_ini_contract_checked": True,
+    "terminal_launch_args_sanitized": ["<WINDOWS_PATH_REDACTED>\\terminal64.exe", "/config:<PRIVATE_TESTER_INI>"],
+    "tester_ini_contract_summary": {
+        "section": "Tester",
+        "expert": "Examples\\MACD Sample",
+        "symbol": "XAUUSD",
+        "period": "M5",
+        "optimization": "0",
+        "report_configured": True,
+        "replace_report": "1",
+        "shutdown_terminal": "1",
+    },
+    "report_contract_summary": {
+        "report_export_configured": True,
+        "replace_report": True,
+        "shutdown_terminal": True,
+        "private_artifacts_only": True,
+    },
+    "blocking_issues": [],
+    "warnings": [],
+    "checks": [],
+}
+
 
 def _fake_success_runner(*args, **kwargs) -> MT5SmokeRunResult:
     return MT5SmokeRunResult(
@@ -92,6 +125,7 @@ class RealMT5SmokeGateTests(unittest.TestCase):
                 approval_phrase=APPROVAL_PHRASE_PT,
                 runner=_fake_success_runner,
                 environment_override=READY_ENVIRONMENT,
+                preflight_override=READY_PREFLIGHT,
             )
             public_json = root / "reports" / "public" / "real_mt5_smoke_summary.json"
             public_md = root / "reports" / "public" / "real_mt5_smoke_summary.md"
@@ -120,6 +154,9 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertTrue(capture_payload["replace_report"])
         self.assertTrue(capture_payload["shutdown_terminal"])
         self.assertFalse(capture_payload["parser_attempted"])
+        self.assertEqual(capture_payload["preflight_status"], "ready_for_one_run_retry")
+        self.assertEqual(capture_payload["failure_stage"], "completed_report_pending_capture")
+        self.assertTrue(payload["ready_for_real_retry"])
         self.assertNotIn("reports/public", str(capture_payload))
         self.assertTrue(private_dir_exists)
         self.assertEqual(len(local_manifests), 1)
@@ -134,6 +171,7 @@ class RealMT5SmokeGateTests(unittest.TestCase):
                 approval_phrase=APPROVAL_PHRASE_PT,
                 runner=_fake_success_runner_with_report,
                 environment_override=READY_ENVIRONMENT,
+                preflight_override=READY_PREFLIGHT,
             )
             capture_json = root / "reports" / "public" / "real_mt5_capture_smoke_summary.json"
             capture_payload = json.loads(capture_json.read_text(encoding="utf-8"))
@@ -144,6 +182,26 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertTrue(capture_payload["metrics_extracted"])
         self.assertEqual(capture_payload["metrics"]["total_trades"], 7)
         self.assertEqual(capture_payload["metrics"]["net_profit"], 42.5)
+
+    def test_approved_smoke_blocks_without_compiled_ex5_preflight(self) -> None:
+        calls = []
+
+        def runner(*args, **kwargs):
+            calls.append("called")
+            return _fake_success_runner(*args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = execute_one_run_real_mt5_smoke(
+                Path(tmpdir),
+                approval_phrase=APPROVAL_PHRASE_PT,
+                runner=runner,
+                environment_override=READY_ENVIRONMENT,
+            )
+
+        self.assertEqual(calls, [])
+        self.assertEqual(result["status"], "HOLD_REAL_MT5_PREFLIGHT_BLOCKED_NO_RETRY")
+        self.assertFalse(result["summary"]["ready_for_real_retry"])
+        self.assertIn("compiled_ex5_not_configured", result["summary"]["preflight_blocking_issues"])
 
 
 if __name__ == "__main__":
