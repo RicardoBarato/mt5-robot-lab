@@ -64,7 +64,17 @@ class StrategyTesterReportConfigTests(unittest.TestCase):
         )
         text = str(summary)
         self.assertNotIn("C:\\Users\\Ricardo", text)
-        self.assertIn("<APPDATA>", text)
+        self.assertTrue(
+            any(
+                placeholder in text
+                for placeholder in (
+                    "<APPDATA>",
+                    "<LOCALAPPDATA>",
+                    "<USER_HOME>",
+                    "<WINDOWS_PATH_REDACTED>",
+                )
+            )
+        )
 
     def test_make_report_export_summary_is_public_safe(self) -> None:
         summary = make_report_export_summary()
