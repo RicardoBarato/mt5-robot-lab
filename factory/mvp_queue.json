@@ -625,9 +625,15 @@
       },
       {
         "id": "MVP-014F",
-        "objective": "Run one gated real retry only after the real MT5 preflight confirms terminal, MetaEditor, expert path, compiled EX5 and private report export contract.",
+        "objective": "Add a safe non-executing preflight readiness command that confirms the retry contract before any real MT5 launch.",
+        "status": "completed",
+        "title": "Preflight Readiness"
+      },
+      {
+        "id": "MVP-014G",
+        "objective": "Run one gated real retry only after the real MT5 preflight is reviewed and Operator Gate approval is explicit.",
         "status": "recommended_next",
-        "title": "One-run Real Retry With Preflight"
+        "title": "One-run Real Retry After Preflight"
       },
       {
         "id": "MILESTONE-014-FAILURE-REVIEW",

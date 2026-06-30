@@ -141,6 +141,7 @@ ReplaceReport=1
 ShutdownTerminal=1
 ```
 
-The next real smoke is `MVP-014F One-run Real Retry With Preflight`. It remains
-one execution only and must keep raw reports private until the public summary is
-sanitized.
+MVP-014F adds `python app\mt5_robot_lab_app.py --real-mt5-preflight` for a
+safe, non-executing readiness check. The next real smoke is `MVP-014G One-run
+Real Retry After Preflight`. It remains one execution only and must keep raw
+reports private until the public summary is sanitized.

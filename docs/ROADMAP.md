@@ -11,8 +11,9 @@
 9. Execute one-run capture smoke. [completed: failed no retry]
 10. Add backtest budget product policy. [completed]
 11. Diagnose real MT5 report-capture failure and add preflight. [completed]
-12. Retry one-run real smoke only after preflight success. [recommended next]
-13. Add installer and portable package after release review. [future]
+12. Add safe retry preflight readiness command. [completed]
+13. Retry one-run real smoke only after preflight review and Operator Gate approval. [recommended next]
+14. Add installer and portable package after release review. [future]
 
 ## Current Stage
 
@@ -20,7 +21,7 @@ PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
 REAL_MT5_STATUS = one_run_smoke_completed_no_report_captured
 
-NEXT_REQUIRED_STEP = MVP_014F_one_run_real_retry_with_preflight
+NEXT_REQUIRED_STEP = MVP_014G_one_run_real_retry_after_preflight
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -36,7 +37,8 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014C | completed_in_pr | Defines Strategy Tester report export before any multi-run smoke. |
 | MVP-014D | failed_no_retry | One real report capture smoke was attempted once and failed with sanitized exit-code evidence. |
 | MVP-014E | completed | Failure diagnosis, legacy alignment notes and preflight blocker added. |
-| MVP-014F | recommended_next | One-run real retry only after preflight passes and Operator Gate approval is explicit. |
+| MVP-014F | completed | Safe preflight readiness command and public summaries added. |
+| MVP-014G | recommended_next | One-run real retry only after preflight review and Operator Gate approval. |
 
 ## Backtest Budget Policy
 
@@ -82,5 +84,15 @@ added a preflight validator for terminal, MetaEditor, expert path, expected
 compiled EX5, private report contract, tester INI flags and close-after-run
 policy.
 
-Next decision: run `MVP-014F - One-run Real Retry With Preflight` only after
-preflight returns `ready_for_real_retry=true`.
+Next decision: run MVP-014F preflight readiness without MT5 execution.
+
+## MVP-014F Result
+
+Title: MVP-014F - Preflight Readiness
+
+Result: added `python app\mt5_robot_lab_app.py --real-mt5-preflight`. The command
+writes sanitized public preflight summaries, does not launch MT5, does not start
+Strategy Tester and does not execute an EA.
+
+Next decision: the operator may approve `MVP-014G - One-run Real Retry After
+Preflight` only after reviewing the preflight summaries.

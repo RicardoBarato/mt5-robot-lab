@@ -212,6 +212,17 @@ prove the expected expert path, compiled EX5, private report contract,
 `ReplaceReport=1`, `ShutdownTerminal=1`, one-run smoke scope and close-after-run
 policy before launching MT5 again.
 
+MVP-014F adds the safe preflight readiness command:
+
+```powershell
+python app\mt5_robot_lab_app.py --real-mt5-preflight
+```
+
+The command writes sanitized public summaries, does not launch MT5, does not
+start Strategy Tester and does not execute an EA. It records
+`ready_for_retry=true` only for the contract-readiness path; the next real run
+still requires explicit Operator Gate approval.
+
 ## MT5 Close After Real Run
 
 Every future gated real smoke or real backtest must use:
@@ -276,7 +287,7 @@ Raw Strategy Tester reports must stay under `reports/private/real_mt5_smoke/`.
 Public summaries must stay sanitized. Controlled multi-run execution remains
 blocked until a future one-run smoke captures and parses an official report.
 
-The next required technical step is `MVP-014F - One-run Real Retry With
+The next required technical step is `MVP-014G - One-run Real Retry After
 Preflight`, still limited to one Operator Gate execution and still blocked from
 multi-run or 10/50/100 public backtests.
 

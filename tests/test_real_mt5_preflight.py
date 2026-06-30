@@ -6,6 +6,7 @@ from app.core.real_mt5_preflight import (
     RealMT5PreflightConfig,
     build_real_mt5_preflight_check,
     classify_failure_stage,
+    generate_real_mt5_preflight_readiness,
 )
 from app.core.strategy_tester_report_config import build_strategy_tester_report_contract, build_tester_ini_report_lines
 
@@ -89,6 +90,63 @@ class RealMT5PreflightTests(unittest.TestCase):
         self.assertFalse(summary["ready_for_real_retry"])
         self.assertIn("tester_ini_report_path_not_private", summary["blocking_issues"])
 
+    def test_tester_ini_contract_requires_report_line(self) -> None:
+        contract = build_strategy_tester_report_contract("unit_preflight_004")
+        bad_ini = "\n".join(line for line in _tester_ini(contract).splitlines() if not line.startswith("Report="))
+        summary = build_real_mt5_preflight_check(
+            RealMT5PreflightConfig(
+                terminal_found=True,
+                metaeditor_found=True,
+                operator_gate_approved=True,
+            ),
+            contract,
+            {"candidate_id": "unit"},
+            tester_ini_text=bad_ini,
+        )
+
+        self.assertFalse(summary["ready_for_real_retry"])
+        self.assertIn("tester_ini_contract_invalid", summary["blocking_issues"])
+
+    def test_tester_ini_contract_requires_replace_report_and_shutdown(self) -> None:
+        contract = build_strategy_tester_report_contract("unit_preflight_005")
+        bad_ini = _tester_ini(contract).replace("ReplaceReport=1", "ReplaceReport=0").replace(
+            "ShutdownTerminal=1", "ShutdownTerminal=0"
+        )
+        summary = build_real_mt5_preflight_check(
+            RealMT5PreflightConfig(
+                terminal_found=True,
+                metaeditor_found=True,
+                operator_gate_approved=True,
+            ),
+            contract,
+            {"candidate_id": "unit"},
+            tester_ini_text=bad_ini,
+        )
+
+        self.assertFalse(summary["ready_for_real_retry"])
+        self.assertIn("tester_ini_contract_invalid", summary["blocking_issues"])
+
+    def test_preflight_requires_close_after_run_policy(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ex5_path = Path(tmpdir) / "MACD Sample.ex5"
+            ex5_path.write_text("compiled placeholder", encoding="utf-8")
+            contract = build_strategy_tester_report_contract("unit_preflight_006")
+            summary = build_real_mt5_preflight_check(
+                RealMT5PreflightConfig(
+                    terminal_found=True,
+                    metaeditor_found=True,
+                    expected_ex5_path=str(ex5_path),
+                    operator_gate_approved=True,
+                    close_after_run_policy="missing",
+                ),
+                contract,
+                {"candidate_id": "unit"},
+                tester_ini_text=_tester_ini(contract),
+            )
+
+        self.assertFalse(summary["ready_for_real_retry"])
+        self.assertIn("close_after_run_policy_missing", summary["blocking_issues"])
+
     def test_failure_stage_classifies_nonzero_no_report_before_ea(self) -> None:
         stage = classify_failure_stage(
             exit_code=3294954941,
@@ -98,6 +156,28 @@ class RealMT5PreflightTests(unittest.TestCase):
             ea_executed=False,
         )
         self.assertEqual(stage, "strategy_tester_failed_before_ea")
+
+    def test_generate_preflight_readiness_is_public_safe_and_non_executing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            result = generate_real_mt5_preflight_readiness(root)
+            payload = result["summary"]
+            public_text = (
+                (root / "reports" / "public" / "real_mt5_preflight_summary.json").read_text(encoding="utf-8")
+                + (root / "reports" / "public" / "real_mt5_preflight_summary.md").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(result["status"], "PASS_MVP_014F_PREFLIGHT_READY_FOR_REAL_RETRY")
+        self.assertTrue(payload["ready_for_retry"])
+        self.assertEqual(payload["blocking_issues"], [])
+        self.assertFalse(payload["mt5_real_run_new"])
+        self.assertFalse(payload["backtest_real_run_new"])
+        self.assertFalse(payload["strategy_tester_run_new"])
+        self.assertFalse(payload["ea_executed_new"])
+        for marker in ["C:\\Users\\", "C:/Users/", "file://", "\\\\server\\"]:
+            self.assertNotIn(marker, public_text)
+        self.assertNotIn(".ex5", public_text)
+        self.assertIn("<COMPILED_EA_FILE>", public_text)
 
 
 if __name__ == "__main__":

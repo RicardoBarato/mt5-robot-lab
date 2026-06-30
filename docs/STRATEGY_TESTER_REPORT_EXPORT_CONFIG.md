@@ -91,6 +91,7 @@ parses an official Strategy Tester report.
 MVP-014F One-run Real Retry With Preflight
 ```
 
-MVP-014F must use one real execution only, Operator Gate, close-after-run,
-report export/capture enabled, parse enabled and preflight success. It must not
-run a multi-run tournament or 10/50/100 public backtests.
+MVP-014F adds a non-executing preflight readiness command. MVP-014G may use one
+real execution only after review, Operator Gate, close-after-run, report
+export/capture enabled, parse enabled and preflight success. It must not run a
+multi-run tournament or 10/50/100 public backtests.

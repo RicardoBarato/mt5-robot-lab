@@ -25,7 +25,8 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-014C | MT5 Strategy Tester Report Export Configuration | high | completed_in_pr |
 | MVP-014D | One-run Real Report Capture Smoke | high | failed_no_retry |
 | MVP-014E | Real MT5 Failure Diagnosis and Legacy Runner Alignment | high | completed |
-| MVP-014F | One-run Real Retry With Preflight | high | recommended_next |
+| MVP-014F | Preflight Readiness | high | completed |
+| MVP-014G | One-run Real Retry After Preflight | high | recommended_next |
 
 Use:
 
@@ -45,7 +46,7 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next recommended step is `MVP-014F One-run Real Retry With Preflight`.
+The next recommended step is `MVP-014G One-run Real Retry After Preflight`.
 
 Before MVP-014D, every real execution path must carry the close-after-run
 policy:
@@ -118,4 +119,17 @@ report_export_contract_checked=true
 report_path_privacy_checked=true
 ready_for_retry=false
 next_mvp=MVP-014F One-run Real Retry With Preflight
+```
+
+MVP-014F result:
+
+```text
+preflight_command=true
+ready_for_retry=true
+blocking_issues=none
+mt5_real_run_new=false
+backtest_real_run_new=false
+strategy_tester_run_new=false
+ea_executed_new=false
+next_mvp=MVP-014G One-run Real Retry After Preflight
 ```
