@@ -14,7 +14,7 @@ from app.core.mt5_terminal_runtime_diagnostics import (
 
 
 GOOD_INI = """[Tester]
-Expert=Examples\\MACD Sample
+Expert=MT5RobotLab\\SmokeHarness_Public
 Symbol=XAUUSD
 Period=M5
 Model=0
@@ -27,13 +27,13 @@ ShutdownTerminal=1
 
 class TerminalRuntimeDiagnosticsTests(unittest.TestCase):
     def test_detects_missing_expert(self) -> None:
-        result = validate_tester_ini_for_mt5_runtime(GOOD_INI.replace("Expert=Examples\\MACD Sample\n", ""))
+        result = validate_tester_ini_for_mt5_runtime(GOOD_INI.replace("Expert=MT5RobotLab\\SmokeHarness_Public\n", ""))
 
         self.assertFalse(result["expert_present"])
         self.assertFalse(result["expert_format_valid"])
 
     def test_detects_invalid_expert_format(self) -> None:
-        result = validate_tester_ini_for_mt5_runtime(GOOD_INI.replace("Examples\\MACD Sample", "C:\\bad\\EA.ex5"))
+        result = validate_tester_ini_for_mt5_runtime(GOOD_INI.replace("MT5RobotLab\\SmokeHarness_Public", "C:\\bad\\EA.ex5"))
 
         self.assertTrue(result["expert_present"])
         self.assertFalse(result["expert_format_valid"])
@@ -72,12 +72,12 @@ class TerminalRuntimeDiagnosticsTests(unittest.TestCase):
     def test_detects_ex5_project_marker_not_terminal_data_dir(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            marker = root / "runs" / "preflight_readiness" / "mvp_014f" / "compiled" / "MACD Sample.ex5"
+            marker = root / "runs" / "preflight_readiness" / "mvp_014f" / "compiled" / "SmokeHarness_Public.ex5"
             marker.parent.mkdir(parents=True)
             marker.write_text("marker", encoding="utf-8")
 
             mapping = validate_expert_mapping_for_strategy_tester(
-                "Examples\\MACD Sample",
+                "MT5RobotLab\\SmokeHarness_Public",
                 str(marker),
                 project_root=root,
             )
@@ -94,7 +94,7 @@ class TerminalRuntimeDiagnosticsTests(unittest.TestCase):
     def test_generate_outputs_are_sanitized_without_opening_mt5(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            marker = root / "runs" / "preflight_readiness" / "mvp_014f" / "compiled" / "MACD Sample.ex5"
+            marker = root / "runs" / "preflight_readiness" / "mvp_014f" / "compiled" / "SmokeHarness_Public.ex5"
             marker.parent.mkdir(parents=True)
             marker.write_text("marker", encoding="utf-8")
             run = root / "reports" / "private" / "real_mt5_smoke" / "run_001"

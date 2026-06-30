@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from app.core.mt5_detection import redact_public_path
+from app.core.compiled_ex5_readiness import DEFAULT_BOOTSTRAP_EXPERT
 from app.core.real_mt5_runtime_contract import build_real_mt5_runtime_contract
 from app.core.terminal_contract_audit import build_terminal_contract_audit
 
@@ -351,7 +352,7 @@ def build_terminal_runtime_diagnostics(project_root: Path) -> dict[str, object]:
         project_root,
         environment=environment or {},
         tester_ini_text=tester_ini_text,
-        expert=tester_values.get("Expert", "") if tester_ini_text else "Examples\\MACD Sample",
+        expert=tester_values.get("Expert", "") if tester_ini_text else DEFAULT_BOOTSTRAP_EXPERT,
         allow_external_filesystem_check=False,
     )
     runtime_paths = compare_preflight_vs_runtime_paths(

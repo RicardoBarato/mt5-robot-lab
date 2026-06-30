@@ -21,7 +21,7 @@ The runner did create a private tester configuration with:
 
 ```text
 [Tester]
-Expert=Examples\MACD Sample
+Expert=<legacy built-in sample>
 Symbol=XAUUSD
 Period=M5
 Optimization=0

@@ -15,7 +15,7 @@ def _tester_ini(contract: dict[str, object]) -> str:
     return "\n".join(
         [
             "[Tester]",
-            "Expert=Examples\\MACD Sample",
+            "Expert=MT5RobotLab\\SmokeHarness_Public",
             "Symbol=XAUUSD",
             "Period=M5",
             "Model=0",
@@ -52,7 +52,7 @@ class RealMT5PreflightTests(unittest.TestCase):
 
     def test_preflight_passes_when_all_contracts_are_explicit(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            ex5_path = Path(tmpdir) / "MACD Sample.ex5"
+            ex5_path = Path(tmpdir) / "SmokeHarness_Public.ex5"
             ex5_path.write_text("compiled placeholder", encoding="utf-8")
             contract = build_strategy_tester_report_contract("unit_preflight_002")
             summary = build_real_mt5_preflight_check(
@@ -128,7 +128,7 @@ class RealMT5PreflightTests(unittest.TestCase):
 
     def test_preflight_requires_close_after_run_policy(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            ex5_path = Path(tmpdir) / "MACD Sample.ex5"
+            ex5_path = Path(tmpdir) / "SmokeHarness_Public.ex5"
             ex5_path.write_text("compiled placeholder", encoding="utf-8")
             contract = build_strategy_tester_report_contract("unit_preflight_006")
             summary = build_real_mt5_preflight_check(

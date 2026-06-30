@@ -100,9 +100,14 @@ expected compiled EX5 is not present there yet. Report export remains ready, but
 execution remains blocked until EX5 placement and terminal contract audit pass.
 
 MVP-014K3 adds the terminal DataDir bootstrap command for a safe source or
-ignored local EX5. The current result is
-`HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND`; report export remains ready, but
-execution remains blocked until EX5 bootstrap and terminal contract audit pass.
+ignored local EX5. The K3 result was
+`HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND`; report export remained ready, but
+execution remained blocked until EX5 bootstrap and terminal contract audit pass.
+
+MVP-014K4 adds the public non-trading smoke harness source and maps the tester
+expert to `MT5RobotLab\SmokeHarness_Public`. The report export contract is
+unchanged; execution remains blocked until EX5 bootstrap, terminal contract
+audit, preflight and runtime dry-run all pass.
 
 `MVP-014L One-run Real Retry With Terminal Contract Audit PASS` may use one real
 execution only after review, Operator Gate, close-after-run, report

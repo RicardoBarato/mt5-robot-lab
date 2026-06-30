@@ -26,11 +26,12 @@ from app.core.strategy_tester_report_config import (
     build_tester_ini_report_lines,
 )
 from app.core.terminal_contract_audit import build_terminal_contract_audit
+from app.core.compiled_ex5_readiness import DEFAULT_BOOTSTRAP_EXPERT
 
 
 DEFAULT_SYMBOL = "XAUUSD"
 DEFAULT_TIMEFRAME = "M5"
-DEFAULT_CANDIDATE_ID = "mt5_builtin_examples_macd_sample_smoke"
+DEFAULT_CANDIDATE_ID = "mt5_robot_lab_safe_smoke_harness_public"
 PRIVATE_SMOKE_DIR = Path("reports") / "private" / "real_mt5_smoke"
 PUBLIC_SUMMARY_JSON = Path("reports") / "public" / "real_mt5_smoke_summary.json"
 PUBLIC_SUMMARY_MD = Path("reports") / "public" / "real_mt5_smoke_summary.md"
@@ -120,7 +121,7 @@ def _write_private_tester_config(private_dir: Path, *, symbol: str, timeframe: s
     config_text = "\n".join(
         [
             "[Tester]",
-            "Expert=Examples\\MACD Sample",
+            f"Expert={DEFAULT_BOOTSTRAP_EXPERT}",
             f"Symbol={symbol}",
             f"Period={timeframe}",
             "Model=0",
@@ -416,7 +417,7 @@ def execute_one_run_real_mt5_smoke(
         project_root,
         environment=environment,
         operator_gate_approved=bool(gate["execution_allowed"]),
-        expert_path="Examples\\MACD Sample",
+        expert_path=DEFAULT_BOOTSTRAP_EXPERT,
         symbol=symbol,
         timeframe=timeframe,
         run_id=private_dir.name,
@@ -429,7 +430,7 @@ def execute_one_run_real_mt5_smoke(
     terminal_contract_audit = build_terminal_contract_audit(
         project_root,
         environment=environment,
-        expert="Examples\\MACD Sample",
+        expert=DEFAULT_BOOTSTRAP_EXPERT,
         symbol=symbol,
         timeframe=timeframe,
         tester_ini_text=tester_ini_text,

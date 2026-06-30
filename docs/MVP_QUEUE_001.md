@@ -33,6 +33,7 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-014K | Terminal DataDir EX5 Verification | high | blocked_terminal_contract |
 | MVP-014K2 | Terminal DataDir and EX5 Readiness Bootstrap | high | hold_ex5_not_found_in_terminal_datadir |
 | MVP-014K3 | EX5 Terminal DataDir Bootstrap | high | hold_mql5_source_or_ex5_not_found |
+| MVP-014K4 | Safe Smoke EA Source and EX5 Compile Bootstrap | high | safe_smoke_ea_source_ex5_bootstrap_in_progress |
 | MVP-014L | One-run Real Retry With Terminal Contract Audit PASS | high | blocked_until_terminal_contract_pass |
 
 Use:
@@ -53,12 +54,11 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next technical step is to provide one safe MQL5 source or an explicitly
-configured ignored local EX5, then place or compile the expected EX5 inside
-the resolved terminal DataDir without running MT5 or a backtest. `MVP-014L
-One-run Real Retry With Terminal Contract Audit PASS` remains blocked until
-`MVP-014K3` proves the terminal DataDir, compiled EX5 and Strategy Tester expert
-mapping contract.
+The next technical step is `MVP-014K4`: compile the public non-trading smoke
+EA source into the resolved terminal DataDir without running MT5 or a backtest.
+`MVP-014L One-run Real Retry With Terminal Contract Audit PASS` remains blocked
+until `MVP-014K4` proves the terminal DataDir, compiled EX5 and Strategy Tester
+expert mapping contract.
 
 Before MVP-014D, every real execution path must carry the close-after-run
 policy:
@@ -288,4 +288,20 @@ close_after_run_ready=true
 ready_for_real_retry=false
 blocking_issues=mql5_source_or_ex5_not_found
 next_step=provide_or_generate_safe_ea_source_before_retry
+```
+
+MVP-014K4 target:
+
+```text
+safe_smoke_ea_source_created=true
+safe_smoke_ea_has_trading_logic=false
+expert_relative_path=MT5RobotLab\SmokeHarness_Public
+mt5_terminal_run=false
+strategy_tester_run_new=false
+metaeditor_real_run=allowed_for_compile_only
+compiled_ex5_verified_in_terminal_datadir=required
+terminal_contract_audit=PASS_required
+real_mt5_preflight=PASS_required
+real_mt5_runtime_dry_run=PASS_required
+next_mvp=MVP-014L One-run Real Retry With Terminal Contract Audit PASS
 ```

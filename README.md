@@ -329,6 +329,19 @@ ready_for_real_retry=false
 `MVP-014L` remains blocked until the safe source/EX5 is provided, the bootstrap
 passes, and the terminal contract audit, preflight and runtime dry-run all pass.
 
+MVP-014K4 provides that safe source:
+
+```text
+MQL5/Experts/MT5RobotLab/SmokeHarness_Public.mq5
+```
+
+The source is a public smoke harness only. It contains no trade operations, no
+grid, no martingale, no credential handling and no live trading approval. The
+K4 bootstrap may use MetaEditor to compile this source into the resolved
+terminal DataDir, but it still must not launch `terminal64.exe`, Strategy
+Tester or any backtest. `MVP-014L` remains blocked until the bootstrap,
+terminal contract audit, preflight and runtime dry-run all pass.
+
 ## MT5 Close After Real Run
 
 Every future gated real smoke or real backtest must use:
@@ -419,7 +432,7 @@ foundation, MVP factory, Operator Gate, publication guard, public/private
 artifact boundary and one gated real MT5 smoke attempt. Official report capture
 is still unresolved, no parseable real Strategy Tester report has been captured,
 the latest retry reached the Strategy Tester launch path but failed before EA
-execution, MVP-014K2 found the terminal DataDir but blocks retry until the
-compiled EX5 is present there and the terminal contract passes, no multi-run
-tournament has been run, no 100-backtest optimization has been run, no installer
-or portable zip exists and nothing is a financial recommendation.
+execution, and MVP-014K4 is adding the public safe smoke harness and EX5
+bootstrap path for the terminal DataDir. No multi-run tournament has been run,
+no 100-backtest optimization has been run, no installer or portable zip exists
+and nothing is a financial recommendation.

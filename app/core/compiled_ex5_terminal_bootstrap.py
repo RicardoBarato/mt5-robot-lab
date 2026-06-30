@@ -37,16 +37,18 @@ from app.core.terminal_contract_audit import build_terminal_contract_audit
 
 PUBLIC_TERMINAL_BOOTSTRAP_JSON = Path("reports") / "public" / "compiled_ex5_terminal_bootstrap_summary.json"
 PUBLIC_TERMINAL_BOOTSTRAP_MD = Path("reports") / "public" / "compiled_ex5_terminal_bootstrap_summary.md"
+PUBLIC_SAFE_SMOKE_BOOTSTRAP_JSON = Path("reports") / "public" / "safe_smoke_ea_bootstrap_summary.json"
+PUBLIC_SAFE_SMOKE_BOOTSTRAP_MD = Path("reports") / "public" / "safe_smoke_ea_bootstrap_summary.md"
 PUBLIC_TERMINAL_BOOTSTRAP_REPORT = (
-    Path("reports") / "public" / "MVP_014K3_EX5_TERMINAL_DATADIR_BOOTSTRAP_REPORT.md"
+    Path("reports") / "public" / "MVP_014K4_SAFE_SMOKE_EA_SOURCE_EX5_BOOTSTRAP_REPORT.md"
 )
 
-PASS_STATUS = "PASS_MVP_014K3_EX5_TERMINAL_DATADIR_BOOTSTRAP_COMPLETED"
-HOLD_DATADIR_STATUS = "HOLD_MVP_014K3_TERMINAL_DATADIR_NOT_FOUND"
-HOLD_SOURCE_STATUS = "HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND"
-HOLD_AMBIGUOUS_STATUS = "HOLD_MVP_014K3_EXPERT_SOURCE_AMBIGUOUS"
-HOLD_METAEDITOR_STATUS = "HOLD_MVP_014K3_METAEDITOR_NOT_AVAILABLE"
-HOLD_COMPILE_STATUS = "HOLD_MVP_014K3_METAEDITOR_COMPILE_FAILED"
+PASS_STATUS = "PASS_MVP_014K4_SAFE_SMOKE_EA_EX5_BOOTSTRAP_COMPLETED"
+HOLD_DATADIR_STATUS = "HOLD_MVP_014K4_TERMINAL_DATADIR_NOT_FOUND"
+HOLD_SOURCE_STATUS = "HOLD_MVP_014K4_MQL5_SOURCE_OR_EX5_NOT_FOUND"
+HOLD_AMBIGUOUS_STATUS = "HOLD_MVP_014K4_EXPERT_SOURCE_AMBIGUOUS"
+HOLD_METAEDITOR_STATUS = "HOLD_MVP_014K4_METAEDITOR_NOT_AVAILABLE"
+HOLD_COMPILE_STATUS = "HOLD_MVP_014K4_METAEDITOR_COMPILE_FAILED"
 
 METHOD_ALREADY_PRESENT = "already_present"
 METHOD_COMPILED = "compiled_with_metaeditor"
@@ -55,6 +57,7 @@ METHOD_HOLD_MISSING = "hold_missing_source_or_ex5"
 METHOD_HOLD_AMBIGUOUS = "hold_expert_source_ambiguous"
 
 SAFE_REPO_MQ5_ROOTS = (
+    Path("MQL5") / "Experts",
     Path("app") / "assets" / "mql5",
     Path("src") / "mql5",
     Path("examples") / "mql5",
@@ -240,6 +243,7 @@ def _compile_with_metaeditor(
     timeout_seconds: int,
 ) -> tuple[bool, int | None]:
     private_log_path.parent.mkdir(parents=True, exist_ok=True)
+    private_log_path.unlink(missing_ok=True)
     command = [str(metaeditor), f"/compile:{mq5_path}", f"/log:{private_log_path}"]
     runner: CompileRunner = compile_runner or subprocess.run
     completed = runner(
@@ -250,7 +254,18 @@ def _compile_with_metaeditor(
         text=True,
         check=False,
     )
-    return int(completed.returncode) == 0, int(completed.returncode)
+    return (
+        int(completed.returncode) == 0 or _compile_log_has_zero_errors(private_log_path),
+        int(completed.returncode),
+    )
+
+
+def _compile_log_has_zero_errors(path: Path) -> bool:
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore").lower()
+    except OSError:
+        return False
+    return "result: 0 errors" in text
 
 
 def _write_marker(
@@ -427,7 +442,7 @@ def build_compiled_ex5_terminal_bootstrap(
     blocking_issues = list(dict.fromkeys(blocking_issues))
     if status == PASS_STATUS:
         blocking_issues = []
-        next_step = "review/merge MVP-014K3, then operator may approve MVP-014L one-run real retry"
+        next_step = "review/merge MVP-014K4, then operator may approve MVP-014L one-run real retry"
     elif "mql5_source_or_ex5_not_found" in blocking_issues:
         next_step = "provide or generate safe EA source before retry"
     elif status == HOLD_AMBIGUOUS_STATUS:
@@ -517,7 +532,7 @@ def _markdown(payload: dict[str, object]) -> str:
     warnings = ", ".join(payload["warnings"]) if payload["warnings"] else "none"
     return "\n".join(
         [
-            "# MVP-014K3 EX5 Terminal DataDir Bootstrap",
+            "# MVP-014K4 Safe Smoke EA Source and EX5 Bootstrap",
             "",
             "## 1. Executive Summary",
             "",
@@ -527,7 +542,7 @@ def _markdown(payload: dict[str, object]) -> str:
             "",
             "## 2. Previous Blocker",
             "",
-            "- MVP-014K2 resolved the terminal DataDir but did not find the compiled EX5 there.",
+            "- MVP-014K3 resolved the terminal DataDir but did not find a safe source or EX5 to bootstrap.",
             "",
             "## 3. DataDir Source",
             "",
@@ -587,11 +602,15 @@ def generate_compiled_ex5_terminal_bootstrap(project_root: Path) -> dict[str, ob
     payload = build_compiled_ex5_terminal_bootstrap(project_root)
     public_json = project_root / PUBLIC_TERMINAL_BOOTSTRAP_JSON
     public_md = project_root / PUBLIC_TERMINAL_BOOTSTRAP_MD
+    public_safe_json = project_root / PUBLIC_SAFE_SMOKE_BOOTSTRAP_JSON
+    public_safe_md = project_root / PUBLIC_SAFE_SMOKE_BOOTSTRAP_MD
     public_report = project_root / PUBLIC_TERMINAL_BOOTSTRAP_REPORT
     public_json.parent.mkdir(parents=True, exist_ok=True)
     public_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     markdown = _markdown(payload)
     public_md.write_text(markdown, encoding="utf-8")
+    public_safe_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    public_safe_md.write_text(markdown, encoding="utf-8")
     public_report.write_text(markdown, encoding="utf-8")
     return {
         "status": payload["status"],
@@ -599,6 +618,8 @@ def generate_compiled_ex5_terminal_bootstrap(project_root: Path) -> dict[str, ob
         "files": {
             "json": str(public_json),
             "markdown": str(public_md),
+            "safe_smoke_json": str(public_safe_json),
+            "safe_smoke_markdown": str(public_safe_md),
             "report": str(public_report),
         },
     }

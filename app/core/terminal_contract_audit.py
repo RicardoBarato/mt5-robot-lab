@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from app.core.compiled_ex5_readiness import (
+    DEFAULT_BOOTSTRAP_EXPERT,
     load_compiled_ex5_readiness_marker,
     public_readiness_summary,
     validate_compiled_ex5_readiness,
@@ -32,7 +33,7 @@ PUBLIC_TERMINAL_CONTRACT_MD = Path("reports") / "public" / "terminal_contract_au
 PUBLIC_TERMINAL_CONTRACT_REPORT = (
     Path("reports") / "public" / "MVP_014K_TERMINAL_DATADIR_EX5_VERIFICATION_REPORT.md"
 )
-DEFAULT_EXPERT = "Examples\\MACD Sample"
+DEFAULT_EXPERT = DEFAULT_BOOTSTRAP_EXPERT
 
 PASS_STATUS = "PASS_MVP_014K_TERMINAL_DATADIR_EX5_VERIFICATION_COMPLETED"
 HOLD_STATUS = "HOLD_MVP_014K_TERMINAL_CONTRACT_BLOCKED"

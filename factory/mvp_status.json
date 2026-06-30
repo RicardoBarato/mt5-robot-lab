@@ -29,5 +29,6 @@
   "MVP-014K": "blocked_terminal_contract",
   "MVP-014K2": "hold_ex5_not_found_in_terminal_datadir",
   "MVP-014K3": "hold_mql5_source_or_ex5_not_found",
+  "MVP-014K4": "safe_smoke_ea_source_ex5_bootstrap_in_progress",
   "MVP-014L": "blocked_until_terminal_contract_pass"
 }

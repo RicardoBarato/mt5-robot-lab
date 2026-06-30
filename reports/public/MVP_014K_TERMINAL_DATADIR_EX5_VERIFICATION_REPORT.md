@@ -1,18 +1,18 @@
 # MVP-014K Terminal DataDir EX5 Verification
 
-- Status: HOLD_MVP_014K_TERMINAL_CONTRACT_BLOCKED
-- Terminal contract audit: FAIL
+- Status: PASS_MVP_014K_TERMINAL_DATADIR_EX5_VERIFICATION_COMPLETED
+- Terminal contract audit: PASS
 - Terminal DataDir found: true
-- DataDir source: appdata_origin_txt
-- Compiled EX5 verified in terminal DataDir: false
-- Terminal DataDir consistent: false
-- Expert mapping valid for tester: false
+- DataDir source: compiled_ex5_readiness_marker
+- Compiled EX5 verified in terminal DataDir: true
+- Terminal DataDir consistent: true
+- Expert mapping valid for tester: true
 - Expert parameters status: not_required
-- Tester INI contract ready: false
+- Tester INI contract ready: true
 - Report contract ready: true
 - Close-after-run ready: true
-- Ready for real retry: false
-- Blocking issues: compiled_ex5_readiness_marker_missing, terminal_data_dir_mismatch, compiled_ex5_not_found_in_terminal_datadir, compiled_ex5_not_verified_in_terminal_datadir, expert_mapping_invalid_for_strategy_tester
+- Ready for real retry: true
+- Blocking issues: none
 - Warnings: none
 - MT5 real run new: false
 - Backtest real run new: false

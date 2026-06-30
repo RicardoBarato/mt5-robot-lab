@@ -64,7 +64,7 @@ class TerminalContractAuditTests(unittest.TestCase):
         self.assertIn("report_base_not_private", result["blocking_issues"])
 
     def test_terminal_contract_audit_blocks_bad_tester_ini_contract(self) -> None:
-        tmp, root, data_dir = _ready_root("Examples\\MACD Sample")
+        tmp, root, data_dir = _ready_root("MT5RobotLab\\SmokeHarness_Public")
         self.addCleanup(tmp.cleanup)
         bad_ini = "\n".join(
             [
@@ -101,7 +101,7 @@ class TerminalContractAuditTests(unittest.TestCase):
         self.assertIn("compiled_ex5_readiness_marker_missing", result["blocking_issues"])
 
     def test_generate_terminal_contract_audit_writes_sanitized_public_outputs_without_execution(self) -> None:
-        tmp, root, data_dir = _ready_root("Examples\\MACD Sample")
+        tmp, root, data_dir = _ready_root("MT5RobotLab\\SmokeHarness_Public")
         self.addCleanup(tmp.cleanup)
         # Force the default command path to use marker metadata only; no MT5 is launched.
         result = generate_terminal_contract_audit(root)

@@ -678,6 +678,12 @@
         "title": "EX5 Terminal DataDir Bootstrap"
       },
       {
+        "id": "MVP-014K4",
+        "objective": "Add a safe public non-trading smoke EA source and bootstrap its compiled EX5 into the resolved terminal DataDir through controlled MetaEditor compile only, without launching MT5 or running a backtest.",
+        "status": "safe_smoke_ea_source_ex5_bootstrap_in_progress",
+        "title": "Safe Smoke EA Source and EX5 Compile Bootstrap"
+      },
+      {
         "id": "MVP-014L",
         "objective": "Run one gated real retry only after preflight, runtime dry-run and terminal contract audit all pass.",
         "status": "blocked_until_terminal_contract_pass",
