@@ -17,7 +17,8 @@
 15. Retry one-run real smoke only after runtime dry-run proof and Operator Gate approval. [completed: EA not executed, no retry]
 16. Diagnose runtime versus terminal execution gap before any new retry. [completed]
 17. Verify terminal DataDir EX5 and Strategy Tester contract before any new retry. [completed: retry blocked]
-18. Retry one-run real smoke only after terminal contract audit passes. [recommended next]
+18. Bootstrap terminal DataDir EX5 readiness before any retry. [blocked: EX5 absent in DataDir]
+19. Retry one-run real smoke only after terminal contract audit passes. [blocked until contract pass]
 19. Add installer and portable package after release review. [future]
 
 ## Current Stage
@@ -26,7 +27,7 @@ PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
 REAL_MT5_STATUS = terminal_contract_audit_blocks_retry_until_ex5_datadir_mapping_proven
 
-NEXT_REQUIRED_STEP = MVP_014L_one_run_real_retry_only_after_terminal_contract_audit_passes
+NEXT_REQUIRED_STEP = compile_or_copy_EX5_to_terminal_DataDir_before_MVP_014L
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -48,7 +49,8 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014I | blocked_strategy_tester_failed_before_ea | One-run real retry reached Strategy Tester launch but failed before EA execution; no retry was attempted. |
 | MVP-014J | completed | Diagnosed runtime versus terminal gap without launching MT5. |
 | MVP-014K | blocked_terminal_contract | Terminal DataDir EX5 contract audit added; retry remains blocked. |
-| MVP-014L | recommended_next_after_terminal_contract_pass | One-run real retry only after terminal contract audit PASS. |
+| MVP-014K2 | hold_ex5_not_found_in_terminal_datadir | Terminal DataDir resolved from `origin.txt`, but expected EX5 is absent in that DataDir. |
+| MVP-014L | blocked_until_terminal_contract_pass | One-run real retry only after terminal contract audit PASS. |
 
 ## Backtest Budget Policy
 
@@ -217,3 +219,36 @@ expert_mapping_invalid_for_strategy_tester
 Next decision: fix the terminal DataDir EX5 contract. Only after
 `--terminal-contract-audit` returns PASS can the operator approve
 `MVP-014L - One-run Real Retry With Terminal Contract Audit PASS`.
+
+## MVP-014K2 Result
+
+Title: MVP-014K2 - Terminal DataDir and EX5 Readiness Bootstrap
+
+Result: added `python app\mt5_robot_lab_app.py --compiled-ex5-readiness-bootstrap`.
+The command is non-executing. It resolves the terminal DataDir, checks for the
+expected compiled EX5 under that DataDir and creates the ignored local readiness
+marker only when the EX5 is actually present.
+
+```text
+terminal_data_dir_found=true
+datadir_source=appdata_origin_txt
+compiled_ex5_found_in_terminal_datadir=false
+compiled_ex5_marker_created=false
+compiled_ex5_verified_in_terminal_datadir=false
+terminal_datadir_consistent=false
+ready_for_real_retry=false
+```
+
+Blocking issues:
+
+```text
+compiled_ex5_readiness_marker_missing
+terminal_data_dir_mismatch
+compiled_ex5_not_found_in_terminal_datadir
+compiled_ex5_not_verified_in_terminal_datadir
+expert_mapping_invalid_for_strategy_tester
+```
+
+Next decision: compile or copy the expected EX5 into the resolved terminal
+DataDir without running a backtest. `MVP-014L` remains blocked until the
+bootstrap, preflight, runtime dry-run and terminal contract audit all pass.

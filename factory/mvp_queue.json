@@ -666,9 +666,15 @@
         "title": "Terminal DataDir EX5 Verification"
       },
       {
+        "id": "MVP-014K2",
+        "objective": "Resolve the terminal DataDir and bootstrap compiled EX5 readiness only if the expected EX5 exists inside that terminal DataDir, without launching MT5 or running a backtest.",
+        "status": "hold_ex5_not_found_in_terminal_datadir",
+        "title": "Terminal DataDir and EX5 Readiness Bootstrap"
+      },
+      {
         "id": "MVP-014L",
         "objective": "Run one gated real retry only after preflight, runtime dry-run and terminal contract audit all pass.",
-        "status": "recommended_next_after_terminal_contract_pass",
+        "status": "blocked_until_terminal_contract_pass",
         "title": "One-run Real Retry With Terminal Contract Audit PASS"
       }
     ],

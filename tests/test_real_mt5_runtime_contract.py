@@ -5,6 +5,7 @@ import time
 import unittest
 from pathlib import Path
 
+from app.core.compiled_ex5_readiness import write_compiled_ex5_readiness_marker
 from app.core.real_mt5_preflight import ensure_ignored_preflight_ex5_marker
 from app.core.real_mt5_runtime_contract import (
     build_real_mt5_runtime_contract,
@@ -22,12 +23,25 @@ READY_ENVIRONMENT = {
 }
 
 
+def _attach_terminal_contract(root: Path) -> dict[str, object]:
+    data_dir = root / "terminal_data"
+    ex5 = data_dir / "MQL5" / "Experts" / "Examples" / "MACD Sample.ex5"
+    ex5.parent.mkdir(parents=True)
+    ex5.write_text("compiled fake", encoding="utf-8")
+    write_compiled_ex5_readiness_marker(
+        root,
+        terminal_data_dir=data_dir,
+        expert_relative_path="Examples\\MACD Sample",
+    )
+    return {**READY_ENVIRONMENT, "terminal_data_dir": str(data_dir)}
+
+
 class RealMT5RuntimeContractTests(unittest.TestCase):
     def test_preflight_marker_is_attached_to_runtime_contract(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             ensure_ignored_preflight_ex5_marker(root)
-            contract = build_real_mt5_runtime_contract(root, environment=READY_ENVIRONMENT)
+            contract = build_real_mt5_runtime_contract(root, environment=_attach_terminal_contract(root))
 
         self.assertTrue(contract["ready_for_retry"])
         self.assertTrue(contract["compiled_ex5_configured"])
@@ -41,6 +55,15 @@ class RealMT5RuntimeContractTests(unittest.TestCase):
 
         self.assertFalse(contract["ready_for_retry"])
         self.assertIn("compiled_ex5_marker_missing", contract["blocking_issues"])
+
+    def test_runtime_contract_blocks_missing_terminal_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            ensure_ignored_preflight_ex5_marker(root)
+            contract = build_real_mt5_runtime_contract(root, environment=READY_ENVIRONMENT)
+
+        self.assertFalse(contract["ready_for_retry"])
+        self.assertIn("compiled_ex5_readiness_marker_missing", contract["blocking_issues"])
 
     def test_runtime_contract_blocks_stale_marker(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -102,7 +125,7 @@ class RealMT5RuntimeContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             ensure_ignored_preflight_ex5_marker(root)
-            result = generate_real_mt5_runtime_dry_run(root, environment_override=READY_ENVIRONMENT)
+            result = generate_real_mt5_runtime_dry_run(root, environment_override=_attach_terminal_contract(root))
             public_json = root / "reports" / "public" / "real_mt5_runtime_dry_run_summary.json"
             public_md = root / "reports" / "public" / "real_mt5_runtime_dry_run_summary.md"
             payload = json.loads(public_json.read_text(encoding="utf-8"))

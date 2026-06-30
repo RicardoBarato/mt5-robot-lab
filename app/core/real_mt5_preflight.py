@@ -19,6 +19,7 @@ from app.core.strategy_tester_report_config import (
     build_strategy_tester_report_contract,
     build_tester_ini_report_lines,
 )
+from app.core.terminal_contract_audit import build_terminal_contract_audit
 
 
 DEFAULT_EXPERT = "Examples\\MACD Sample"
@@ -557,7 +558,8 @@ def generate_real_mt5_preflight_readiness(project_root: Path) -> dict[str, objec
         "preflight_mode": "contract_readiness_no_terminal_launch",
         "next_step": "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
     }
-    terminal_contract_readiness = public_readiness_summary(
+    terminal_contract = build_terminal_contract_audit(project_root)
+    terminal_contract_readiness = dict(terminal_contract.get("readiness", {})) or public_readiness_summary(
         validate_compiled_ex5_readiness(
             project_root,
             environment={},
@@ -566,11 +568,25 @@ def generate_real_mt5_preflight_readiness(project_root: Path) -> dict[str, objec
         )
     )
     payload["terminal_contract_audit_required"] = True
+    payload["terminal_contract_audit"] = terminal_contract.get("terminal_contract_audit", "FAIL")
     payload["terminal_contract_readiness"] = terminal_contract_readiness
     payload["compiled_ex5_verified_in_terminal_datadir"] = terminal_contract_readiness[
         "compiled_ex5_verified_in_terminal_datadir"
     ]
     payload["terminal_datadir_consistent"] = terminal_contract_readiness["terminal_datadir_consistent"]
+    if not bool(terminal_contract.get("ready_for_real_retry")):
+        payload["status"] = BLOCKED_STATUS
+        payload["ready_for_real_retry"] = False
+        payload["ready_for_retry"] = False
+        payload["blocking_issues"] = list(
+            dict.fromkeys(
+                [
+                    *list(payload.get("blocking_issues", [])),
+                    *list(terminal_contract.get("blocking_issues", [])),
+                ]
+            )
+        )
+        payload["next_step"] = str(terminal_contract.get("next_step", "fix terminal contract blocking issues"))
     payload = _sanitize_preflight_public_payload(payload)
     public_json = project_root / PUBLIC_PREFLIGHT_JSON
     public_md = project_root / PUBLIC_PREFLIGHT_MD
@@ -581,9 +597,7 @@ def generate_real_mt5_preflight_readiness(project_root: Path) -> dict[str, objec
     public_md.write_text(markdown, encoding="utf-8")
     public_report.write_text(markdown, encoding="utf-8")
     return {
-        "status": "PASS_MVP_014F_PREFLIGHT_READY_FOR_REAL_RETRY"
-        if payload["ready_for_retry"]
-        else "HOLD_MVP_014F_PREFLIGHT_BLOCKED",
+        "status": "PASS_MVP_014F_PREFLIGHT_READY_FOR_REAL_RETRY" if payload["ready_for_retry"] else "HOLD_MVP_014F_PREFLIGHT_BLOCKED",
         "summary": payload,
         "files": {
             "json": str(public_json),

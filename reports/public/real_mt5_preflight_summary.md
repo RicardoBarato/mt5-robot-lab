@@ -1,8 +1,8 @@
 # MVP-014F Preflight Readiness
 
-- Status: ready_for_one_run_retry
-- Ready for retry: true
-- Blocking issues: none
+- Status: blocked_preflight_failed
+- Ready for retry: false
+- Blocking issues: compiled_ex5_readiness_marker_missing, terminal_data_dir_mismatch, compiled_ex5_not_found_in_terminal_datadir, compiled_ex5_not_verified_in_terminal_datadir, expert_mapping_invalid_for_strategy_tester
 - Warnings: none
 - Expert path ready: true
 - Compiled EX5 ready: true

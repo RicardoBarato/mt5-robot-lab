@@ -1,6 +1,12 @@
 {
   "backtest_real_run_new": false,
-  "blocking_issues": [],
+  "blocking_issues": [
+    "compiled_ex5_readiness_marker_missing",
+    "terminal_data_dir_mismatch",
+    "compiled_ex5_not_found_in_terminal_datadir",
+    "compiled_ex5_not_verified_in_terminal_datadir",
+    "expert_mapping_invalid_for_strategy_tester"
+  ],
   "close_after_run_policy": "always_after_real_run",
   "compiled_ex5_configured": true,
   "compiled_ex5_expected": "<WINDOWS_PATH_REDACTED>\\MACD Sample<COMPILED_EA_FILE>",
@@ -20,7 +26,7 @@
   "paths_sanitized": true,
   "private_files_committed": false,
   "public_summary_created": true,
-  "ready_for_real_retry": true,
+  "ready_for_real_retry": false,
   "report_contract": {
     "expected_report_paths": [
       "reports\\private\\real_mt5_smoke\\mvp_014h_runtime_dry_run\\strategy_tester_report.html",
@@ -38,14 +44,14 @@
     "report_required": true,
     "shutdown_terminal": true
   },
-  "root_cause": "compiled_ex5_ready_but_not_attached_to_runtime",
+  "root_cause": "runtime_contract_blocked",
   "runtime_contract_created": true,
   "runtime_handoff_diagnosed": true,
-  "runtime_handoff_fix": "fixed",
+  "runtime_handoff_fix": "blocked",
   "runtime_preflight_ready": true,
   "runtime_preflight_status": "ready_for_one_run_retry",
   "smoke_only": true,
-  "status": "PASS_MVP_014H_RUNTIME_DRY_RUN_READY",
+  "status": "HOLD_MVP_014H_RUNTIME_DRY_RUN_BLOCKED",
   "strategy_tester_run_new": false,
   "terminal_contract_audit_required": true,
   "terminal_datadir_consistent": false,

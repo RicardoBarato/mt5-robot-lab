@@ -195,7 +195,7 @@ def load_local_mt5_config(config_path: Path | None = None) -> dict[str, str]:
         return {"_error": "local_config_must_be_json_object"}
     return {
         key: str(payload.get(key, "") or "")
-        for key in ("terminal_path", "metaeditor_path")
+        for key in ("terminal_path", "metaeditor_path", "terminal_data_dir")
         if payload.get(key)
     }
 

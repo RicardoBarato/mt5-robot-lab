@@ -4,6 +4,8 @@ import unittest
 from pathlib import Path
 
 from app.core.compiled_ex5_readiness import (
+    build_compiled_ex5_readiness_bootstrap,
+    generate_compiled_ex5_readiness_bootstrap,
     validate_compiled_ex5_readiness,
     validate_expert_relative_path,
     write_compiled_ex5_readiness_marker,
@@ -122,6 +124,54 @@ class CompiledEX5ReadinessTests(unittest.TestCase):
         self.assertTrue(marker["compiled_ex5_exists"])
         self.assertIn("marker_created_at", marker)
         json.dumps(marker)
+
+    def test_bootstrap_creates_marker_when_ex5_exists_in_configured_datadir(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            data_dir = root / "terminal_data"
+            ex5 = data_dir / "MQL5" / "Experts" / "Examples" / "MACD Sample.ex5"
+            ex5.parent.mkdir(parents=True)
+            ex5.write_text("compiled fake", encoding="utf-8")
+            config_dir = root / "config"
+            config_dir.mkdir()
+            (config_dir / "mt5.local.json").write_text(
+                json.dumps({"terminal_data_dir": str(data_dir)}),
+                encoding="utf-8",
+            )
+            result = build_compiled_ex5_readiness_bootstrap(root)
+
+        self.assertEqual(result["status"], "PASS_MVP_014K2_TERMINAL_DATADIR_EX5_BOOTSTRAP_COMPLETED")
+        self.assertTrue(result["compiled_ex5_marker_created"])
+        self.assertTrue(result["compiled_ex5_verified_in_terminal_datadir"])
+        self.assertEqual(result["blocking_issues"], [])
+
+    def test_bootstrap_holds_when_ex5_is_absent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            data_dir = root / "terminal_data"
+            (data_dir / "MQL5" / "Experts").mkdir(parents=True)
+            config_dir = root / "config"
+            config_dir.mkdir()
+            (config_dir / "mt5.local.json").write_text(
+                json.dumps({"terminal_data_dir": str(data_dir)}),
+                encoding="utf-8",
+            )
+            result = generate_compiled_ex5_readiness_bootstrap(root)
+            public_text = (
+                (root / "reports" / "public" / "compiled_ex5_readiness_bootstrap_summary.json").read_text(
+                    encoding="utf-8"
+                )
+                + (root / "reports" / "public" / "compiled_ex5_readiness_bootstrap_summary.md").read_text(
+                    encoding="utf-8"
+                )
+            )
+
+        self.assertEqual(result["status"], "HOLD_MVP_014K2_EX5_NOT_FOUND_IN_TERMINAL_DATADIR")
+        self.assertFalse(result["summary"]["compiled_ex5_found_in_terminal_datadir"])
+        self.assertFalse(result["summary"]["compiled_ex5_marker_created"])
+        self.assertIn("compiled_ex5_not_found_in_terminal_datadir", result["summary"]["blocking_issues"])
+        self.assertNotIn(str(root), public_text)
+        self.assertNotIn(".ex5", public_text.lower())
 
 
 if __name__ == "__main__":

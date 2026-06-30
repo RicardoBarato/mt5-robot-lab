@@ -93,7 +93,7 @@ class TerminalContractAuditTests(unittest.TestCase):
 
     def test_terminal_contract_audit_blocks_without_datadir_marker(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            result = build_terminal_contract_audit(Path(tmp), environment=READY_ENV)
+            result = build_terminal_contract_audit(Path(tmp), environment=READY_ENV, resolve_datadir=False)
 
         self.assertEqual(result["terminal_contract_audit"], "FAIL")
         self.assertFalse(result["ready_for_real_retry"])

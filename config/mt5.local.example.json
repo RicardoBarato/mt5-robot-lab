@@ -1,4 +1,5 @@
 {
   "terminal_path": "C:\\Program Files\\Tickmill MT5 Terminal - Scalper\\terminal64.exe",
-  "metaeditor_path": "C:\\Program Files\\Tickmill MT5 Terminal - Scalper\\metaeditor64.exe"
+  "metaeditor_path": "C:\\Program Files\\Tickmill MT5 Terminal - Scalper\\metaeditor64.exe",
+  "terminal_data_dir": "%APPDATA%\\MetaQuotes\\Terminal\\<TERMINAL_ID>"
 }

@@ -143,3 +143,9 @@ ready_for_real_retry=false
 The next alignment task is to make the terminal contract pass. `MVP-014L
 One-run Real Retry With Terminal Contract Audit PASS` is blocked until the
 terminal DataDir and Strategy Tester expert mapping are proven.
+
+MVP-014K2 adds `python app\mt5_robot_lab_app.py --compiled-ex5-readiness-bootstrap`.
+It resolved the terminal DataDir from local terminal metadata, but did not find
+the expected compiled EX5 in that DataDir. The legacy alignment conclusion is
+therefore unchanged for execution: do not retry until EX5 placement and terminal
+contract verification pass.

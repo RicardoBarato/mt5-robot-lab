@@ -1,6 +1,12 @@
 {
   "backtest_real_run_new": false,
-  "blocking_issues": [],
+  "blocking_issues": [
+    "compiled_ex5_readiness_marker_missing",
+    "terminal_data_dir_mismatch",
+    "compiled_ex5_not_found_in_terminal_datadir",
+    "compiled_ex5_not_verified_in_terminal_datadir",
+    "expert_mapping_invalid_for_strategy_tester"
+  ],
   "candidate_id": "mvp_014f_preflight_readiness",
   "checks": [
     {
@@ -124,7 +130,7 @@
   "expert_path_ready": true,
   "failure_stage": "not_attempted",
   "mt5_real_run_new": false,
-  "next_step": "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
+  "next_step": "compile_or_copy_ex5_to_terminal_datadir_before_retry",
   "operator_gate_ready": true,
   "paths_sanitized": true,
   "preflight_command": true,
@@ -133,8 +139,8 @@
   "private_files_committed": false,
   "public_preflight_summary": true,
   "raw_logs_public": false,
-  "ready_for_real_retry": true,
-  "ready_for_retry": true,
+  "ready_for_real_retry": false,
+  "ready_for_retry": false,
   "report_contract_ready": true,
   "report_contract_summary": {
     "expected_report_paths": [
@@ -155,13 +161,14 @@
   },
   "report_export_contract_checked": true,
   "report_path_privacy_checked": true,
-  "status": "ready_for_one_run_retry",
+  "status": "blocked_preflight_failed",
   "strategy_tester_run_new": false,
+  "terminal_contract_audit": "FAIL",
   "terminal_contract_audit_required": true,
   "terminal_contract_readiness": {
     "blocking_issues": [
-      "terminal_data_dir_missing",
       "compiled_ex5_readiness_marker_missing",
+      "terminal_data_dir_mismatch",
       "compiled_ex5_not_found_in_terminal_datadir",
       "compiled_ex5_not_verified_in_terminal_datadir"
     ],

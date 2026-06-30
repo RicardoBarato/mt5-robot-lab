@@ -24,6 +24,7 @@ from app.core.champion_dna import (
     validate_champion_dna,
     write_champion_artifacts,
 )
+from app.core.compiled_ex5_readiness import generate_compiled_ex5_readiness_bootstrap
 from app.core.export_reports import export_sample_summary
 from app.core.intelligence_modes import validate_intelligence_modes
 from app.core.lab_registry import load_lab_registry
@@ -263,6 +264,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Audit terminal DataDir, compiled EX5 and tester contract without launching MT5",
     )
+    parser.add_argument(
+        "--compiled-ex5-readiness-bootstrap",
+        action="store_true",
+        help="Resolve terminal DataDir and create an ignored EX5 readiness marker if the compiled EX5 already exists",
+    )
     parser.add_argument("--run-real-mt5-smoke", action="store_true", help="Run one explicitly approved local MT5 smoke")
     parser.add_argument("--operator-approval-phrase", default="", help="Exact operator approval phrase for real smoke")
     parser.add_argument("--mt5-terminal-path", default="", help="Optional manual terminal64.exe path for safe detection only")
@@ -344,6 +350,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.terminal_contract_audit:
         result = generate_terminal_contract_audit(PROJECT_ROOT)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.compiled_ex5_readiness_bootstrap:
+        result = generate_compiled_ex5_readiness_bootstrap(PROJECT_ROOT)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     if args.run_real_mt5_smoke:
