@@ -242,9 +242,28 @@ pause_stop_supported=true
 
 The system must never open 10, 50 or 100 MT5 terminals at the same time.
 
-The next required technical step is `MVP-014C - MT5 Strategy Tester Report Export
-Configuration`, focused only on fixing or defining official report export before
-any controlled multi-run smoke.
+## Strategy Tester Report Export Contract
+
+MVP-014C prepares the report export/capture contract for the next one-run real
+smoke. It does not run MT5, does not run Strategy Tester and does not execute an
+EA.
+
+Future tester configuration must include:
+
+```text
+[Tester]
+Report=<private_report_base>
+ReplaceReport=1
+ShutdownTerminal=1
+```
+
+Raw Strategy Tester reports must stay under `reports/private/real_mt5_smoke/`.
+Public summaries must stay sanitized. Controlled multi-run execution remains
+blocked until a future one-run smoke captures and parses an official report.
+
+The next required technical step after this contract is `MVP-014D - One-run Real
+Report Capture Smoke`, still limited to one Operator Gate execution and still
+blocked from multi-run or 10/50/100 public backtests.
 
 ## Development Validation
 

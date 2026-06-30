@@ -608,8 +608,14 @@
       {
         "id": "MVP-014C",
         "objective": "Fix or define how MT5 Strategy Tester should export official reports so that the next one-run real smoke can capture a parseable report.",
-        "status": "recommended_next",
+        "status": "completed_in_pr",
         "title": "MT5 Strategy Tester Report Export Configuration"
+      },
+      {
+        "id": "MVP-014D",
+        "objective": "Run one gated real smoke with report export/capture enabled and parse enabled. No multi-run, tournament, optimization or 10/50/100 public backtests.",
+        "status": "recommended_next",
+        "title": "One-run Real Report Capture Smoke"
       }
     ],
     "priority": "high",

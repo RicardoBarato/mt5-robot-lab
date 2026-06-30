@@ -15,7 +15,8 @@
   "MVP-013D": "completed_or_reviewed",
   "MVP-014A": "completed",
   "MVP-014B": "completed_no_report_found",
-  "MVP-014C": "recommended_next",
+  "MVP-014C": "completed_in_pr",
+  "MVP-014D": "recommended_next",
   "MT5_CLOSE_AFTER_REAL_RUN_POLICY": "completed",
   "BACKTEST_BUDGET_PRODUCT_POLICY": "completed"
 }
