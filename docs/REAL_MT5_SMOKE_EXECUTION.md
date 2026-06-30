@@ -142,6 +142,12 @@ ShutdownTerminal=1
 ```
 
 MVP-014F adds `python app\mt5_robot_lab_app.py --real-mt5-preflight` for a
-safe, non-executing readiness check. The next real smoke is `MVP-014G One-run
-Real Retry After Preflight`. It remains one execution only and must keep raw
-reports private until the public summary is sanitized.
+safe, non-executing readiness check.
+
+MVP-014G received fresh Operator Gate approval and passed the non-executing
+preflight, but the real-run runtime preflight blocked before terminal launch
+with `compiled_ex5_not_configured`. No MT5 real run, Strategy Tester run or EA
+execution occurred in MVP-014G.
+
+The next step is `MVP-014H Runtime Gap Diagnosis`, focused on the handoff
+between the accepted preflight readiness marker and the runtime smoke path.

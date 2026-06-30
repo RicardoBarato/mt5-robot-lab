@@ -632,8 +632,14 @@
       {
         "id": "MVP-014G",
         "objective": "Run one gated real retry only after the real MT5 preflight is reviewed and Operator Gate approval is explicit.",
-        "status": "recommended_next",
+        "status": "completed_not_parseable",
         "title": "One-run Real Retry After Preflight"
+      },
+      {
+        "id": "MVP-014H",
+        "objective": "Diagnose why the accepted preflight readiness marker is not carried into the real-run runtime preflight before another retry.",
+        "status": "recommended_next",
+        "title": "Runtime Gap Diagnosis"
       },
       {
         "id": "MILESTONE-014-FAILURE-REVIEW",

@@ -26,7 +26,8 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-014D | One-run Real Report Capture Smoke | high | failed_no_retry |
 | MVP-014E | Real MT5 Failure Diagnosis and Legacy Runner Alignment | high | completed |
 | MVP-014F | Preflight Readiness | high | completed |
-| MVP-014G | One-run Real Retry After Preflight | high | recommended_next |
+| MVP-014G | One-run Real Retry After Preflight | high | completed_not_parseable |
+| MVP-014H | Runtime Gap Diagnosis | high | recommended_next |
 
 Use:
 
@@ -46,7 +47,7 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next recommended step is `MVP-014G One-run Real Retry After Preflight`.
+The next recommended step is `MVP-014H Runtime Gap Diagnosis`.
 
 Before MVP-014D, every real execution path must carry the close-after-run
 policy:
@@ -132,4 +133,21 @@ backtest_real_run_new=false
 strategy_tester_run_new=false
 ea_executed_new=false
 next_mvp=MVP-014G One-run Real Retry After Preflight
+```
+
+MVP-014G result:
+
+```text
+operator_gate_approved=true
+preflight_before_run=PASS
+ready_for_retry_before_run=true
+ex5_readiness_accepted=true
+real_smoke_attempted=false
+real_smoke_runs=0
+mt5_real_run=false
+strategy_tester_run=false
+ea_executed=false
+failure_stage=runtime_preflight_failed_before_terminal_launch
+preflight_blocking_issue=compiled_ex5_not_configured
+next_mvp=MVP-014H Runtime Gap Diagnosis
 ```

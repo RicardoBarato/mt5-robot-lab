@@ -168,5 +168,10 @@ unless all of these are true:
 - close-after-run policy is `always_after_real_run`.
 
 If any item fails, the runner must return a hold/block result before launching
-MT5. MVP-014F adds a non-executing preflight readiness command. The next allowed
-real execution step is `MVP-014G One-run Real Retry After Preflight`.
+MT5. MVP-014F adds a non-executing preflight readiness command.
+
+MVP-014G confirmed a runtime gap: the non-executing preflight accepted the
+readiness marker, but the real-run runtime preflight blocked with
+`compiled_ex5_not_configured` before launching MT5. The next allowed step is
+`MVP-014H Runtime Gap Diagnosis`; another real retry requires a fresh Operator
+Gate approval after that diagnosis.
