@@ -161,6 +161,7 @@ def _allowed_sensitive_context(line: str, rel_text: str) -> bool:
         "app/core/leaderboard_schema.py",
         "app/core/real_mt5_preflight.py",
         "app/core/real_mt5_runtime_contract.py",
+        "app/core/mt5_terminal_runtime_diagnostics.py",
     }:
         return True
     if "design token" in normalized or "design_tokens" in normalized or rel_text == "app/ui/design_tokens.py":

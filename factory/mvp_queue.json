@@ -644,7 +644,7 @@
       {
         "id": "MVP-014I",
         "objective": "Attempted exactly one real retry after preflight and runtime dry-run passed; Strategy Tester launch was reached, but EA did not execute and no report was captured.",
-        "status": "blocked_runtime_vs_terminal_gap",
+        "status": "blocked_strategy_tester_failed_before_ea",
         "title": "One-run Real Retry With Runtime Dry-Run Proven"
       },
       {
@@ -655,9 +655,15 @@
       },
       {
         "id": "MVP-014J",
-        "objective": "Diagnose the runtime versus terminal execution gap before any new real retry.",
-        "status": "recommended_next",
+        "objective": "Diagnose the runtime versus terminal execution gap without launching MT5. The diagnostic classified the blocker as compiled_ex5_marker_not_verified_in_terminal_datadir and kept ready_for_real_retry=false.",
+        "status": "completed",
         "title": "Runtime vs Terminal Gap Diagnosis"
+      },
+      {
+        "id": "MVP-014K",
+        "objective": "Allow a new one-run real retry only after terminal DataDir and Strategy Tester expert mapping diagnostics pass.",
+        "status": "recommended_next",
+        "title": "One-run Real Retry After Terminal Contract Diagnosis"
       }
     ],
     "priority": "high",

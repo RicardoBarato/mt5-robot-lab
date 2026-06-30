@@ -15,16 +15,17 @@
 13. Retry one-run real smoke only after preflight review and Operator Gate approval. [completed: blocked before launch]
 14. Add runtime preflight marker handoff dry-run. [completed]
 15. Retry one-run real smoke only after runtime dry-run proof and Operator Gate approval. [completed: EA not executed, no retry]
-16. Diagnose runtime versus terminal execution gap before any new retry. [recommended next]
-17. Add installer and portable package after release review. [future]
+16. Diagnose runtime versus terminal execution gap before any new retry. [completed]
+17. Retry one-run real smoke only after terminal contract diagnosis passes. [recommended next]
+18. Add installer and portable package after release review. [future]
 
 ## Current Stage
 
 PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
-REAL_MT5_STATUS = one_run_retry_reached_strategy_tester_but_ea_not_executed
+REAL_MT5_STATUS = one_run_retry_reached_strategy_tester_but_ea_not_executed_terminal_contract_gap_diagnosed
 
-NEXT_REQUIRED_STEP = MVP_014J_runtime_vs_terminal_gap_diagnosis
+NEXT_REQUIRED_STEP = MVP_014K_one_run_real_retry_only_after_terminal_contract_diagnosis_passes
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -43,8 +44,9 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014F | completed | Safe preflight readiness command and public summaries added. |
 | MVP-014G | completed_not_parseable | Retry command blocked before terminal launch because runtime preflight did not receive the accepted readiness marker. |
 | MVP-014H | completed | Runtime contract and dry-run attach the accepted readiness marker into runtime preflight. |
-| MVP-014I | blocked_runtime_vs_terminal_gap | One-run real retry reached Strategy Tester launch but failed before EA execution; no retry was attempted. |
-| MVP-014J | recommended_next | Diagnose the runtime versus terminal execution gap before any new real retry. |
+| MVP-014I | blocked_strategy_tester_failed_before_ea | One-run real retry reached Strategy Tester launch but failed before EA execution; no retry was attempted. |
+| MVP-014J | completed | Diagnosed runtime versus terminal gap without launching MT5. |
+| MVP-014K | recommended_next | Retry only after terminal DataDir and expert mapping diagnostics pass. |
 
 ## Backtest Budget Policy
 
@@ -155,3 +157,29 @@ mt5_closed_after_run=true
 
 Next decision: do not retry immediately. Run `MVP-014J - Runtime vs Terminal
 Gap Diagnosis` before any new real attempt.
+
+## MVP-014J Result
+
+Title: MVP-014J - Runtime vs Terminal Gap Diagnosis
+
+Result: added `python app\mt5_robot_lab_app.py --terminal-runtime-diagnostics`.
+The command reviews local private run artifacts and writes only sanitized public
+diagnostic summaries. It does not launch MT5, does not start Strategy Tester and
+does not execute an EA.
+
+```text
+root_cause=compiled_ex5_marker_not_verified_in_terminal_datadir
+exit_code=3294954941
+failure_stage=strategy_tester_failed_before_ea
+tester_ini_reviewed=true
+expert_mapping_checked=true
+data_dir_consistency_checked=true
+report_contract_checked=true
+terminal_args_checked=true
+contract_bug_fixed=false
+ready_for_real_retry=false
+```
+
+Next decision: `MVP-014K - One-run Real Retry only after terminal contract
+diagnosis passes` is blocked until the terminal DataDir and Strategy Tester
+expert mapping are proven.

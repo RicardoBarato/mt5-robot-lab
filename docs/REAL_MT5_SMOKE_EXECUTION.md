@@ -176,5 +176,18 @@ parse_status=no_report_found
 mt5_closed_after_run=true
 ```
 
-The next step is `MVP-014J Runtime vs Terminal Gap Diagnosis`. Do not approve
-another real retry until that gap is reviewed.
+MVP-014J adds a non-executing terminal-runtime diagnostic:
+
+```powershell
+python app\mt5_robot_lab_app.py --terminal-runtime-diagnostics
+```
+
+The diagnostic reviewed the private failed-run artifacts locally and published
+only sanitized summaries. It confirmed the next blocker as
+`compiled_ex5_marker_not_verified_in_terminal_datadir`: the accepted readiness
+marker is project-local, but the runner has not proven that the compiled EA is
+available in the terminal DataDir used by Strategy Tester.
+
+Do not approve another real retry until the terminal DataDir and Strategy Tester
+expert mapping checks pass. The next planned step is `MVP-014K One-run Real
+Retry only after terminal contract diagnosis passes`.
