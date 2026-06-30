@@ -20,7 +20,8 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-013D | Real Smoke Result Review | high | completed_or_reviewed |
 | MVP-014A | Real Smoke Result Capture and Parser | high | completed |
 | MVP-014B | One-run Real Capture Smoke | high | completed_no_report_found |
-| Hardening | MT5 Close After Real Run Policy | high | in_progress |
+| Hardening | MT5 Close After Real Run Policy | high | completed |
+| Policy | Backtest Budget Product Policy | high | completed |
 | MVP-014C | MT5 Strategy Tester Report Export Configuration | high | recommended_next |
 
 Use:
@@ -52,6 +53,24 @@ mt5_close_policy=always_after_real_run
 ```
 
 Após a execução real, o MT5 será fechado para manter o ambiente limpo e evitar processos presos.
+
+The public product budget policy is:
+
+```text
+minimum_public_backtests=10
+default_backtests=10
+recommended_options=10,50,100
+custom_backtests_allowed=true
+custom_backtests_minimum=10
+ranking_mode=single_unified_ranking
+sequential_only=true
+max_concurrent_mt5=1
+close_mt5_after_each_backtest=true
+```
+
+One-run smoke remains internal/dev only and is not valid for ranking or product
+claims. Every ranking result must disclose `backtests_requested`,
+`backtests_completed`, `search_budget`, `generation_id` and `candidate_id`.
 
 MVP-014C objective:
 

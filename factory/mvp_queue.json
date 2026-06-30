@@ -591,8 +591,19 @@
       },
       {
         "id": "MVP-014B",
-        "status": "in_pr_no_report_found",
+        "status": "completed_no_report_found",
         "title": "One-run Real Capture Smoke"
+      },
+      {
+        "id": "MT5_CLOSE_AFTER_REAL_RUN_POLICY",
+        "status": "completed",
+        "title": "Close MT5 After Every Real Run"
+      },
+      {
+        "id": "BACKTEST_BUDGET_PRODUCT_POLICY",
+        "objective": "Set minimum public backtests to 10, default to 10, recommended options to 10/50/100, unified ranking and sequential execution with max_concurrent_mt5=1.",
+        "status": "completed",
+        "title": "Backtest Budget Product Policy"
       },
       {
         "id": "MVP-014C",
