@@ -28,7 +28,8 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-014F | Preflight Readiness | high | completed |
 | MVP-014G | One-run Real Retry After Preflight | high | completed_not_parseable |
 | MVP-014H | Runtime Gap Diagnosis | high | completed |
-| MVP-014I | One-run Real Retry With Runtime Dry-Run Proven | high | recommended_next |
+| MVP-014I | One-run Real Retry With Runtime Dry-Run Proven | high | blocked_runtime_vs_terminal_gap |
+| MVP-014J | Runtime vs Terminal Gap Diagnosis | high | recommended_next |
 
 Use:
 
@@ -48,7 +49,7 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next recommended step is `MVP-014I One-run Real Retry With Runtime Dry-Run Proven`.
+The next recommended step is `MVP-014J Runtime vs Terminal Gap Diagnosis`.
 
 Before MVP-014D, every real execution path must carry the close-after-run
 policy:
@@ -166,4 +167,29 @@ mt5_real_run_new=false
 strategy_tester_run_new=false
 ea_executed_new=false
 next_mvp=MVP-014I One-run Real Retry With Runtime Dry-Run Proven
+```
+
+MVP-014I result:
+
+```text
+operator_gate_approved=true
+preflight_before_run=PASS
+runtime_dry_run_before_run=PASS
+ready_for_real_retry=true
+blocking_issues=none
+ex5_marker_attached_to_runtime=true
+compiled_ex5_configured_in_dry_run=true
+real_smoke_attempted=true
+real_smoke_runs=1
+mt5_real_run=true
+strategy_tester_run=true
+backtest_real_run=false
+ea_executed=false
+report_file_found=false
+result_parseable=false
+parse_status=no_report_found
+failure_stage=strategy_tester_failed_before_ea
+exit_code=3294954941
+mt5_closed_after_run=true
+next_mvp=MVP-014J Runtime vs Terminal Gap Diagnosis
 ```

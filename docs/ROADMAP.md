@@ -14,16 +14,17 @@
 12. Add safe retry preflight readiness command. [completed]
 13. Retry one-run real smoke only after preflight review and Operator Gate approval. [completed: blocked before launch]
 14. Add runtime preflight marker handoff dry-run. [completed]
-15. Retry one-run real smoke only after runtime dry-run proof and Operator Gate approval. [recommended next]
-16. Add installer and portable package after release review. [future]
+15. Retry one-run real smoke only after runtime dry-run proof and Operator Gate approval. [completed: EA not executed, no retry]
+16. Diagnose runtime versus terminal execution gap before any new retry. [recommended next]
+17. Add installer and portable package after release review. [future]
 
 ## Current Stage
 
 PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
-REAL_MT5_STATUS = one_run_smoke_completed_no_report_captured
+REAL_MT5_STATUS = one_run_retry_reached_strategy_tester_but_ea_not_executed
 
-NEXT_REQUIRED_STEP = MVP_014I_one_run_real_retry_with_runtime_dry_run_proven
+NEXT_REQUIRED_STEP = MVP_014J_runtime_vs_terminal_gap_diagnosis
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -42,7 +43,8 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014F | completed | Safe preflight readiness command and public summaries added. |
 | MVP-014G | completed_not_parseable | Retry command blocked before terminal launch because runtime preflight did not receive the accepted readiness marker. |
 | MVP-014H | completed | Runtime contract and dry-run attach the accepted readiness marker into runtime preflight. |
-| MVP-014I | recommended_next | One-run real retry only after preflight, runtime dry-run, clean worktree and fresh Operator Gate approval. |
+| MVP-014I | blocked_runtime_vs_terminal_gap | One-run real retry reached Strategy Tester launch but failed before EA execution; no retry was attempted. |
+| MVP-014J | recommended_next | Diagnose the runtime versus terminal execution gap before any new real retry. |
 
 ## Backtest Budget Policy
 
@@ -127,3 +129,29 @@ artifact path. MVP-014H adds an explicit runtime contract and a non-executing
 Next decision: `MVP-014I - One-run Real Retry With Runtime Dry-Run Proven` may
 be requested only after `--real-mt5-preflight`, `--real-mt5-runtime-dry-run`, a
 clean worktree and fresh Operator Gate approval.
+
+## MVP-014I Result
+
+Title: MVP-014I - One-run Real Retry With Runtime Dry-Run Proven
+
+Result: the Operator Gate was approved, the safe preflight passed and the
+runtime dry-run passed. One real local MT5 smoke was attempted. The run reached
+the Strategy Tester launch path, but the EA did not execute and no official
+report was captured.
+
+```text
+real_smoke_attempted=true
+real_smoke_runs=1
+mt5_real_run=true
+strategy_tester_run=true
+backtest_real_run=false
+ea_executed=false
+report_file_found=false
+parse_status=no_report_found
+failure_stage=strategy_tester_failed_before_ea
+exit_code=3294954941
+mt5_closed_after_run=true
+```
+
+Next decision: do not retry immediately. Run `MVP-014J - Runtime vs Terminal
+Gap Diagnosis` before any new real attempt.

@@ -643,8 +643,8 @@
       },
       {
         "id": "MVP-014I",
-        "objective": "Run one gated real retry only after both the non-executing preflight and runtime dry-run pass, with a clean worktree and fresh Operator Gate approval.",
-        "status": "recommended_next",
+        "objective": "Attempted exactly one real retry after preflight and runtime dry-run passed; Strategy Tester launch was reached, but EA did not execute and no report was captured.",
+        "status": "blocked_runtime_vs_terminal_gap",
         "title": "One-run Real Retry With Runtime Dry-Run Proven"
       },
       {
@@ -652,6 +652,12 @@
         "objective": "Review the sanitized failed-no-retry result, generated tester configuration and MT5/Strategy Tester launch mechanics before approving any retry.",
         "status": "completed_by_mvp_014e",
         "title": "Milestone 014 Failure Summary Review"
+      },
+      {
+        "id": "MVP-014J",
+        "objective": "Diagnose the runtime versus terminal execution gap before any new real retry.",
+        "status": "recommended_next",
+        "title": "Runtime vs Terminal Gap Diagnosis"
       }
     ],
     "priority": "high",

@@ -1,41 +1,43 @@
-# MVP-014G Real Retry Summary
+# MVP-014I Real MT5 Retry Summary
 
-Status: `HOLD_MVP_014G_PREFLIGHT_BLOCKED_NO_RETRY`
+Status: `HOLD_MVP_014I_EA_NOT_EXECUTED_NO_RETRY`
 
-MVP-014G started from a clean `main` branch with fresh Operator Gate approval and a passing non-executing preflight. The retry command did not launch MetaTrader 5 because the runtime preflight blocked before terminal launch.
+One gated local MT5 retry was attempted after both the safe preflight and the
+runtime dry-run passed. The attempt launched through the controlled runner and
+used the runtime contract from MVP-014H.
 
 ## Result
 
 - Operator Gate approved: true
 - Preflight before run: PASS
-- Ready for retry before run: true
+- Runtime dry-run before run: PASS
+- Ready for real retry: true
 - Blocking issues before run: none
-- EX5 readiness accepted: true
-- Real smoke attempted: false
-- Real smoke runs: 0
-- Runs attempted: 0
-- MT5 real run: false
+- Real smoke attempted: true
+- Real smoke runs: 1
+- MT5 real run: true
+- Strategy Tester run: true
 - Backtest real run: false
-- Strategy Tester run: false
 - EA executed: false
 - Tournament 100 run: false
 - Report export enabled: true
 - Replace report enabled: true
 - Shutdown terminal enabled: true
 - Report file found: false
-- Parseable: false
-- Parse status: no_report_found
+- Result parseable: false
+- Parse status: `no_report_found`
 - Metrics extracted: false
-- Failure stage: runtime_preflight_failed_before_terminal_launch
-- Failure reason: real_mt5_preflight_blocked_retry
-- Runtime preflight blocker: compiled_ex5_not_configured
-- MT5 close attempted: false
-- MT5 closed after run: false
+- Failure stage: `strategy_tester_failed_before_ea`
+- Exit code: `3294954941`
+- Runtime contract used: true
+- MT5 close attempted: true
+- MT5 closed after run: true
 - Raw artifacts private: true
 - Credentials stored: false
-- Private files committed: false
 - Paths sanitized: true
 
 ## Decision
 
-No Strategy Tester execution happened and no EA executed. The next step is `MVP-014H Runtime Gap Diagnosis`, focused on the handoff between the accepted preflight readiness marker and the runtime real-run preflight.
+The retry reached Strategy Tester launch but still failed before EA execution.
+No retry was attempted. The next decision is
+`review_runtime_vs_terminal_gap`.

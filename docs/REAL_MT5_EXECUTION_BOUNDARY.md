@@ -185,3 +185,20 @@ retry is not allowed unless all of these pass in order:
 Operator Gate fresh approval
 worktree clean
 ```
+
+MVP-014I satisfied those gates and attempted exactly one real local MT5 smoke.
+It reached Strategy Tester launch but failed before EA execution:
+
+```text
+mt5_real_run=true
+strategy_tester_run=true
+backtest_real_run=false
+ea_executed=false
+report_file_found=false
+parse_status=no_report_found
+failure_stage=strategy_tester_failed_before_ea
+mt5_closed_after_run=true
+```
+
+The current boundary remains: no multi-run, tournament, 10/50/100 backtests or
+new retry until `MVP-014J Runtime vs Terminal Gap Diagnosis` is completed.

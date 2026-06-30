@@ -162,3 +162,19 @@ The root cause was `compiled_ex5_ready_but_not_attached_to_runtime`: the
 accepted readiness marker existed, but the real-run preflight read a runtime
 configuration that did not carry it. The next real retry is `MVP-014I` and must
 be preceded by both `--real-mt5-preflight` and `--real-mt5-runtime-dry-run`.
+
+MVP-014I received fresh Operator Gate approval after both checks passed. The
+runner attempted exactly one real local MT5 smoke. The attempt reached Strategy
+Tester launch, but the EA did not execute, no official report was found and no
+retry was attempted.
+
+```text
+failure_stage=strategy_tester_failed_before_ea
+exit_code=3294954941
+report_file_found=false
+parse_status=no_report_found
+mt5_closed_after_run=true
+```
+
+The next step is `MVP-014J Runtime vs Terminal Gap Diagnosis`. Do not approve
+another real retry until that gap is reviewed.

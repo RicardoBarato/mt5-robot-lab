@@ -237,6 +237,12 @@ start Strategy Tester and does not execute an EA. It records
 `ready_for_retry=true` only for the contract-readiness path; the next real run
 still requires explicit Operator Gate approval.
 
+MVP-014I received fresh Operator Gate approval after both the preflight and
+runtime dry-run passed. One real local MT5 smoke was attempted. The run reached
+the Strategy Tester launch path, but the EA did not execute, no official report
+was captured and no retry was attempted. The next required technical step is
+`MVP-014J - Runtime vs Terminal Gap Diagnosis`.
+
 ## MT5 Close After Real Run
 
 Every future gated real smoke or real backtest must use:
@@ -301,9 +307,9 @@ Raw Strategy Tester reports must stay under `reports/private/real_mt5_smoke/`.
 Public summaries must stay sanitized. Controlled multi-run execution remains
 blocked until a future one-run smoke captures and parses an official report.
 
-The next required technical step is `MVP-014I - One-run Real Retry With Runtime
-Dry-Run Proven`, still requiring fresh Operator Gate approval and still blocked
-from multi-run or 10/50/100 public backtests.
+The next required technical step is `MVP-014J - Runtime vs Terminal Gap
+Diagnosis`, still requiring no multi-run or 10/50/100 public backtests until a
+single controlled smoke executes and captures a parseable official report.
 
 ## Development Validation
 
@@ -325,8 +331,7 @@ Advanced technical MVP, not a final product. The project has a desktop
 foundation, MVP factory, Operator Gate, publication guard, public/private
 artifact boundary and one gated real MT5 smoke attempt. Official report capture
 is still unresolved, no parseable real Strategy Tester report has been captured,
-the latest retry command blocked before terminal launch due to a runtime
-preflight marker handoff gap, MVP-014H adds a non-executing runtime dry-run to
-prove that handoff before the next retry, no multi-run tournament has been run,
-no 100-backtest optimization has been run, no installer or portable zip exists
-and nothing is a financial recommendation.
+the latest retry reached the Strategy Tester launch path but failed before EA
+execution, no multi-run tournament has been run, no 100-backtest optimization
+has been run, no installer or portable zip exists and nothing is a financial
+recommendation.
