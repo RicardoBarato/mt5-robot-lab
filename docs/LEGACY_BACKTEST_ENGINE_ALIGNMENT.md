@@ -89,3 +89,19 @@ but not attached to the real-run runtime config. The next real execution step is
 
 MVP-014I is still only one execution. It is not a tournament, not optimization,
 not 10/50/100 backtests and not a product ranking run.
+
+## MVP-014I Result
+
+MVP-014I executed exactly one retry after the preflight and runtime dry-run
+passed. The result did not close the loop: Strategy Tester launch was reached,
+but the EA did not execute and no official report was captured.
+
+```text
+failure_stage=strategy_tester_failed_before_ea
+exit_code=3294954941
+report_file_found=false
+parse_status=no_report_found
+mt5_closed_after_run=true
+```
+
+The next alignment task is `MVP-014J Runtime vs Terminal Gap Diagnosis`.
