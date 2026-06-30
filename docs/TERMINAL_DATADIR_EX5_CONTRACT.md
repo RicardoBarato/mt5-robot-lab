@@ -27,7 +27,7 @@ MT5:
 - compiled EX5 exists under the terminal DataDir;
 - the Strategy Tester `Expert` value maps to that compiled EX5;
 - the expert path is relative, not absolute;
-- the expert path does not include `.mq5` or `.ex5`;
+- the expert path does not include source or compiled file extensions;
 - optional ExpertParameters, if required, live under the terminal DataDir;
 - the report path remains private;
 - `Optimization=0`;
@@ -52,26 +52,45 @@ expected EX5 already exists under that terminal DataDir:
 python app\mt5_robot_lab_app.py --compiled-ex5-readiness-bootstrap
 ```
 
+MVP-014K3 adds a stricter bootstrap command that can also use exactly one safe
+in-repo MQL5 source or an explicitly configured ignored local EX5:
+
+```powershell
+python app\mt5_robot_lab_app.py --compiled-ex5-terminal-bootstrap
+```
+
+This command never launches `terminal64.exe`, never starts Strategy Tester and
+never runs a backtest. It may invoke MetaEditor only for a controlled compile
+when a safe source exists and the MetaEditor path is configured.
+
 ## Current Decision
 
-The current MVP-014K2 bootstrap/audit is blocked:
+The current MVP-014K3 bootstrap/audit is blocked:
 
 ```text
+status=HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND
 terminal_data_dir_found=true
 datadir_source=appdata_origin_txt
-compiled_ex5_found_in_terminal_datadir=false
-compiled_ex5_readiness_marker_missing
+bootstrap_command=HOLD
+bootstrap_method=hold_missing_source_or_ex5
+metaeditor_real_run=false
+mt5_terminal_run=false
+compiled_ex5_found_before=false
+compiled_ex5_created_or_copied=false
+compiled_ex5_found_after=false
+compiled_ex5_marker_created=false
 terminal_contract_audit=FAIL
 compiled_ex5_verified_in_terminal_datadir=false
 terminal_datadir_consistent=false
 expert_mapping_valid_for_tester=false
 ready_for_real_retry=false
+blocking_issues=mql5_source_or_ex5_not_found
 ```
 
 This is an improvement over the previous missing-DataDir state, but it is still
-not enough for a real retry. The next real retry remains blocked until the EX5
-exists in the resolved terminal DataDir and the terminal contract audit returns
-PASS.
+not enough for a real retry. The next real retry remains blocked until a safe
+source or ignored local EX5 is provided, the EX5 exists in the resolved terminal
+DataDir and the terminal contract audit returns PASS.
 
 ## Next MVP
 
@@ -81,6 +100,7 @@ requested only after:
 ```text
 --real-mt5-preflight PASS
 --real-mt5-runtime-dry-run PASS
+--compiled-ex5-terminal-bootstrap PASS
 --terminal-contract-audit PASS
 fresh Operator Gate approval
 clean worktree

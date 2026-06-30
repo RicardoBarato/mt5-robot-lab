@@ -14,6 +14,11 @@ class MT5RobotLabAppTests(unittest.TestCase):
 
         self.assertTrue(args.compiled_ex5_readiness_bootstrap)
 
+    def test_compiled_ex5_terminal_bootstrap_flag_is_available(self) -> None:
+        args = build_parser().parse_args(["--compiled-ex5-terminal-bootstrap"])
+
+        self.assertTrue(args.compiled_ex5_terminal_bootstrap)
+
 
 if __name__ == "__main__":
     unittest.main()

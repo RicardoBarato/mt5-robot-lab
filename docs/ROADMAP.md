@@ -18,8 +18,9 @@
 16. Diagnose runtime versus terminal execution gap before any new retry. [completed]
 17. Verify terminal DataDir EX5 and Strategy Tester contract before any new retry. [completed: retry blocked]
 18. Bootstrap terminal DataDir EX5 readiness before any retry. [blocked: EX5 absent in DataDir]
-19. Retry one-run real smoke only after terminal contract audit passes. [blocked until contract pass]
-19. Add installer and portable package after release review. [future]
+19. Bootstrap terminal DataDir EX5 from safe source or ignored local EX5. [hold: source or EX5 missing]
+20. Retry one-run real smoke only after terminal contract audit passes. [blocked until contract pass]
+21. Add installer and portable package after release review. [future]
 
 ## Current Stage
 
@@ -27,7 +28,7 @@ PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
 REAL_MT5_STATUS = terminal_contract_audit_blocks_retry_until_ex5_datadir_mapping_proven
 
-NEXT_REQUIRED_STEP = compile_or_copy_EX5_to_terminal_DataDir_before_MVP_014L
+NEXT_REQUIRED_STEP = provide_safe_MQ5_source_or_ignored_EX5_before_MVP_014L
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -50,6 +51,7 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014J | completed | Diagnosed runtime versus terminal gap without launching MT5. |
 | MVP-014K | blocked_terminal_contract | Terminal DataDir EX5 contract audit added; retry remains blocked. |
 | MVP-014K2 | hold_ex5_not_found_in_terminal_datadir | Terminal DataDir resolved from `origin.txt`, but expected EX5 is absent in that DataDir. |
+| MVP-014K3 | hold_mql5_source_or_ex5_not_found | Terminal DataDir bootstrap command added; no safe MQL5 source or ignored local EX5 was available. |
 | MVP-014L | blocked_until_terminal_contract_pass | One-run real retry only after terminal contract audit PASS. |
 
 ## Backtest Budget Policy
@@ -252,3 +254,35 @@ expert_mapping_invalid_for_strategy_tester
 Next decision: compile or copy the expected EX5 into the resolved terminal
 DataDir without running a backtest. `MVP-014L` remains blocked until the
 bootstrap, preflight, runtime dry-run and terminal contract audit all pass.
+
+## MVP-014K3 Result
+
+Title: MVP-014K3 - EX5 Terminal DataDir Bootstrap
+
+Result: added `python app\mt5_robot_lab_app.py --compiled-ex5-terminal-bootstrap`.
+The command is non-executing for MT5 terminal/Strategy Tester. It may create the
+readiness marker only when an EX5 already exists in the terminal DataDir, an
+ignored local EX5 is explicitly configured, or a single safe MQL5 source can
+be compiled with MetaEditor. The current local state does not provide any of
+those inputs:
+
+```text
+status=HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND
+terminal_data_dir_found=true
+datadir_source=appdata_origin_txt
+bootstrap_command=HOLD
+bootstrap_method=hold_missing_source_or_ex5
+metaeditor_real_run=false
+mt5_terminal_run=false
+compiled_ex5_found_before=false
+compiled_ex5_created_or_copied=false
+compiled_ex5_found_after=false
+compiled_ex5_marker_created=false
+compiled_ex5_verified_in_terminal_datadir=false
+ready_for_real_retry=false
+blocking_issues=mql5_source_or_ex5_not_found
+```
+
+Next decision: provide or generate a safe EA source, or provide an explicitly
+configured ignored local EX5, then rerun the bootstrap and terminal contract
+audit before any MVP-014L approval.

@@ -32,6 +32,7 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-014J | Runtime vs Terminal Gap Diagnosis | high | completed |
 | MVP-014K | Terminal DataDir EX5 Verification | high | blocked_terminal_contract |
 | MVP-014K2 | Terminal DataDir and EX5 Readiness Bootstrap | high | hold_ex5_not_found_in_terminal_datadir |
+| MVP-014K3 | EX5 Terminal DataDir Bootstrap | high | hold_mql5_source_or_ex5_not_found |
 | MVP-014L | One-run Real Retry With Terminal Contract Audit PASS | high | blocked_until_terminal_contract_pass |
 
 Use:
@@ -52,11 +53,12 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next technical step is to place or compile the expected EX5 inside the
-resolved terminal DataDir without running MT5 or a backtest. `MVP-014L One-run
-Real Retry With Terminal Contract Audit PASS` remains blocked until `MVP-014K2`
-proves the terminal DataDir, compiled EX5 and Strategy Tester expert mapping
-contract.
+The next technical step is to provide one safe MQL5 source or an explicitly
+configured ignored local EX5, then place or compile the expected EX5 inside
+the resolved terminal DataDir without running MT5 or a backtest. `MVP-014L
+One-run Real Retry With Terminal Contract Audit PASS` remains blocked until
+`MVP-014K3` proves the terminal DataDir, compiled EX5 and Strategy Tester expert
+mapping contract.
 
 Before MVP-014D, every real execution path must carry the close-after-run
 policy:
@@ -260,4 +262,30 @@ mt5_real_run_new=false
 strategy_tester_run_new=false
 ea_executed_new=false
 next_step=compile_or_copy_ex5_to_terminal_datadir_before_retry
+```
+
+MVP-014K3 result:
+
+```text
+compiled_ex5_terminal_bootstrap=HOLD
+status=HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND
+terminal_data_dir_found=true
+datadir_source=appdata_origin_txt
+bootstrap_command=HOLD
+bootstrap_method=hold_missing_source_or_ex5
+metaeditor_real_run=false
+mt5_terminal_run=false
+compiled_ex5_found_before=false
+compiled_ex5_created_or_copied=false
+compiled_ex5_found_after=false
+compiled_ex5_marker_created=false
+compiled_ex5_verified_in_terminal_datadir=false
+terminal_datadir_consistent=false
+expert_mapping_valid_for_tester=false
+tester_ini_contract_ready=false
+report_contract_ready=true
+close_after_run_ready=true
+ready_for_real_retry=false
+blocking_issues=mql5_source_or_ex5_not_found
+next_step=provide_or_generate_safe_ea_source_before_retry
 ```

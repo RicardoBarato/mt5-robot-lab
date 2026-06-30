@@ -21,7 +21,7 @@ This document defines what MVP-012 allows and what remains blocked.
 - Store credentials.
 - Store broker server details.
 - Create `.set` files.
-- Create `.ex5` files.
+- Create compiled EX5 files.
 - Create `.exe`, `.zip`, release or tag.
 
 ## Technical Gate Conditions
@@ -230,3 +230,11 @@ MVP-014K2 narrows the blocker: the terminal DataDir is now resolved through
 DataDir. Any future real execution remains blocked until the EX5 readiness
 bootstrap creates its ignored local marker and the terminal contract audit
 returns PASS.
+
+MVP-014K3 adds `python app\mt5_robot_lab_app.py --compiled-ex5-terminal-bootstrap`.
+It can only bootstrap from an existing terminal DataDir EX5, an explicitly
+configured ignored local EX5, or one safe MQL5 source. The current result is
+`HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND`, with no MetaEditor run and no
+MT5 terminal launch. Any future real execution remains blocked until this
+bootstrap returns PASS and the terminal contract audit, preflight and runtime
+dry-run also pass.
