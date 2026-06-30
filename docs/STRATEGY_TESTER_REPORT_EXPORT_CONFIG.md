@@ -85,13 +85,18 @@ The next smoke should search for:
 Controlled multi-run remains blocked until a future one-run smoke captures and
 parses an official Strategy Tester report.
 
-## Next MVP
+## Terminal Contract Dependency
 
 ```text
-MVP-014F One-run Real Retry With Preflight
+MVP-014K Terminal DataDir EX5 Verification
 ```
 
-MVP-014F adds a non-executing preflight readiness command. MVP-014G may use one
-real execution only after review, Operator Gate, close-after-run, report
-export/capture enabled, parse enabled and preflight success. It must not run a
-multi-run tournament or 10/50/100 public backtests.
+The report export contract is necessary but not sufficient. The current blocker
+is earlier in the Strategy Tester launch path: the compiled EX5 has not been
+verified in the terminal DataDir and the tester expert mapping is not proven.
+
+`MVP-014L One-run Real Retry With Terminal Contract Audit PASS` may use one real
+execution only after review, Operator Gate, close-after-run, report
+export/capture enabled, parse enabled, preflight success, runtime dry-run
+success and terminal contract audit success. It must not run a multi-run
+tournament or 10/50/100 public backtests.

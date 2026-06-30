@@ -661,9 +661,15 @@
       },
       {
         "id": "MVP-014K",
-        "objective": "Allow a new one-run real retry only after terminal DataDir and Strategy Tester expert mapping diagnostics pass.",
-        "status": "recommended_next",
-        "title": "One-run Real Retry After Terminal Contract Diagnosis"
+        "objective": "Verify the terminal DataDir, compiled EX5 location, Strategy Tester expert mapping, report contract and close-after-run contract without launching MT5.",
+        "status": "blocked_terminal_contract",
+        "title": "Terminal DataDir EX5 Verification"
+      },
+      {
+        "id": "MVP-014L",
+        "objective": "Run one gated real retry only after preflight, runtime dry-run and terminal contract audit all pass.",
+        "status": "recommended_next_after_terminal_contract_pass",
+        "title": "One-run Real Retry With Terminal Contract Audit PASS"
       }
     ],
     "priority": "high",

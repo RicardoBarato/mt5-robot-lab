@@ -122,6 +122,24 @@ failure_stage=strategy_tester_failed_before_ea
 ready_for_real_retry=false
 ```
 
-The next alignment task is `MVP-014K One-run Real Retry only after terminal
-contract diagnosis passes`, blocked until the terminal DataDir and Strategy
-Tester expert mapping are proven.
+## MVP-014K Result
+
+MVP-014K added the terminal DataDir EX5 verification command:
+
+```text
+python app\mt5_robot_lab_app.py --terminal-contract-audit
+```
+
+The command is non-executing and currently blocks another retry:
+
+```text
+terminal_contract_audit=FAIL
+compiled_ex5_verified_in_terminal_datadir=false
+terminal_datadir_consistent=false
+expert_mapping_valid_for_tester=false
+ready_for_real_retry=false
+```
+
+The next alignment task is to make the terminal contract pass. `MVP-014L
+One-run Real Retry With Terminal Contract Audit PASS` is blocked until the
+terminal DataDir and Strategy Tester expert mapping are proven.

@@ -2,7 +2,7 @@
 
 - Status: PASS_MVP_014J_RUNTIME_TERMINAL_GAP_DIAGNOSED
 - Root cause: compiled_ex5_marker_not_verified_in_terminal_datadir
-- Likely causes: compiled_ex5_in_different_data_dir, terminal_data_dir_mismatch, tester_ini_missing_expert_parameters, mt5_started_but_tester_config_rejected, terminal_exit_before_ea_start, unknown_terminal_exit
+- Likely causes: compiled_ex5_in_different_data_dir, terminal_data_dir_mismatch, terminal_contract_audit_failed, tester_ini_missing_expert_parameters, mt5_started_but_tester_config_rejected, terminal_exit_before_ea_start, unknown_terminal_exit
 - Failure stage: strategy_tester_failed_before_ea
 - Exit code recorded: 3294954941
 - Tester INI reviewed: true

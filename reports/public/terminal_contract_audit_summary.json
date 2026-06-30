@@ -1,0 +1,61 @@
+{
+  "backtest_real_run_new": false,
+  "blocking_issues": [
+    "terminal_data_dir_missing",
+    "compiled_ex5_readiness_marker_missing",
+    "compiled_ex5_not_found_in_terminal_datadir",
+    "compiled_ex5_not_verified_in_terminal_datadir",
+    "expert_mapping_invalid_for_strategy_tester"
+  ],
+  "close_after_run_ready": true,
+  "compiled_ex5_verified_in_terminal_datadir": false,
+  "credentials_stored": false,
+  "ea_executed_new": false,
+  "ex5_committed": false,
+  "exe_created": false,
+  "expert_mapping_valid_for_tester": false,
+  "expert_parameters_status": "not_required",
+  "mt5_real_run_new": false,
+  "next_mvp": "MVP-014L One-run Real Retry With Terminal Contract Audit PASS",
+  "next_step": "fix terminal contract blocking issues before any real retry",
+  "paths_sanitized": true,
+  "private_files_committed": false,
+  "public_summary_created": true,
+  "readiness": {
+    "blocking_issues": [
+      "terminal_data_dir_missing",
+      "compiled_ex5_readiness_marker_missing",
+      "compiled_ex5_not_found_in_terminal_datadir",
+      "compiled_ex5_not_verified_in_terminal_datadir"
+    ],
+    "compiled_ex5_verified_in_terminal_datadir": false,
+    "expert_mapping_valid_for_strategy_tester": false,
+    "expert_parameters_status": "not_required",
+    "expert_relative_path_set": true,
+    "marker_stale": false,
+    "terminal_datadir_consistent": false,
+    "warnings": []
+  },
+  "ready_for_real_retry": false,
+  "report_contract_ready": true,
+  "set_committed": false,
+  "status": "HOLD_MVP_014K_TERMINAL_CONTRACT_BLOCKED",
+  "strategy_tester_run_new": false,
+  "terminal_contract_audit": "FAIL",
+  "terminal_contract_audit_command": true,
+  "terminal_datadir_consistent": false,
+  "tester_ini_contract": {
+    "expert_set": true,
+    "optimization": "0",
+    "replace_report": "1",
+    "report_configured": true,
+    "section": "Tester",
+    "shutdown_terminal": "1",
+    "symbol": "XAUUSD",
+    "timeframe": "M5"
+  },
+  "tester_ini_contract_ready": false,
+  "tournament_100_run": false,
+  "warnings": [],
+  "zip_created": false
+}

@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from app.core.compiled_ex5_readiness import public_readiness_summary, validate_compiled_ex5_readiness
 from app.core.mt5_detection import redact_public_path, validate_mt5_executable_path
 from app.core.strategy_tester_report_config import (
     build_strategy_tester_report_contract,
@@ -556,6 +557,20 @@ def generate_real_mt5_preflight_readiness(project_root: Path) -> dict[str, objec
         "preflight_mode": "contract_readiness_no_terminal_launch",
         "next_step": "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
     }
+    terminal_contract_readiness = public_readiness_summary(
+        validate_compiled_ex5_readiness(
+            project_root,
+            environment={},
+            expert_relative_path=DEFAULT_EXPERT,
+            allow_external_filesystem_check=False,
+        )
+    )
+    payload["terminal_contract_audit_required"] = True
+    payload["terminal_contract_readiness"] = terminal_contract_readiness
+    payload["compiled_ex5_verified_in_terminal_datadir"] = terminal_contract_readiness[
+        "compiled_ex5_verified_in_terminal_datadir"
+    ]
+    payload["terminal_datadir_consistent"] = terminal_contract_readiness["terminal_datadir_consistent"]
     payload = _sanitize_preflight_public_payload(payload)
     public_json = project_root / PUBLIC_PREFLIGHT_JSON
     public_md = project_root / PUBLIC_PREFLIGHT_MD

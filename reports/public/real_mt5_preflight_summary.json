@@ -113,6 +113,7 @@
   "compiled_ex5_checked": true,
   "compiled_ex5_expected": "<WINDOWS_PATH_REDACTED>\\MACD Sample<COMPILED_EA_FILE>",
   "compiled_ex5_ready": true,
+  "compiled_ex5_verified_in_terminal_datadir": false,
   "credentials_stored": false,
   "ea_executed_new": false,
   "exe_created": false,
@@ -156,6 +157,23 @@
   "report_path_privacy_checked": true,
   "status": "ready_for_one_run_retry",
   "strategy_tester_run_new": false,
+  "terminal_contract_audit_required": true,
+  "terminal_contract_readiness": {
+    "blocking_issues": [
+      "terminal_data_dir_missing",
+      "compiled_ex5_readiness_marker_missing",
+      "compiled_ex5_not_found_in_terminal_datadir",
+      "compiled_ex5_not_verified_in_terminal_datadir"
+    ],
+    "compiled_ex5_verified_in_terminal_datadir": false,
+    "expert_mapping_valid_for_strategy_tester": false,
+    "expert_parameters_status": "not_required",
+    "expert_relative_path_set": true,
+    "marker_stale": false,
+    "terminal_datadir_consistent": false,
+    "warnings": []
+  },
+  "terminal_datadir_consistent": false,
   "terminal_launch_args_sanitized": [],
   "tester_ini_contract_checked": true,
   "tester_ini_contract_ready": true,

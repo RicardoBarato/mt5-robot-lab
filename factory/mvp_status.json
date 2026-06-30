@@ -26,5 +26,6 @@
   "MT5_CLOSE_AFTER_REAL_RUN_POLICY": "completed",
   "BACKTEST_BUDGET_PRODUCT_POLICY": "completed",
   "MVP-014J": "completed",
-  "MVP-014K": "recommended_next"
+  "MVP-014K": "blocked_terminal_contract",
+  "MVP-014L": "recommended_next_after_terminal_contract_pass"
 }
