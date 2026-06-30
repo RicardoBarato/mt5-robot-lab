@@ -89,11 +89,19 @@ class MT5SmokeExecutionError(RuntimeError):
         *,
         attempted_process: bool,
         strategy_tester_requested: bool,
+        return_code: int | None = None,
+        command: list[str] | None = None,
+        failure_stage: str = "unknown_failure_stage",
+        exit_code_category: str = "not_recorded",
         close_summary: dict[str, object] | None = None,
     ) -> None:
         super().__init__(message)
         self.attempted_process = attempted_process
         self.strategy_tester_requested = strategy_tester_requested
+        self.return_code = return_code
+        self.command = command or []
+        self.failure_stage = failure_stage
+        self.exit_code_category = exit_code_category
         self.close_summary = make_mt5_close_summary(close_summary)
 
 
@@ -153,6 +161,9 @@ def _write_private_execution_artifacts(
     error: BaseException | None = None,
     close_summary: dict[str, object] | None = None,
     report_contract: dict[str, object] | None = None,
+    preflight_summary: dict[str, object] | None = None,
+    failure_stage: str = "",
+    exit_code_category: str = "",
 ) -> None:
     if private_artifact_dir is None:
         return
@@ -171,6 +182,11 @@ def _write_private_execution_artifacts(
         "returncode": completed.returncode if completed is not None else None,
         "error_type": type(error).__name__ if error else "",
         "error_message": str(error) if error else "",
+        "failure_stage": failure_stage,
+        "exit_code_category": exit_code_category,
+        "preflight_status": preflight_summary.get("status", "") if preflight_summary else "",
+        "ready_for_real_retry": bool(preflight_summary.get("ready_for_real_retry", False)) if preflight_summary else False,
+        "preflight_blocking_issues": list(preflight_summary.get("blocking_issues", [])) if preflight_summary else [],
         "credentials_stored": False,
         **_report_contract_manifest_fields(report_contract),
         **make_mt5_close_summary(close_summary),
@@ -203,6 +219,7 @@ def run_mt5_smoke(
     metrics: BacktestMetrics | None = None,
     close_policy: MT5ClosePolicy | None = None,
     report_contract: dict[str, object] | None = None,
+    preflight_summary: dict[str, object] | None = None,
 ) -> MT5SmokeRunResult:
     smoke_config = config or MT5SmokeConfig()
     if smoke_config.max_backtests != 1:
@@ -304,11 +321,18 @@ def run_mt5_smoke(
                 error=exc,
                 close_summary=close_summary,
                 report_contract=report_contract,
+                preflight_summary=preflight_summary,
+                failure_stage="strategy_tester_timeout",
+                exit_code_category="not_recorded",
             )
             raise MT5SmokeExecutionError(
                 f"MT5 Strategy Tester smoke timed out after {smoke_config.timeout_seconds} seconds",
                 attempted_process=True,
                 strategy_tester_requested=True,
+                return_code=None,
+                command=[redact_public_path(command[0]), f"/config:{redact_public_path(command[1].split(':', 1)[1])}"],
+                failure_stage="strategy_tester_timeout",
+                exit_code_category="not_recorded",
                 close_summary=close_summary,
             ) from exc
         completed = subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
@@ -320,11 +344,18 @@ def run_mt5_smoke(
             error=exc,
             close_summary=close_summary,
             report_contract=report_contract,
+            preflight_summary=preflight_summary,
+            failure_stage="strategy_tester_timeout",
+            exit_code_category="not_recorded",
         )
         raise MT5SmokeExecutionError(
             f"MT5 Strategy Tester smoke timed out after {smoke_config.timeout_seconds} seconds",
             attempted_process=True,
             strategy_tester_requested=True,
+            return_code=None,
+            command=[redact_public_path(command[0]), f"/config:{redact_public_path(command[1].split(':', 1)[1])}"],
+            failure_stage="strategy_tester_timeout",
+            exit_code_category="not_recorded",
             close_summary=close_summary,
         ) from exc
     except OSError as exc:
@@ -335,11 +366,18 @@ def run_mt5_smoke(
             error=exc,
             close_summary=close_summary,
             report_contract=report_contract,
+            preflight_summary=preflight_summary,
+            failure_stage="strategy_tester_process_start_failed",
+            exit_code_category="not_recorded",
         )
         raise MT5SmokeExecutionError(
             "MT5 Strategy Tester smoke process could not be started",
             attempted_process=False,
             strategy_tester_requested=True,
+            return_code=None,
+            command=[redact_public_path(command[0]), f"/config:{redact_public_path(command[1].split(':', 1)[1])}"],
+            failure_stage="strategy_tester_process_start_failed",
+            exit_code_category="not_recorded",
             close_summary=close_summary,
         ) from exc
     finally:
@@ -351,12 +389,19 @@ def run_mt5_smoke(
         completed=completed,
         close_summary=close_summary,
         report_contract=report_contract,
+        preflight_summary=preflight_summary,
+        failure_stage="strategy_tester_completed" if completed and completed.returncode == 0 else "strategy_tester_failed_before_ea",
+        exit_code_category="success" if completed and completed.returncode == 0 else "unknown_terminal_exit",
     )
     if completed.returncode != 0:
         raise MT5SmokeExecutionError(
             f"MT5 Strategy Tester smoke failed with exit code {completed.returncode}",
             attempted_process=True,
             strategy_tester_requested=True,
+            return_code=completed.returncode,
+            command=[redact_public_path(command[0]), f"/config:{redact_public_path(command[1].split(':', 1)[1])}"],
+            failure_stage="strategy_tester_failed_before_ea",
+            exit_code_category="unknown_terminal_exit",
             close_summary=close_summary,
         )
 

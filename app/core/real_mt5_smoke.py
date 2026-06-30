@@ -9,13 +9,14 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Callable
 
 from app.core.mt5_detection import build_local_mt5_environment_status, redact_public_path
 from app.core.mt5_process_control import make_mt5_close_summary
+from app.core.real_mt5_preflight import RealMT5PreflightConfig, build_real_mt5_preflight_check
 from app.core.mt5_report_parser import ParsedMT5Report, parse_mt5_report
 from app.core.mt5_runner import MT5SmokeConfig, MT5SmokeExecutionError, MT5SmokeRunResult, run_mt5_smoke
 from app.core.operator_gate import APPROVAL_PHRASE_PT, approve_operator_gate, create_operator_approval_request
@@ -73,6 +74,20 @@ class RealMT5SmokeSummary:
     mt5_process_owned_by_app: bool = False
     mt5_external_process_detected: bool = False
     manual_close_required: bool = False
+    preflight_status: str = "not_evaluated"
+    ready_for_real_retry: bool = False
+    preflight_blocking_issues: list[str] = field(default_factory=list)
+    failure_stage: str = "not_attempted"
+    exit_code_recorded: int | None = None
+    exit_code_category: str = "not_recorded"
+    expert_path_checked: bool = False
+    compiled_ex5_checked: bool = False
+    report_export_contract_checked: bool = False
+    report_path_privacy_checked: bool = False
+    tester_ini_contract_checked: bool = False
+    terminal_launch_args_sanitized: list[str] = field(default_factory=list)
+    tester_ini_contract_summary: dict[str, object] = field(default_factory=dict)
+    report_contract_summary: dict[str, object] = field(default_factory=dict)
 
     def to_public_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -155,6 +170,15 @@ def _write_public_summaries(project_root: Path, summary: RealMT5SmokeSummary) ->
         f"- MT5 closed after run: {str(summary.mt5_closed_after_run).lower()}",
         f"- MT5 close method: {summary.mt5_close_method}",
         f"- Manual close required: {str(summary.manual_close_required).lower()}",
+        f"- Preflight status: {summary.preflight_status}",
+        f"- Ready for retry: {str(summary.ready_for_real_retry).lower()}",
+        f"- Failure stage: {summary.failure_stage}",
+        f"- Exit code recorded: {summary.exit_code_recorded if summary.exit_code_recorded is not None else 'not_recorded'}",
+        f"- Exit code category: {summary.exit_code_category}",
+        f"- Expert path checked: {str(summary.expert_path_checked).lower()}",
+        f"- Compiled EX5 checked: {str(summary.compiled_ex5_checked).lower()}",
+        f"- Report export contract checked: {str(summary.report_export_contract_checked).lower()}",
+        f"- Report path privacy checked: {str(summary.report_path_privacy_checked).lower()}",
         "",
         "Raw local artifacts are kept only under the ignored private smoke folder.",
     ]
@@ -277,6 +301,20 @@ def _write_public_capture_summaries(
         "mt5_process_owned_by_app": summary.mt5_process_owned_by_app,
         "mt5_external_process_detected": summary.mt5_external_process_detected,
         "manual_close_required": summary.manual_close_required,
+        "preflight_status": summary.preflight_status,
+        "ready_for_real_retry": summary.ready_for_real_retry,
+        "preflight_blocking_issues": summary.preflight_blocking_issues,
+        "failure_stage": summary.failure_stage,
+        "exit_code_recorded": summary.exit_code_recorded,
+        "exit_code_category": summary.exit_code_category,
+        "expert_path_checked": summary.expert_path_checked,
+        "compiled_ex5_checked": summary.compiled_ex5_checked,
+        "report_export_contract_checked": summary.report_export_contract_checked,
+        "report_path_privacy_checked": summary.report_path_privacy_checked,
+        "tester_ini_contract_checked": summary.tester_ini_contract_checked,
+        "terminal_launch_args_sanitized": summary.terminal_launch_args_sanitized,
+        "tester_ini_contract_summary": summary.tester_ini_contract_summary,
+        "report_contract_summary": summary.report_contract_summary,
         "parser_warnings": parsed_report.warnings if parsed_report else [],
         "metrics": _metric_payload(parsed_report),
     }
@@ -311,6 +349,11 @@ def _write_public_capture_summaries(
         f"- MT5 closed after run: {str(summary.mt5_closed_after_run).lower()}",
         f"- MT5 close method: {summary.mt5_close_method}",
         f"- Manual close required: {str(summary.manual_close_required).lower()}",
+        f"- Preflight status: {summary.preflight_status}",
+        f"- Ready for retry: {str(summary.ready_for_real_retry).lower()}",
+        f"- Failure stage: {summary.failure_stage}",
+        f"- Exit code recorded: {summary.exit_code_recorded if summary.exit_code_recorded is not None else 'not_recorded'}",
+        f"- Exit code category: {summary.exit_code_category}",
         "",
         "Raw local artifacts remain only in the ignored private smoke folder.",
     ]
@@ -330,6 +373,7 @@ def execute_one_run_real_mt5_smoke(
     run_id: str | None = None,
     runner: Callable[..., MT5SmokeRunResult] = run_mt5_smoke,
     environment_override: dict[str, object] | None = None,
+    preflight_override: dict[str, object] | None = None,
 ) -> dict[str, object]:
     capture_context = create_capture_context(
         project_root,
@@ -365,8 +409,32 @@ def execute_one_run_real_mt5_smoke(
         encoding="utf-8",
     )
 
-    ready_for_real_smoke = bool(environment["ready_for_real_smoke"] and gate["execution_allowed"])
     config_path, report_contract = _write_private_tester_config(private_dir, symbol=symbol, timeframe=timeframe)
+    tester_ini_text = config_path.read_text(encoding="utf-8")
+    preflight_summary = preflight_override or build_real_mt5_preflight_check(
+        RealMT5PreflightConfig(
+            terminal_found=bool(environment["terminal_found"]),
+            metaeditor_found=bool(environment["metaeditor_found"]),
+            expert="Examples\\MACD Sample",
+            expected_ex5_path=str(environment.get("expected_ex5_path", "") or ""),
+            symbol=symbol,
+            period=timeframe,
+            max_backtests=1,
+            smoke_only=True,
+            operator_gate_approved=bool(gate["execution_allowed"]),
+            close_after_run_policy="always_after_real_run",
+            tournament_100_run=False,
+            credentials_stored=False,
+        ),
+        report_contract,
+        {"candidate_id": DEFAULT_CANDIDATE_ID, "expert": "Examples\\MACD Sample"},
+        tester_ini_text=tester_ini_text,
+    )
+    ready_for_real_smoke = bool(
+        environment["ready_for_real_smoke"]
+        and gate["execution_allowed"]
+        and preflight_summary.get("ready_for_real_retry", False)
+    )
     status = "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED"
     failure_reason = ""
     attempted = False
@@ -374,10 +442,18 @@ def execute_one_run_real_mt5_smoke(
     strategy_tester_run = False
     backtest_real_run = False
     ea_executed = False
+    exit_code_recorded: int | None = None
+    exit_code_category = str(preflight_summary.get("exit_code_category", "not_recorded"))
+    failure_stage = str(preflight_summary.get("failure_stage", "not_attempted"))
+    terminal_launch_args_sanitized = list(preflight_summary.get("terminal_launch_args_sanitized", []))
     close_summary = make_mt5_close_summary(None)
 
-    if not ready_for_real_smoke:
+    if not bool(environment["ready_for_real_smoke"] and gate["execution_allowed"]):
         status = "HOLD_MT5_NOT_READY"
+    elif not bool(preflight_summary.get("ready_for_real_retry", False)):
+        status = "HOLD_REAL_MT5_PREFLIGHT_BLOCKED_NO_RETRY"
+        failure_reason = "real_mt5_preflight_blocked_retry"
+        failure_stage = str(preflight_summary.get("failure_stage", "not_attempted"))
     else:
         attempted = True
         try:
@@ -395,11 +471,16 @@ def execute_one_run_real_mt5_smoke(
                 tester_config_allowed_roots=[private_dir],
                 private_artifact_dir=private_dir,
                 report_contract=report_contract,
+                preflight_summary=preflight_summary,
             )
             mt5_real_run = bool(result.mt5_real_execution)
             strategy_tester_run = bool(result.strategy_tester_executed)
             backtest_real_run = bool(result.strategy_tester_executed)
             ea_executed = bool(result.strategy_tester_executed)
+            failure_stage = "completed_report_pending_capture"
+            exit_code_recorded = 0
+            exit_code_category = "success"
+            terminal_launch_args_sanitized = list(result.command)
             close_summary = make_mt5_close_summary(result.public_payload())
         except MT5SmokeExecutionError as exc:
             status = "HOLD_REAL_SMOKE_FAILED_NO_RETRY"
@@ -408,6 +489,10 @@ def execute_one_run_real_mt5_smoke(
             strategy_tester_run = bool(exc.strategy_tester_requested)
             backtest_real_run = False
             ea_executed = False
+            exit_code_recorded = exc.return_code
+            exit_code_category = exc.exit_code_category
+            failure_stage = exc.failure_stage
+            terminal_launch_args_sanitized = list(exc.command)
             close_summary = make_mt5_close_summary(exc.close_summary)
         except Exception as exc:  # noqa: BLE001 - failure must be recorded without retry.
             status = "HOLD_REAL_SMOKE_FAILED_NO_RETRY"
@@ -416,6 +501,8 @@ def execute_one_run_real_mt5_smoke(
             strategy_tester_run = False
             backtest_real_run = False
             ea_executed = False
+            failure_stage = "runner_exception_before_strategy_tester"
+            exit_code_category = "not_recorded"
 
     manifest = write_capture_manifest(
         capture_context,
@@ -426,6 +513,7 @@ def execute_one_run_real_mt5_smoke(
         requested_timeframe=timeframe,
         close_summary=close_summary,
         report_contract=report_contract,
+        preflight_summary=preflight_summary,
     )
 
     summary = RealMT5SmokeSummary(
@@ -454,6 +542,20 @@ def execute_one_run_real_mt5_smoke(
         raw_artifacts_private=True,
         public_summary_created=True,
         failure_reason=failure_reason,
+        preflight_status=str(preflight_summary.get("status", "not_evaluated")),
+        ready_for_real_retry=bool(preflight_summary.get("ready_for_real_retry", False)),
+        preflight_blocking_issues=list(preflight_summary.get("blocking_issues", [])),
+        failure_stage=failure_stage,
+        exit_code_recorded=exit_code_recorded,
+        exit_code_category=exit_code_category,
+        expert_path_checked=bool(preflight_summary.get("expert_path_checked", False)),
+        compiled_ex5_checked=bool(preflight_summary.get("compiled_ex5_checked", False)),
+        report_export_contract_checked=bool(preflight_summary.get("report_export_contract_checked", False)),
+        report_path_privacy_checked=bool(preflight_summary.get("report_path_privacy_checked", False)),
+        tester_ini_contract_checked=bool(preflight_summary.get("tester_ini_contract_checked", False)),
+        terminal_launch_args_sanitized=terminal_launch_args_sanitized,
+        tester_ini_contract_summary=dict(preflight_summary.get("tester_ini_contract_summary", {})),
+        report_contract_summary=dict(preflight_summary.get("report_contract_summary", {})),
         **close_summary,
     )
     public_files = _write_public_summaries(project_root, summary)
@@ -477,6 +579,12 @@ def execute_one_run_real_mt5_smoke(
         requested_timeframe=timeframe,
         close_summary=close_summary,
         report_contract=report_contract,
+        preflight_summary={
+            **preflight_summary,
+            "failure_stage": summary.failure_stage,
+            "exit_code_category": summary.exit_code_category,
+            "ready_for_real_retry": summary.ready_for_real_retry,
+        },
     )
     capture_summary = _write_public_capture_summaries(
         project_root,
@@ -497,6 +605,7 @@ def execute_one_run_real_mt5_smoke(
         "capture_summary": capture_summary,
         "public_files": {key: str(value) for key, value in public_files.items()},
         "private_artifact_dir_sanitized": redact_public_path(private_dir),
+        "preflight_summary": preflight_summary,
     }
 
 

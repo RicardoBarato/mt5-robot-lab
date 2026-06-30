@@ -197,6 +197,21 @@ integrated the capture/parser contract and recorded the current state:
 - the close-after-real-run policy is now mandatory for every future real run;
 - 100-backtest tournaments remain blocked.
 
+MVP-014D attempted one report-capture smoke and failed without retry. The
+sanitized diagnosis is:
+
+```text
+exit_code=3294954941
+failure_stage=strategy_tester_failed_before_ea
+report_file_found=false
+parse_status=no_report_found
+```
+
+MVP-014E adds the required preflight layer before any retry. A future retry must
+prove the expected expert path, compiled EX5, private report contract,
+`ReplaceReport=1`, `ShutdownTerminal=1`, one-run smoke scope and close-after-run
+policy before launching MT5 again.
+
 ## MT5 Close After Real Run
 
 Every future gated real smoke or real backtest must use:
@@ -261,9 +276,9 @@ Raw Strategy Tester reports must stay under `reports/private/real_mt5_smoke/`.
 Public summaries must stay sanitized. Controlled multi-run execution remains
 blocked until a future one-run smoke captures and parses an official report.
 
-The next required technical step after this contract is `MVP-014D - One-run Real
-Report Capture Smoke`, still limited to one Operator Gate execution and still
-blocked from multi-run or 10/50/100 public backtests.
+The next required technical step is `MVP-014F - One-run Real Retry With
+Preflight`, still limited to one Operator Gate execution and still blocked from
+multi-run or 10/50/100 public backtests.
 
 ## Development Validation
 
@@ -285,5 +300,6 @@ Advanced technical MVP, not a final product. The project has a desktop
 foundation, MVP factory, Operator Gate, publication guard, public/private
 artifact boundary and one gated real MT5 smoke attempt. Official report capture
 is still unresolved, no parseable real Strategy Tester report has been captured,
-no multi-run tournament has been run, no 100-backtest optimization has been run,
-no installer or portable zip exists and nothing is a financial recommendation.
+real retry is blocked until preflight passes, no multi-run tournament has been
+run, no 100-backtest optimization has been run, no installer or portable zip
+exists and nothing is a financial recommendation.

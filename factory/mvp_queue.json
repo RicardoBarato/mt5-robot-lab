@@ -618,9 +618,21 @@
         "title": "One-run Real Report Capture Smoke"
       },
       {
+        "id": "MVP-014E",
+        "objective": "Diagnose the failed real MT5 smoke, align with legacy runner expectations, add preflight checks and keep retry blocked until the compiled EA/report contract are explicit.",
+        "status": "completed",
+        "title": "Real MT5 Failure Diagnosis and Legacy Runner Alignment"
+      },
+      {
+        "id": "MVP-014F",
+        "objective": "Run one gated real retry only after the real MT5 preflight confirms terminal, MetaEditor, expert path, compiled EX5 and private report export contract.",
+        "status": "recommended_next",
+        "title": "One-run Real Retry With Preflight"
+      },
+      {
         "id": "MILESTONE-014-FAILURE-REVIEW",
         "objective": "Review the sanitized failed-no-retry result, generated tester configuration and MT5/Strategy Tester launch mechanics before approving any retry.",
-        "status": "recommended_next",
+        "status": "completed_by_mvp_014e",
         "title": "Milestone 014 Failure Summary Review"
       }
     ],

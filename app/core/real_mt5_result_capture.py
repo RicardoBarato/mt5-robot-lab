@@ -65,6 +65,11 @@ class ResultCaptureManifest:
     mt5_process_owned_by_app: bool = False
     mt5_external_process_detected: bool = False
     manual_close_required: bool = False
+    failure_stage: str = "not_attempted"
+    exit_code_category: str = "not_recorded"
+    preflight_status: str = "not_evaluated"
+    ready_for_real_retry: bool = False
+    preflight_blocking_issues: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -176,6 +181,7 @@ def write_capture_manifest(
     requested_timeframe: str = "M5",
     close_summary: dict[str, object] | None = None,
     report_contract: dict[str, object] | None = None,
+    preflight_summary: dict[str, object] | None = None,
 ) -> ResultCaptureManifest:
     artifacts = discover_capture_artifacts(context.run_dir)
     contract = report_contract or build_strategy_tester_report_contract(context.run_id)
@@ -203,6 +209,13 @@ def write_capture_manifest(
         report_capture_attempted=capture_status not in {"initialized", "not_attempted"},
         report_capture_status=capture_status,
         parser_attempted=parser_attempted,
+        failure_stage=str(preflight_summary.get("failure_stage", "not_attempted")) if preflight_summary else "not_attempted",
+        exit_code_category=str(preflight_summary.get("exit_code_category", "not_recorded"))
+        if preflight_summary
+        else "not_recorded",
+        preflight_status=str(preflight_summary.get("status", "not_evaluated")) if preflight_summary else "not_evaluated",
+        ready_for_real_retry=bool(preflight_summary.get("ready_for_real_retry", False)) if preflight_summary else False,
+        preflight_blocking_issues=list(preflight_summary.get("blocking_issues", [])) if preflight_summary else [],
         **make_mt5_close_summary(close_summary),
     )
     context.manifest_path.write_text(json.dumps(manifest.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")

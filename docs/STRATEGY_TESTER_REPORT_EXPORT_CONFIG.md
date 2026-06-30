@@ -6,8 +6,10 @@ does not run MT5, does not launch Strategy Tester and does not execute an EA.
 ## Background
 
 MVP-014B ran one gated real capture smoke, but no official Strategy Tester
-report was captured. MVP-014C prepares the configuration and private artifact
+report was captured. MVP-014C prepared the configuration and private artifact
 boundary needed for the next one-run smoke to capture a parseable report.
+MVP-014D attempted that smoke and failed without retry. MVP-014E therefore
+adds preflight checks before any future retry.
 
 ## Required Tester Lines
 
@@ -86,9 +88,9 @@ parses an official Strategy Tester report.
 ## Next MVP
 
 ```text
-MVP-014D One-run Real Report Capture Smoke
+MVP-014F One-run Real Retry With Preflight
 ```
 
-MVP-014D must use one real execution only, Operator Gate, close-after-run,
-report export/capture enabled and parse enabled. It must not run a multi-run
-tournament or 10/50/100 public backtests.
+MVP-014F must use one real execution only, Operator Gate, close-after-run,
+report export/capture enabled, parse enabled and preflight success. It must not
+run a multi-run tournament or 10/50/100 public backtests.

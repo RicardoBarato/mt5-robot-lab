@@ -107,8 +107,8 @@ Current recorded state:
 - official Strategy Tester report capture is still not solved;
 - no parseable real report exists yet.
 
-Controlled multi-run execution is blocked until MVP-014C fixes or defines
-official report export/capture.
+Controlled multi-run execution is blocked until a one-run retry captures and
+parses an official report.
 
 ## Strategy Tester Report Export Contract
 
@@ -141,3 +141,31 @@ Após a execução real, o MT5 será fechado para manter o ambiente limpo e evit
 The app may close only MT5 processes started and controlled by the app. If the
 terminal was already open and external to the run, the summary must record
 `mt5_external_process_detected=true` and `manual_close_required=true`.
+
+## MVP-014E Preflight Boundary
+
+MVP-014D failed with:
+
+```text
+exit_code=3294954941
+failure_stage=strategy_tester_failed_before_ea
+report_file_found=false
+```
+
+MVP-014E adds a preflight layer before any retry. A future retry must block
+unless all of these are true:
+
+- `terminal64.exe` readiness confirmed;
+- `metaeditor64.exe` readiness confirmed;
+- Strategy Tester expert path present and safe;
+- expected compiled EX5 configured and found;
+- requested symbol present;
+- requested timeframe supported;
+- tester INI contains `[Tester]`, `Expert`, `Symbol`, `Period`,
+  `Optimization=0`, `Report`, `ReplaceReport=1` and `ShutdownTerminal=1`;
+- report path stays under `reports/private/real_mt5_smoke/`;
+- Operator Gate approved for one run only;
+- close-after-run policy is `always_after_real_run`.
+
+If any item fails, the runner must return a hold/block result before launching
+MT5. The next allowed step is `MVP-014F One-run Real Retry With Preflight`.
