@@ -109,5 +109,16 @@ This command is not used by CI.
 
 ## Next Required Fix
 
-MVP-014C must define or correct the Strategy Tester report export configuration
-before another real smoke is used to capture a parseable report.
+MVP-014C defines the Strategy Tester report export configuration for the next
+real smoke without running MT5 in that MVP. Future generated tester config must
+include:
+
+```text
+[Tester]
+Report=<private_report_base>
+ReplaceReport=1
+ShutdownTerminal=1
+```
+
+The next real smoke remains one execution only and must keep raw reports private
+until the public summary is sanitized.

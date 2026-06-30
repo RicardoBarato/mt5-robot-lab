@@ -22,7 +22,8 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-014B | One-run Real Capture Smoke | high | completed_no_report_found |
 | Hardening | MT5 Close After Real Run Policy | high | completed |
 | Policy | Backtest Budget Product Policy | high | completed |
-| MVP-014C | MT5 Strategy Tester Report Export Configuration | high | recommended_next |
+| MVP-014C | MT5 Strategy Tester Report Export Configuration | high | completed_in_pr |
+| MVP-014D | One-run Real Report Capture Smoke | high | recommended_next |
 
 Use:
 
@@ -42,10 +43,9 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next recommended step is `MVP-014C MT5 Strategy Tester Report Export
-Configuration`.
+The next recommended step is `MVP-014D One-run Real Report Capture Smoke`.
 
-Before MVP-014C, every real execution path must carry the close-after-run
+Before MVP-014D, every real execution path must carry the close-after-run
 policy:
 
 ```text
@@ -72,9 +72,22 @@ One-run smoke remains internal/dev only and is not valid for ranking or product
 claims. Every ranking result must disclose `backtests_requested`,
 `backtests_completed`, `search_budget`, `generation_id` and `candidate_id`.
 
-MVP-014C objective:
+MVP-014C completed objective:
 
 ```text
 Fix or define how MT5 Strategy Tester should export official reports so that
 the next one-run real smoke can capture a parseable report.
+```
+
+MVP-014D must remain:
+
+```text
+1 execution real
+Operator Gate required
+close-after-run required
+report export/capture enabled
+parse enabled
+no multi-run
+no tournament
+no 10/50/100 public backtests yet
 ```

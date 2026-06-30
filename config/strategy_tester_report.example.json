@@ -1,0 +1,12 @@
+{
+  "report_export_enabled": true,
+  "report_formats": [
+    "html",
+    "xml"
+  ],
+  "private_output_root": "reports/private/real_mt5_smoke",
+  "replace_report": true,
+  "shutdown_terminal": true,
+  "public_summary_enabled": true,
+  "commit_raw_reports": false
+}

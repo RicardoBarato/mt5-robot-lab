@@ -110,6 +110,20 @@ Current recorded state:
 Controlled multi-run execution is blocked until MVP-014C fixes or defines
 official report export/capture.
 
+## Strategy Tester Report Export Contract
+
+MVP-014C prepares the next real smoke to use:
+
+```text
+Report=<private_report_base>
+ReplaceReport=1
+ShutdownTerminal=1
+```
+
+`Report` must target `reports/private/real_mt5_smoke/<run_id>/`, not
+`reports/public`. The next smoke must search `.html`, `.htm`, `.xml`, `.csv` and
+`.json` candidates, then publish only sanitized summaries.
+
 ## MT5 Close After Run Policy
 
 Every future gated real smoke or real backtest must record:

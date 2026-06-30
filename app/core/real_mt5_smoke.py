@@ -20,6 +20,10 @@ from app.core.mt5_report_parser import ParsedMT5Report, parse_mt5_report
 from app.core.mt5_runner import MT5SmokeConfig, MT5SmokeExecutionError, MT5SmokeRunResult, run_mt5_smoke
 from app.core.operator_gate import APPROVAL_PHRASE_PT, approve_operator_gate, create_operator_approval_request
 from app.core.real_mt5_result_capture import ResultCaptureManifest, create_capture_context, write_capture_manifest
+from app.core.strategy_tester_report_config import (
+    build_strategy_tester_report_contract,
+    build_tester_ini_report_lines,
+)
 
 
 DEFAULT_SYMBOL = "XAUUSD"
@@ -92,10 +96,10 @@ def _tester_date_window() -> tuple[str, str]:
     return start.strftime("%Y.%m.%d"), end.strftime("%Y.%m.%d")
 
 
-def _write_private_tester_config(private_dir: Path, *, symbol: str, timeframe: str) -> Path:
+def _write_private_tester_config(private_dir: Path, *, symbol: str, timeframe: str) -> tuple[Path, dict[str, object]]:
     private_dir.mkdir(parents=True, exist_ok=True)
     from_date, to_date = _tester_date_window()
-    report_target = private_dir / "strategy_tester_report"
+    report_contract = build_strategy_tester_report_contract(private_dir.name)
     config_path = private_dir / "mvp_013c_smoke.ini"
     config_text = "\n".join(
         [
@@ -109,14 +113,12 @@ def _write_private_tester_config(private_dir: Path, *, symbol: str, timeframe: s
             f"ToDate={to_date}",
             "Deposit=10000",
             "Currency=USD",
-            f"Report={report_target}",
-            "ReplaceReport=1",
-            "ShutdownTerminal=1",
+            *build_tester_ini_report_lines(report_contract),
             "",
         ]
     )
     config_path.write_text(config_text, encoding="utf-8")
-    return config_path
+    return config_path, report_contract
 
 
 def _write_public_summaries(project_root: Path, summary: RealMT5SmokeSummary) -> dict[str, Path]:
@@ -259,6 +261,13 @@ def _write_public_capture_summaries(
         "credentials_stored": False,
         "paths_sanitized": True,
         "raw_artifacts_private": True,
+        "report_export_configured": manifest.report_export_configured,
+        "report_base": manifest.report_base,
+        "replace_report": manifest.replace_report,
+        "shutdown_terminal": manifest.shutdown_terminal,
+        "report_capture_attempted": manifest.report_capture_attempted,
+        "report_capture_status": manifest.report_capture_status,
+        "parser_attempted": manifest.parser_attempted,
         "failure_reason": summary.failure_reason,
         "mt5_close_policy": summary.mt5_close_policy,
         "mt5_close_attempted": summary.mt5_close_attempted,
@@ -286,6 +295,9 @@ def _write_public_capture_summaries(
         "- Capture enabled: true",
         "- Parse enabled: true",
         f"- Capture status: {manifest.capture_status}",
+        f"- Report export configured: {str(manifest.report_export_configured).lower()}",
+        f"- Replace report: {str(manifest.replace_report).lower()}",
+        f"- Shutdown terminal: {str(manifest.shutdown_terminal).lower()}",
         f"- Parse status: {parse_status}",
         f"- Report file found: {str(report_file_found).lower()}",
         f"- Result parseable: {str(bool(parsed_report.parseable) if parsed_report else False).lower()}",
@@ -354,7 +366,7 @@ def execute_one_run_real_mt5_smoke(
     )
 
     ready_for_real_smoke = bool(environment["ready_for_real_smoke"] and gate["execution_allowed"])
-    config_path = _write_private_tester_config(private_dir, symbol=symbol, timeframe=timeframe)
+    config_path, report_contract = _write_private_tester_config(private_dir, symbol=symbol, timeframe=timeframe)
     status = "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED"
     failure_reason = ""
     attempted = False
@@ -382,6 +394,7 @@ def execute_one_run_real_mt5_smoke(
                 tester_config_path=str(config_path),
                 tester_config_allowed_roots=[private_dir],
                 private_artifact_dir=private_dir,
+                report_contract=report_contract,
             )
             mt5_real_run = bool(result.mt5_real_execution)
             strategy_tester_run = bool(result.strategy_tester_executed)
@@ -412,6 +425,7 @@ def execute_one_run_real_mt5_smoke(
         requested_symbol=symbol,
         requested_timeframe=timeframe,
         close_summary=close_summary,
+        report_contract=report_contract,
     )
 
     summary = RealMT5SmokeSummary(
@@ -462,6 +476,7 @@ def execute_one_run_real_mt5_smoke(
         requested_symbol=symbol,
         requested_timeframe=timeframe,
         close_summary=close_summary,
+        report_contract=report_contract,
     )
     capture_summary = _write_public_capture_summaries(
         project_root,

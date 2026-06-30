@@ -14,6 +14,10 @@ from pathlib import Path
 from uuid import uuid4
 
 from app.core.mt5_process_control import make_mt5_close_summary
+from app.core.strategy_tester_report_config import (
+    build_strategy_tester_report_contract,
+    expected_report_candidates,
+)
 
 
 SUPPORTED_REPORT_EXTENSIONS = {".html", ".htm", ".xml", ".csv", ".json"}
@@ -42,6 +46,17 @@ class ResultCaptureManifest:
     observed_log_files: list[str]
     capture_status: str
     parse_status: str
+    report_export_configured: bool = False
+    report_base: str = ""
+    replace_report: bool = True
+    shutdown_terminal: bool = True
+    report_required: bool = True
+    parse_required: bool = True
+    private_artifacts_only: bool = True
+    public_summary_sanitized: bool = True
+    report_capture_attempted: bool = False
+    report_capture_status: str = "initialized"
+    parser_attempted: bool = False
     mt5_close_policy: str = "not_applicable"
     mt5_close_attempted: bool = False
     mt5_closed_after_run: bool = False
@@ -94,13 +109,8 @@ def create_capture_context(
     _assert_inside(run_dir, private_root)
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    expected_report_paths = [
-        run_dir / "strategy_tester_report.html",
-        run_dir / "strategy_tester_report.htm",
-        run_dir / "strategy_tester_report.xml",
-        run_dir / "strategy_tester_report.csv",
-        run_dir / "strategy_tester_report.json",
-    ]
+    report_contract = build_strategy_tester_report_contract(clean_run_id)
+    expected_report_paths = [project_root / Path(path) for path in expected_report_candidates(clean_run_id)]
     manifest = ResultCaptureManifest(
         run_id=clean_run_id,
         started_at=utc_now(),
@@ -113,6 +123,17 @@ def create_capture_context(
         observed_log_files=[],
         capture_status="initialized",
         parse_status="not_parsed",
+        report_export_configured=bool(report_contract["report_export_configured"]),
+        report_base=str(report_contract["report_base"]),
+        replace_report=bool(report_contract["replace_report"]),
+        shutdown_terminal=bool(report_contract["shutdown_terminal"]),
+        report_required=bool(report_contract["report_required"]),
+        parse_required=bool(report_contract["parse_required"]),
+        private_artifacts_only=bool(report_contract["private_artifacts_only"]),
+        public_summary_sanitized=bool(report_contract["public_summary_sanitized"]),
+        report_capture_attempted=False,
+        report_capture_status="initialized",
+        parser_attempted=False,
         **make_mt5_close_summary(None),
     )
     manifest_path = run_dir / LOCAL_MANIFEST_NAME
@@ -154,8 +175,11 @@ def write_capture_manifest(
     requested_symbol: str = "XAUUSD",
     requested_timeframe: str = "M5",
     close_summary: dict[str, object] | None = None,
+    report_contract: dict[str, object] | None = None,
 ) -> ResultCaptureManifest:
     artifacts = discover_capture_artifacts(context.run_dir)
+    contract = report_contract or build_strategy_tester_report_contract(context.run_id)
+    parser_attempted = parse_status not in {"not_parsed", "pending_report_discovery", "no_report_found"}
     manifest = ResultCaptureManifest(
         run_id=context.run_id,
         started_at=utc_now(),
@@ -168,6 +192,17 @@ def write_capture_manifest(
         observed_log_files=artifacts["observed_log_files"],
         capture_status=capture_status,
         parse_status=parse_status,
+        report_export_configured=bool(contract["report_export_configured"]),
+        report_base=str(contract["report_base"]),
+        replace_report=bool(contract["replace_report"]),
+        shutdown_terminal=bool(contract["shutdown_terminal"]),
+        report_required=bool(contract["report_required"]),
+        parse_required=bool(contract["parse_required"]),
+        private_artifacts_only=bool(contract["private_artifacts_only"]),
+        public_summary_sanitized=bool(contract["public_summary_sanitized"]),
+        report_capture_attempted=capture_status not in {"initialized", "not_attempted"},
+        report_capture_status=capture_status,
+        parser_attempted=parser_attempted,
         **make_mt5_close_summary(close_summary),
     )
     context.manifest_path.write_text(json.dumps(manifest.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")

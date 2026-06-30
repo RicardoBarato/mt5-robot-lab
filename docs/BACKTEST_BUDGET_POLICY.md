@@ -116,3 +116,7 @@ MVP-014C Strategy Tester Report Export Configuration
 
 MVP-014C must define/fix official Strategy Tester report export before any
 public multi-run or ranking execution.
+
+The minimum public budget remains 10 backtests, but MVP-014C does not execute
+that budget. MVP-014C only prepares the private report export/capture contract
+for the next one-run smoke.

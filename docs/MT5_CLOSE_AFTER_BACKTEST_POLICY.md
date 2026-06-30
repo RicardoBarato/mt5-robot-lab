@@ -50,6 +50,10 @@ The close lifecycle must be recorded even when:
 - no report is found;
 - the parser cannot parse a report.
 
+MVP-014C adds the report export contract for future real runs. Close-after-run
+remains mandatory when `Report=<private_report_base>`, `ReplaceReport=1` and
+`ShutdownTerminal=1` are used.
+
 ## Current Mission Boundary
 
 This policy adds code, docs and tests only. It does not run MT5, does not run

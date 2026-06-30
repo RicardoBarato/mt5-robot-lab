@@ -21,6 +21,13 @@ class RealMT5ResultCaptureTests(unittest.TestCase):
         self.assertFalse(public_root.exists())
         self.assertEqual(manifest["capture_status"], "initialized")
         self.assertEqual(manifest["parse_status"], "not_parsed")
+        self.assertTrue(manifest["report_export_configured"])
+        self.assertIn("reports", manifest["report_base"])
+        self.assertIn("private", manifest["report_base"])
+        self.assertTrue(manifest["replace_report"])
+        self.assertTrue(manifest["shutdown_terminal"])
+        self.assertFalse(manifest["report_capture_attempted"])
+        self.assertFalse(manifest["parser_attempted"])
 
     def test_capture_manifest_discovers_only_local_run_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -42,6 +49,11 @@ class RealMT5ResultCaptureTests(unittest.TestCase):
         self.assertEqual(manifest.return_code, 0)
         self.assertEqual(manifest.capture_status, "report_found")
         self.assertEqual(manifest.parse_status, "parsed")
+        self.assertTrue(manifest.report_export_configured)
+        self.assertEqual(manifest.report_capture_status, "report_found")
+        self.assertTrue(manifest.report_capture_attempted)
+        self.assertTrue(manifest.parser_attempted)
+        self.assertNotIn("reports/public", manifest.report_base.replace("\\", "/"))
 
     def test_run_id_must_not_escape_private_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

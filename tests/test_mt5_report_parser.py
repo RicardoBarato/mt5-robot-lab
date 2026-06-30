@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+import json
 from pathlib import Path
 
 from app.core.mt5_report_parser import parse_mt5_report
@@ -68,6 +69,20 @@ class MT5ReportParserTests(unittest.TestCase):
         self.assertEqual(result.source_format, "xml")
         self.assertEqual(result.total_trades, 12)
         self.assertEqual(result.net_profit, 123.45)
+
+    def test_parse_synthetic_json_report(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            path = root / "synthetic_strategy_tester_report.json"
+            path.write_text(
+                json.dumps({"status": "completed", "total_trades": 4, "net_profit": 10.5}),
+                encoding="utf-8",
+            )
+            result = parse_mt5_report(path, allowed_root=root)
+        self.assertTrue(result.parseable)
+        self.assertEqual(result.source_format, "json")
+        self.assertEqual(result.total_trades, 4)
+        self.assertEqual(result.net_profit, 10.5)
 
     def test_reject_unknown_format(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

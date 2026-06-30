@@ -116,6 +116,11 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertTrue(payload["mt5_closed_after_run"])
         self.assertEqual(capture_payload["mt5_close_policy"], "always_after_real_run")
         self.assertFalse(capture_payload["manual_close_required"])
+        self.assertTrue(capture_payload["report_export_configured"])
+        self.assertTrue(capture_payload["replace_report"])
+        self.assertTrue(capture_payload["shutdown_terminal"])
+        self.assertFalse(capture_payload["parser_attempted"])
+        self.assertNotIn("reports/public", str(capture_payload))
         self.assertTrue(private_dir_exists)
         self.assertEqual(len(local_manifests), 1)
         for marker in ["C:\\Users\\", "C:/Users/", "file://", "\\\\server\\"]:

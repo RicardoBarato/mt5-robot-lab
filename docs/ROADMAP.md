@@ -19,7 +19,7 @@ PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
 REAL_MT5_STATUS = one_run_smoke_completed_no_report_captured
 
-NEXT_REQUIRED_STEP = report_export_capture_fix_before_multi_run
+NEXT_REQUIRED_STEP = mvp_014d_one_run_real_report_capture_smoke
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -32,7 +32,8 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014A | completed | Capture contract and conservative parser merged. |
 | MVP-014B | completed_no_report_found | One real capture smoke ran, but no official Strategy Tester report was found. |
 | Policy | completed | Public minimum is 10 backtests, default is 10, options are 10/50/100 and ranking is unified. |
-| MVP-014C | recommended_next | Define/fix Strategy Tester report export before any multi-run smoke. |
+| MVP-014C | completed_in_pr | Defines Strategy Tester report export before any multi-run smoke. |
+| MVP-014D | recommended_next | One-run real report capture smoke with Operator Gate, export/capture and parser enabled. |
 
 ## Backtest Budget Policy
 
@@ -47,7 +48,7 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 - MT5 close policy: close after each backtest.
 - Internal one-run smoke: dev only, not for ranking and not for product claims.
 
-## MVP-014C Recommended Scope
+## MVP-014C Scope
 
 Title: MVP-014C - MT5 Strategy Tester Report Export Configuration
 
@@ -56,3 +57,11 @@ so that the next one-run real smoke can capture a parseable report.
 
 MVP-014C must not start a tournament, must not run 100 backtests and must remain
 behind explicit Operator Gate controls for any real smoke retry.
+
+## MVP-014D Recommended Scope
+
+Title: MVP-014D - One-run Real Report Capture Smoke
+
+Objective: Run one gated real smoke with report export/capture enabled and parse
+enabled. MVP-014D must not run multi-run execution, a tournament, optimization
+or 10/50/100 public backtests.
