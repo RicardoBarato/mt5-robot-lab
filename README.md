@@ -38,7 +38,7 @@ This project does not edit `ea-xau` directly.
 
 `main` is intended to stay protected. Changes should use branch + PR workflow,
 with CI required before merge. Public artifacts must not include private reports,
-credentials, broker/account details, local paths, `.set` files, `.ex5` files or
+credentials, broker/account details, local paths, real SET files, compiled EX5 files or
 real MT5 logs.
 
 CI and public checks must not run real MT5, real Strategy Tester backtests or
@@ -302,6 +302,32 @@ ready_for_real_retry=false
 So the next technical step is not another real smoke. It is to place or compile
 the expected EX5 into the resolved terminal DataDir, then rerun the bootstrap,
 preflight, runtime dry-run and terminal contract audit.
+
+MVP-014K3 adds a stricter terminal DataDir bootstrap command:
+
+```powershell
+python app\mt5_robot_lab_app.py --compiled-ex5-terminal-bootstrap
+```
+
+The command can only use a safe in-repo MQL5 source, an explicitly configured
+ignored local EX5, or an EX5 already present in the resolved terminal
+DataDir. It does not launch `terminal64.exe`, does not start Strategy Tester and
+does not run a backtest. In the current local state it correctly remains held:
+
+```text
+status=HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND
+terminal_data_dir_found=true
+datadir_source=appdata_origin_txt
+bootstrap_command=HOLD
+compiled_ex5_found_before=false
+compiled_ex5_created_or_copied=false
+compiled_ex5_found_after=false
+compiled_ex5_marker_created=false
+ready_for_real_retry=false
+```
+
+`MVP-014L` remains blocked until the safe source/EX5 is provided, the bootstrap
+passes, and the terminal contract audit, preflight and runtime dry-run all pass.
 
 ## MT5 Close After Real Run
 

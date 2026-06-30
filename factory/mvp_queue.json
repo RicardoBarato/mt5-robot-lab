@@ -672,6 +672,12 @@
         "title": "Terminal DataDir and EX5 Readiness Bootstrap"
       },
       {
+        "id": "MVP-014K3",
+        "objective": "Bootstrap the expected compiled EX5 into the resolved terminal DataDir from a safe source or explicitly configured ignored local EX5, without launching MT5 or running a backtest.",
+        "status": "hold_mql5_source_or_ex5_not_found",
+        "title": "EX5 Terminal DataDir Bootstrap"
+      },
+      {
         "id": "MVP-014L",
         "objective": "Run one gated real retry only after preflight, runtime dry-run and terminal contract audit all pass.",
         "status": "blocked_until_terminal_contract_pass",

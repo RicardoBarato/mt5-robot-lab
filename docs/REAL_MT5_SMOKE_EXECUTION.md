@@ -220,3 +220,14 @@ ready_for_real_retry=false
 
 The next action is a non-backtest EX5 placement/compile readiness step, not a
 new real smoke.
+
+MVP-014K3 implements that non-backtest bootstrap command:
+
+```powershell
+python app\mt5_robot_lab_app.py --compiled-ex5-terminal-bootstrap
+```
+
+The command currently holds with
+`HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND` because no safe MQL5 source or
+ignored local EX5 is available. It did not launch MT5, did not start Strategy
+Tester and did not run a backtest.

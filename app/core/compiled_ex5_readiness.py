@@ -122,6 +122,7 @@ def write_compiled_ex5_readiness_marker(
     expert_relative_path: str,
     override: Path | None = None,
     include_hash: bool = False,
+    bootstrap_method: str = "",
 ) -> dict[str, object]:
     """Write an ignored local readiness marker for an already-compiled EX5.
 
@@ -143,6 +144,7 @@ def write_compiled_ex5_readiness_marker(
         "compiled_ex5_mtime": stat.st_mtime if stat else None,
         "compiled_ex5_hash_optional": _hash_file(expected_path) if exists and include_hash else "",
         "marker_created_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+        "bootstrap_method": bootstrap_method,
     }
     path = marker_path(project_root, override)
     path.parent.mkdir(parents=True, exist_ok=True)

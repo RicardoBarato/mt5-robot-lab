@@ -149,3 +149,9 @@ It resolved the terminal DataDir from local terminal metadata, but did not find
 the expected compiled EX5 in that DataDir. The legacy alignment conclusion is
 therefore unchanged for execution: do not retry until EX5 placement and terminal
 contract verification pass.
+
+MVP-014K3 adds `python app\mt5_robot_lab_app.py --compiled-ex5-terminal-bootstrap`.
+It keeps the same execution boundary while allowing a future controlled
+MetaEditor compile only if one safe MQL5 source exists. In the current local
+state, no source or ignored local EX5 is available, so the command holds with
+`mql5_source_or_ex5_not_found` and the legacy retry remains blocked.

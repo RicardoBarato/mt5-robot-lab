@@ -164,6 +164,7 @@ def _allowed_sensitive_context(line: str, rel_text: str) -> bool:
         "app/core/mt5_terminal_runtime_diagnostics.py",
         "app/core/mt5_datadir_resolver.py",
         "app/core/compiled_ex5_readiness.py",
+        "app/core/compiled_ex5_terminal_bootstrap.py",
         "app/core/terminal_contract_audit.py",
     }:
         return True
