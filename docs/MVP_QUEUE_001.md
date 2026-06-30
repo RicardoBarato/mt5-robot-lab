@@ -23,7 +23,7 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | Hardening | MT5 Close After Real Run Policy | high | completed |
 | Policy | Backtest Budget Product Policy | high | completed |
 | MVP-014C | MT5 Strategy Tester Report Export Configuration | high | completed_in_pr |
-| MVP-014D | One-run Real Report Capture Smoke | high | recommended_next |
+| MVP-014D | One-run Real Report Capture Smoke | high | failed_no_retry |
 
 Use:
 
@@ -43,7 +43,7 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next recommended step is `MVP-014D One-run Real Report Capture Smoke`.
+The next recommended step is `Milestone 014 failure summary review before retry`.
 
 Before MVP-014D, every real execution path must carry the close-after-run
 policy:
@@ -90,4 +90,16 @@ parse enabled
 no multi-run
 no tournament
 no 10/50/100 public backtests yet
+```
+
+MVP-014D result:
+
+```text
+real_smoke_attempted=true
+real_smoke_runs=1
+result_status=failed_no_retry
+exit_code=3294954941
+report_file_found=false
+parse_status=no_report_found
+next_decision=review_failure_summary_before_retry
 ```
