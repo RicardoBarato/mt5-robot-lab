@@ -30,7 +30,8 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-014H | Runtime Gap Diagnosis | high | completed |
 | MVP-014I | One-run Real Retry With Runtime Dry-Run Proven | high | blocked_strategy_tester_failed_before_ea |
 | MVP-014J | Runtime vs Terminal Gap Diagnosis | high | completed |
-| MVP-014K | One-run Real Retry After Terminal Contract Diagnosis | high | recommended_next |
+| MVP-014K | Terminal DataDir EX5 Verification | high | blocked_terminal_contract |
+| MVP-014L | One-run Real Retry With Terminal Contract Audit PASS | high | recommended_next_after_terminal_contract_pass |
 
 Use:
 
@@ -50,9 +51,9 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next recommended step is `MVP-014K One-run Real Retry After Terminal
-Contract Diagnosis`, but only after the terminal DataDir and Strategy Tester
-expert mapping checks pass.
+The next recommended real retry is `MVP-014L One-run Real Retry With Terminal
+Contract Audit PASS`. It remains blocked until `MVP-014K` proves the terminal
+DataDir, compiled EX5 and Strategy Tester expert mapping contract.
 
 Before MVP-014D, every real execution path must carry the close-after-run
 policy:
@@ -215,4 +216,23 @@ mt5_real_run_new=false
 strategy_tester_run_new=false
 ea_executed_new=false
 next_mvp=MVP-014K One-run Real Retry only after terminal contract diagnosis passes
+```
+
+MVP-014K result:
+
+```text
+terminal_contract_audit_command=PASS
+terminal_contract_audit=FAIL
+compiled_ex5_verified_in_terminal_datadir=false
+terminal_datadir_consistent=false
+expert_mapping_valid_for_tester=false
+tester_ini_contract_ready=false
+report_contract_ready=true
+close_after_run_ready=true
+ready_for_real_retry=false
+blocking_issues=terminal_data_dir_missing,compiled_ex5_readiness_marker_missing,compiled_ex5_not_found_in_terminal_datadir,compiled_ex5_not_verified_in_terminal_datadir,expert_mapping_invalid_for_strategy_tester
+mt5_real_run_new=false
+strategy_tester_run_new=false
+ea_executed_new=false
+next_mvp=MVP-014L One-run Real Retry With Terminal Contract Audit PASS
 ```

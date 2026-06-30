@@ -220,6 +220,7 @@ def run_mt5_smoke(
     close_policy: MT5ClosePolicy | None = None,
     report_contract: dict[str, object] | None = None,
     preflight_summary: dict[str, object] | None = None,
+    terminal_contract_audit: dict[str, object] | None = None,
 ) -> MT5SmokeRunResult:
     smoke_config = config or MT5SmokeConfig()
     if smoke_config.max_backtests != 1:
@@ -283,6 +284,16 @@ def run_mt5_smoke(
             "tester_config_path is required for real Strategy Tester execution",
             attempted_process=False,
             strategy_tester_requested=False,
+        )
+    if terminal_contract_audit is not None and not bool(terminal_contract_audit.get("ready_for_real_retry")):
+        raise MT5SmokeExecutionError(
+            "terminal contract audit blocked real Strategy Tester execution",
+            attempted_process=False,
+            strategy_tester_requested=False,
+            return_code=None,
+            command=[],
+            failure_stage="terminal_contract_audit_failed_before_strategy_tester",
+            exit_code_category="not_recorded",
         )
 
     command = build_strategy_tester_command(

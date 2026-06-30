@@ -25,6 +25,7 @@ from app.core.strategy_tester_report_config import (
     build_strategy_tester_report_contract,
     build_tester_ini_report_lines,
 )
+from app.core.terminal_contract_audit import build_terminal_contract_audit
 
 
 DEFAULT_SYMBOL = "XAUUSD"
@@ -425,6 +426,16 @@ def execute_one_run_real_mt5_smoke(
         smoke_only=True,
         close_after_run_policy="always_after_real_run",
     )
+    terminal_contract_audit = build_terminal_contract_audit(
+        project_root,
+        environment=environment,
+        expert="Examples\\MACD Sample",
+        symbol=symbol,
+        timeframe=timeframe,
+        tester_ini_text=tester_ini_text,
+        report_contract=report_contract,
+        allow_external_filesystem_check=False,
+    )
     preflight_summary = preflight_override or dict(runtime_contract["runtime_preflight"])
     if not preflight_override and runtime_contract["blocking_issues"]:
         preflight_summary = {
@@ -433,6 +444,22 @@ def execute_one_run_real_mt5_smoke(
             "ready_for_real_retry": False,
             "blocking_issues": list(runtime_contract["blocking_issues"]),
             "root_cause": runtime_contract["root_cause"],
+        }
+    if not preflight_override and not bool(terminal_contract_audit.get("ready_for_real_retry")):
+        preflight_summary = {
+            **preflight_summary,
+            "status": "blocked_preflight_failed",
+            "ready_for_real_retry": False,
+            "blocking_issues": list(
+                dict.fromkeys(
+                    [
+                        *list(preflight_summary.get("blocking_issues", [])),
+                        *list(terminal_contract_audit.get("blocking_issues", [])),
+                    ]
+                )
+            ),
+            "root_cause": "terminal_contract_audit_failed",
+            "terminal_contract_audit": terminal_contract_audit.get("terminal_contract_audit", "FAIL"),
         }
     ready_for_real_smoke = bool(
         environment["ready_for_real_smoke"]
@@ -476,6 +503,7 @@ def execute_one_run_real_mt5_smoke(
                 private_artifact_dir=private_dir,
                 report_contract=report_contract,
                 preflight_summary=preflight_summary,
+                terminal_contract_audit=None if preflight_override else terminal_contract_audit,
             )
             mt5_real_run = bool(result.mt5_real_execution)
             strategy_tester_run = bool(result.strategy_tester_executed)

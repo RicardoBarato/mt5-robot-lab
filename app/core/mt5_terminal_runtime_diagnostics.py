@@ -15,6 +15,7 @@ from typing import Any
 
 from app.core.mt5_detection import redact_public_path
 from app.core.real_mt5_runtime_contract import build_real_mt5_runtime_contract
+from app.core.terminal_contract_audit import build_terminal_contract_audit
 
 
 PRIVATE_SMOKE_ROOT = Path("reports") / "private" / "real_mt5_smoke"
@@ -48,6 +49,8 @@ class TerminalRuntimeDiagnostics:
     compiled_ex5_configured: bool
     compiled_ex5_marker_is_project_local: bool
     report_contract_checked: bool
+    terminal_contract_audit_checked: bool
+    terminal_contract_audit_ready: bool
     report_configured: bool
     report_path_private: bool
     replace_report_enabled: bool
@@ -76,8 +79,8 @@ class TerminalRuntimeDiagnostics:
     paths_sanitized: bool = True
     public_summary_created: bool = True
     warnings: list[str] = field(default_factory=list)
-    next_mvp: str = "MVP-014K One-run Real Retry only after terminal contract diagnosis passes"
-    next_step: str = "review/merge MVP-014J, then only retry if terminal diagnostics are PASS"
+    next_mvp: str = "MVP-014K Terminal DataDir EX5 Verification"
+    next_step: str = "run terminal contract audit; only request MVP-014L retry if the audit is PASS"
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -336,12 +339,20 @@ def build_terminal_runtime_diagnostics(project_root: Path) -> dict[str, object]:
     summary = _read_json(private_run / "run_summary_sanitized.json") if private_run else {}
     execution = _read_json(private_run / "execution_manifest.json") if private_run else {}
     environment = _read_json(private_run / "environment_sanitized.json") if private_run else {}
+    tester_values = _parse_tester_ini(tester_ini_text)
 
     runtime_contract = build_real_mt5_runtime_contract(
         project_root,
         environment=environment or None,
         operator_gate_approved=True,
         run_id="mvp_014j_terminal_runtime_diagnostics",
+    )
+    terminal_contract = build_terminal_contract_audit(
+        project_root,
+        environment=environment or {},
+        tester_ini_text=tester_ini_text,
+        expert=tester_values.get("Expert", "") if tester_ini_text else "Examples\\MACD Sample",
+        allow_external_filesystem_check=False,
     )
     runtime_paths = compare_preflight_vs_runtime_paths(
         dict(runtime_contract.get("runtime_preflight", {})),
@@ -354,7 +365,6 @@ def build_terminal_runtime_diagnostics(project_root: Path) -> dict[str, object]:
         project_root=project_root,
         terminal_launch_args=list(execution.get("command_sanitized", [])),
     )
-    tester_values = _parse_tester_ini(tester_ini_text)
     expert_mapping = validate_expert_mapping_for_strategy_tester(
         tester_values.get("Expert", ""),
         str(runtime_contract.get("compiled_ex5_expected", "")),
@@ -371,6 +381,8 @@ def build_terminal_runtime_diagnostics(project_root: Path) -> dict[str, object]:
     likely_causes: list[str] = []
     if bool(expert_mapping["compiled_ex5_marker_is_project_local"]):
         likely_causes.extend(["compiled_ex5_in_different_data_dir", "terminal_data_dir_mismatch"])
+    if terminal_contract.get("terminal_contract_audit") == "FAIL":
+        likely_causes.append("terminal_contract_audit_failed")
     if not bool(data_dir["terminal_data_dir_recorded"]):
         likely_causes.append("terminal_data_dir_mismatch")
     if not bool(tester_shape["expert_parameters_present"]):
@@ -413,6 +425,8 @@ def build_terminal_runtime_diagnostics(project_root: Path) -> dict[str, object]:
         compiled_ex5_configured=bool(runtime_paths["compiled_ex5_configured"]),
         compiled_ex5_marker_is_project_local=bool(expert_mapping["compiled_ex5_marker_is_project_local"]),
         report_contract_checked=True,
+        terminal_contract_audit_checked=True,
+        terminal_contract_audit_ready=bool(terminal_contract.get("ready_for_real_retry")),
         report_configured=bool(tester_shape["report_configured"]),
         report_path_private=bool(tester_shape["report_path_private"]),
         replace_report_enabled=bool(tester_shape["replace_report_enabled"]),

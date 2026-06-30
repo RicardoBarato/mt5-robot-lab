@@ -209,6 +209,18 @@ root_cause=compiled_ex5_marker_not_verified_in_terminal_datadir
 ready_for_real_retry=false
 ```
 
+MVP-014K adds `python app\mt5_robot_lab_app.py --terminal-contract-audit`.
+The current audit result is a hold:
+
+```text
+terminal_contract_audit=FAIL
+compiled_ex5_verified_in_terminal_datadir=false
+terminal_datadir_consistent=false
+expert_mapping_valid_for_tester=false
+ready_for_real_retry=false
+```
+
 The current boundary remains: no multi-run, tournament, 10/50/100 backtests or
-new retry until the `MVP-014K` terminal contract checks prove the terminal
-DataDir and Strategy Tester expert mapping.
+new retry until the terminal contract audit proves the terminal DataDir,
+compiled EX5 and Strategy Tester expert mapping. The next retry is `MVP-014L`
+and is allowed only after `--terminal-contract-audit PASS`.

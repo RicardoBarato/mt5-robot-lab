@@ -188,6 +188,22 @@ only sanitized summaries. It confirmed the next blocker as
 marker is project-local, but the runner has not proven that the compiled EA is
 available in the terminal DataDir used by Strategy Tester.
 
-Do not approve another real retry until the terminal DataDir and Strategy Tester
-expert mapping checks pass. The next planned step is `MVP-014K One-run Real
-Retry only after terminal contract diagnosis passes`.
+MVP-014K adds the non-executing terminal contract audit:
+
+```powershell
+python app\mt5_robot_lab_app.py --terminal-contract-audit
+```
+
+The current audit blocks another real retry:
+
+```text
+terminal_contract_audit=FAIL
+compiled_ex5_verified_in_terminal_datadir=false
+terminal_datadir_consistent=false
+expert_mapping_valid_for_tester=false
+ready_for_real_retry=false
+```
+
+Do not approve another real retry until the terminal DataDir, compiled EX5 and
+Strategy Tester expert mapping checks pass. The next planned real retry is
+`MVP-014L One-run Real Retry With Terminal Contract Audit PASS`.

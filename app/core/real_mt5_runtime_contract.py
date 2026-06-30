@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from app.core.compiled_ex5_readiness import public_readiness_summary, validate_compiled_ex5_readiness
 from app.core.mt5_detection import build_local_mt5_environment_status, redact_public_path
 from app.core.real_mt5_preflight import (
     DEFAULT_EXPERT,
@@ -52,6 +53,10 @@ class RealMT5RuntimeContract:
     report_contract: dict[str, object]
     runtime_preflight: dict[str, object]
     root_cause: str
+    terminal_contract_audit_required: bool
+    compiled_ex5_verified_in_terminal_datadir: bool
+    terminal_datadir_consistent: bool
+    expert_mapping_valid_for_tester: bool
     blocking_issues: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
@@ -224,6 +229,14 @@ def build_real_mt5_runtime_contract(
         {"candidate_id": run_id, "expert": expert_path},
         tester_ini_text=tester_text,
     )
+    terminal_readiness = public_readiness_summary(
+        validate_compiled_ex5_readiness(
+            project_root,
+            environment=env,
+            expert_relative_path=expert_path,
+            allow_external_filesystem_check=False,
+        )
+    )
     all_issues = list(dict.fromkeys([*contract_issues, *list(runtime_preflight.get("blocking_issues", []))]))
     ready = not all_issues and bool(runtime_preflight.get("ready_for_real_retry"))
     root_cause = (
@@ -252,6 +265,12 @@ def build_real_mt5_runtime_contract(
         report_contract=dict(runtime_preflight.get("report_contract_summary", {})),
         runtime_preflight=runtime_preflight,
         root_cause=root_cause,
+        terminal_contract_audit_required=True,
+        compiled_ex5_verified_in_terminal_datadir=bool(
+            terminal_readiness["compiled_ex5_verified_in_terminal_datadir"]
+        ),
+        terminal_datadir_consistent=bool(terminal_readiness["terminal_datadir_consistent"]),
+        expert_mapping_valid_for_tester=bool(terminal_readiness["expert_mapping_valid_for_strategy_tester"]),
         blocking_issues=all_issues,
         warnings=list(runtime_preflight.get("warnings", [])),
     )
@@ -274,6 +293,12 @@ def make_runtime_contract_summary(runtime_contract: dict[str, object]) -> dict[s
         "ex5_readiness_marker_present": bool(runtime_contract.get("ex5_readiness_marker_present")),
         "ex5_readiness_marker_stale": bool(runtime_contract.get("ex5_readiness_marker_stale")),
         "ready_for_real_retry": bool(runtime_contract.get("ready_for_retry")),
+        "terminal_contract_audit_required": bool(runtime_contract.get("terminal_contract_audit_required")),
+        "compiled_ex5_verified_in_terminal_datadir": bool(
+            runtime_contract.get("compiled_ex5_verified_in_terminal_datadir")
+        ),
+        "terminal_datadir_consistent": bool(runtime_contract.get("terminal_datadir_consistent")),
+        "expert_mapping_valid_for_tester": bool(runtime_contract.get("expert_mapping_valid_for_tester")),
         "blocking_issues": runtime_contract.get("blocking_issues", []),
         "warnings": runtime_contract.get("warnings", []),
         "runtime_preflight_status": runtime_preflight.get("status", ""),

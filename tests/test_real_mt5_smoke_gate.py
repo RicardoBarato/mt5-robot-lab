@@ -5,6 +5,7 @@ from pathlib import Path
 
 from app.core.mt5_runner import MT5SmokeRunResult
 from app.core.operator_gate import APPROVAL_PHRASE_PT
+from app.core.compiled_ex5_readiness import write_compiled_ex5_readiness_marker
 from app.core.real_mt5_preflight import ensure_ignored_preflight_ex5_marker
 from app.core.real_mt5_smoke import execute_one_run_real_mt5_smoke
 
@@ -188,11 +189,20 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             ensure_ignored_preflight_ex5_marker(root)
+            terminal_data_dir = root / "terminal_data"
+            ex5 = terminal_data_dir / "MQL5" / "Experts" / "Examples" / "MACD Sample.ex5"
+            ex5.parent.mkdir(parents=True)
+            ex5.write_text("compiled fake", encoding="utf-8")
+            write_compiled_ex5_readiness_marker(
+                root,
+                terminal_data_dir=terminal_data_dir,
+                expert_relative_path="Examples\\MACD Sample",
+            )
             result = execute_one_run_real_mt5_smoke(
                 root,
                 approval_phrase=APPROVAL_PHRASE_PT,
                 runner=_fake_success_runner,
-                environment_override=READY_ENVIRONMENT,
+                environment_override={**READY_ENVIRONMENT, "terminal_data_dir": str(terminal_data_dir)},
             )
 
         self.assertEqual(result["status"], "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED")

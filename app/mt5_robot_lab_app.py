@@ -46,6 +46,7 @@ from app.core.real_mt5_smoke import execute_one_run_real_mt5_smoke
 from app.core.risk_profile_ranking import generate_risk_profile_report
 from app.core.symbol_mapping import TIMEFRAME_MINUTES
 from app.core.submission_package import create_submission_package, validate_submission_package
+from app.core.terminal_contract_audit import generate_terminal_contract_audit
 from app.core.tournament_engine import run_tournament
 from app.ui.main_window import launch_app
 from app.ui.screens import INTELLIGENCE_MODE_OPTIONS, NavigationController, build_screen_registry
@@ -257,6 +258,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Diagnose terminal/runtime gaps without launching MT5",
     )
+    parser.add_argument(
+        "--terminal-contract-audit",
+        action="store_true",
+        help="Audit terminal DataDir, compiled EX5 and tester contract without launching MT5",
+    )
     parser.add_argument("--run-real-mt5-smoke", action="store_true", help="Run one explicitly approved local MT5 smoke")
     parser.add_argument("--operator-approval-phrase", default="", help="Exact operator approval phrase for real smoke")
     parser.add_argument("--mt5-terminal-path", default="", help="Optional manual terminal64.exe path for safe detection only")
@@ -334,6 +340,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.terminal_runtime_diagnostics:
         result = generate_terminal_runtime_diagnostics(PROJECT_ROOT)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.terminal_contract_audit:
+        result = generate_terminal_contract_audit(PROJECT_ROOT)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     if args.run_real_mt5_smoke:

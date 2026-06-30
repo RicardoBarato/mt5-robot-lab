@@ -259,6 +259,28 @@ the compiled EA exists in the terminal DataDir used by Strategy Tester.
 proven. The next planned step is `MVP-014K - One-run Real Retry only after
 terminal contract diagnosis passes`.
 
+MVP-014K adds the terminal DataDir EX5 contract audit:
+
+```powershell
+python app\mt5_robot_lab_app.py --terminal-contract-audit
+```
+
+The audit is non-executing. It does not launch MT5, Strategy Tester or
+MetaEditor, and it does not compile or execute an EA. The current result is
+blocked because the compiled EX5 has not been verified inside the terminal
+DataDir used by Strategy Tester and the tester expert mapping is not proven:
+
+```text
+terminal_contract_audit=FAIL
+compiled_ex5_verified_in_terminal_datadir=false
+terminal_datadir_consistent=false
+expert_mapping_valid_for_tester=false
+ready_for_real_retry=false
+```
+
+The next retry is `MVP-014L - One-run Real Retry With Terminal Contract Audit
+PASS`, and it remains blocked until `--terminal-contract-audit` returns PASS.
+
 ## MT5 Close After Real Run
 
 Every future gated real smoke or real backtest must use:
@@ -349,6 +371,7 @@ foundation, MVP factory, Operator Gate, publication guard, public/private
 artifact boundary and one gated real MT5 smoke attempt. Official report capture
 is still unresolved, no parseable real Strategy Tester report has been captured,
 the latest retry reached the Strategy Tester launch path but failed before EA
-execution, MVP-014J diagnosed the terminal/DataDir contract gap, no multi-run
+execution, MVP-014K now blocks retry until the terminal DataDir EX5 contract
+passes, no multi-run
 tournament has been run, no 100-backtest optimization has been run, no installer
 or portable zip exists and nothing is a financial recommendation.
