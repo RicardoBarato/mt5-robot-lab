@@ -168,4 +168,5 @@ unless all of these are true:
 - close-after-run policy is `always_after_real_run`.
 
 If any item fails, the runner must return a hold/block result before launching
-MT5. The next allowed step is `MVP-014F One-run Real Retry With Preflight`.
+MT5. MVP-014F adds a non-executing preflight readiness command. The next allowed
+real execution step is `MVP-014G One-run Real Retry After Preflight`.

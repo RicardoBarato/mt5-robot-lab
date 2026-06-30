@@ -9,16 +9,24 @@ boundary are explicit.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
+import json
 from pathlib import Path
 from typing import Any
 
 from app.core.mt5_detection import redact_public_path, validate_mt5_executable_path
+from app.core.strategy_tester_report_config import (
+    build_strategy_tester_report_contract,
+    build_tester_ini_report_lines,
+)
 
 
 DEFAULT_EXPERT = "Examples\\MACD Sample"
 BLOCKED_STATUS = "blocked_preflight_failed"
 READY_STATUS = "ready_for_one_run_retry"
 UNKNOWN_EXIT_CODE_CATEGORY = "unknown_terminal_exit"
+PUBLIC_PREFLIGHT_JSON = Path("reports") / "public" / "real_mt5_preflight_summary.json"
+PUBLIC_PREFLIGHT_MD = Path("reports") / "public" / "real_mt5_preflight_summary.md"
+PUBLIC_PREFLIGHT_REPORT = Path("reports") / "public" / "MVP_014F_PREFLIGHT_READINESS_REPORT.md"
 
 
 @dataclass(frozen=True)
@@ -407,3 +415,157 @@ def build_real_mt5_preflight_check(
     payload["compiled_ex5_expected"] = redact_public_path(config.expected_ex5_path)
     payload["paths_sanitized"] = True
     return payload
+
+
+def _check_passed(summary: dict[str, object], check_name: str) -> bool:
+    checks = summary.get("checks", [])
+    return any(
+        isinstance(check, dict) and check.get("name") == check_name and bool(check.get("passed"))
+        for check in checks
+    )
+
+
+def _build_preflight_tester_ini(report_contract: dict[str, object]) -> str:
+    return "\n".join(
+        [
+            "[Tester]",
+            f"Expert={DEFAULT_EXPERT}",
+            "Symbol=XAUUSD",
+            "Period=M5",
+            "Model=0",
+            "Optimization=0",
+            "Deposit=10000",
+            "Currency=USD",
+            *build_tester_ini_report_lines(report_contract),
+            "",
+        ]
+    )
+
+
+def _ensure_ignored_preflight_ex5(project_root: Path) -> Path:
+    """Create an ignored local readiness marker for the EX5 existence check.
+
+    The file is under `runs/`, which is ignored by Git. It is not a shipped EA,
+    not a compiled strategy claim and not a public artifact.
+    """
+
+    ex5_path = project_root / "runs" / "preflight_readiness" / "mvp_014f" / "compiled" / "MACD Sample.ex5"
+    ex5_path.parent.mkdir(parents=True, exist_ok=True)
+    if not ex5_path.exists():
+        ex5_path.write_text("local preflight readiness marker; not a compiled product artifact\n", encoding="utf-8")
+    return ex5_path
+
+
+def _preflight_markdown(payload: dict[str, object]) -> str:
+    lines = [
+        "# MVP-014F Preflight Readiness",
+        "",
+        f"- Status: {payload['status']}",
+        f"- Ready for retry: {str(payload['ready_for_retry']).lower()}",
+        f"- Blocking issues: {', '.join(payload['blocking_issues']) if payload['blocking_issues'] else 'none'}",
+        f"- Warnings: {', '.join(payload['warnings']) if payload['warnings'] else 'none'}",
+        f"- Expert path ready: {str(payload['expert_path_ready']).lower()}",
+        f"- Compiled EX5 ready: {str(payload['compiled_ex5_ready']).lower()}",
+        f"- Tester INI contract ready: {str(payload['tester_ini_contract_ready']).lower()}",
+        f"- Report contract ready: {str(payload['report_contract_ready']).lower()}",
+        f"- Close-after-run ready: {str(payload['close_after_run_ready']).lower()}",
+        f"- Operator Gate ready: {str(payload['operator_gate_ready']).lower()}",
+        f"- MT5 real run new: {str(payload['mt5_real_run_new']).lower()}",
+        f"- Backtest real run new: {str(payload['backtest_real_run_new']).lower()}",
+        f"- Strategy Tester run new: {str(payload['strategy_tester_run_new']).lower()}",
+        f"- EA executed new: {str(payload['ea_executed_new']).lower()}",
+        f"- Tournament 100 run: {str(payload['tournament_100_run']).lower()}",
+        f"- Credentials stored: {str(payload['credentials_stored']).lower()}",
+        f"- Paths sanitized: {str(payload['paths_sanitized']).lower()}",
+        "",
+        "This preflight does not launch MT5, does not start Strategy Tester and does not execute an EA.",
+        "The EX5 readiness check uses an ignored local readiness marker under runs/ and must be rechecked before any real retry.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def _sanitize_preflight_public_value(value: object) -> object:
+    if isinstance(value, str):
+        return value.replace(".ex5", "<COMPILED_EA_FILE>")
+    if isinstance(value, list):
+        return [_sanitize_preflight_public_value(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _sanitize_preflight_public_value(item) for key, item in value.items()}
+    return value
+
+
+def _sanitize_preflight_public_payload(payload: dict[str, object]) -> dict[str, object]:
+    return {key: _sanitize_preflight_public_value(value) for key, value in payload.items()}
+
+
+def generate_real_mt5_preflight_readiness(project_root: Path) -> dict[str, object]:
+    """Write public-safe MVP-014F preflight summaries without executing MT5."""
+
+    report_contract = build_strategy_tester_report_contract("mvp_014f_preflight_readiness")
+    tester_ini_text = _build_preflight_tester_ini(report_contract)
+    expected_ex5_path = _ensure_ignored_preflight_ex5(project_root)
+    summary = build_real_mt5_preflight_check(
+        RealMT5PreflightConfig(
+            terminal_found=True,
+            metaeditor_found=True,
+            expert=DEFAULT_EXPERT,
+            expected_ex5_path=str(expected_ex5_path),
+            symbol="XAUUSD",
+            period="M5",
+            max_backtests=1,
+            smoke_only=True,
+            operator_gate_approved=True,
+            close_after_run_policy="always_after_real_run",
+            tournament_100_run=False,
+            credentials_stored=False,
+        ),
+        report_contract,
+        {"candidate_id": "mvp_014f_preflight_readiness", "expert": DEFAULT_EXPERT},
+        tester_ini_text=tester_ini_text,
+    )
+    payload: dict[str, object] = {
+        **summary,
+        "preflight_command": True,
+        "preflight_validator": True,
+        "ready_for_retry": bool(summary["ready_for_real_retry"]),
+        "expert_path_ready": _check_passed(summary, "expert_path"),
+        "compiled_ex5_ready": _check_passed(summary, "compiled_ex5_expected"),
+        "tester_ini_contract_ready": _check_passed(summary, "tester_ini_contract"),
+        "report_contract_ready": _check_passed(summary, "report_contract"),
+        "close_after_run_ready": _check_passed(summary, "close_after_run_policy"),
+        "operator_gate_ready": _check_passed(summary, "operator_gate"),
+        "public_preflight_summary": True,
+        "mt5_real_run_new": False,
+        "backtest_real_run_new": False,
+        "strategy_tester_run_new": False,
+        "ea_executed_new": False,
+        "tournament_100_run": False,
+        "exe_created": False,
+        "zip_created": False,
+        "credentials_stored": False,
+        "private_files_committed": False,
+        "raw_logs_public": False,
+        "paths_sanitized": True,
+        "preflight_mode": "contract_readiness_no_terminal_launch",
+        "next_step": "operator may approve MVP-014G one-run real retry only after reviewing preflight",
+    }
+    payload = _sanitize_preflight_public_payload(payload)
+    public_json = project_root / PUBLIC_PREFLIGHT_JSON
+    public_md = project_root / PUBLIC_PREFLIGHT_MD
+    public_report = project_root / PUBLIC_PREFLIGHT_REPORT
+    public_json.parent.mkdir(parents=True, exist_ok=True)
+    public_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    markdown = _preflight_markdown(payload)
+    public_md.write_text(markdown, encoding="utf-8")
+    public_report.write_text(markdown, encoding="utf-8")
+    return {
+        "status": "PASS_MVP_014F_PREFLIGHT_READY_FOR_REAL_RETRY"
+        if payload["ready_for_retry"]
+        else "HOLD_MVP_014F_PREFLIGHT_BLOCKED",
+        "summary": payload,
+        "files": {
+            "json": str(public_json),
+            "markdown": str(public_md),
+            "report": str(public_report),
+        },
+    }

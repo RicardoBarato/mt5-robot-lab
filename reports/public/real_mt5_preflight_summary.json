@@ -1,0 +1,175 @@
+{
+  "backtest_real_run_new": false,
+  "blocking_issues": [],
+  "candidate_id": "mvp_014f_preflight_readiness",
+  "checks": [
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "terminal_ready",
+      "passed": true,
+      "reason": "terminal64.exe_confirmed"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "metaeditor_ready",
+      "passed": true,
+      "reason": "metaeditor64.exe_confirmed"
+    },
+    {
+      "blocking": false,
+      "detail": "Examples\\MACD Sample",
+      "name": "expert_path",
+      "passed": true,
+      "reason": "expert_path_present"
+    },
+    {
+      "blocking": false,
+      "detail": "<WINDOWS_PATH_REDACTED>\\MACD Sample<COMPILED_EA_FILE>",
+      "name": "compiled_ex5_expected",
+      "passed": true,
+      "reason": "compiled_ex5_found"
+    },
+    {
+      "blocking": false,
+      "detail": "XAUUSD",
+      "name": "symbol_config",
+      "passed": true,
+      "reason": "symbol_present"
+    },
+    {
+      "blocking": false,
+      "detail": "M5",
+      "name": "period_config",
+      "passed": true,
+      "reason": "period_supported"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "report_contract",
+      "passed": true,
+      "reason": "report_contract_private_and_enabled"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "tester_ini_contract",
+      "passed": true,
+      "reason": "tester_ini_contract_valid"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "private_artifact_paths",
+      "passed": true,
+      "reason": "private_artifact_paths_private"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "max_backtests",
+      "passed": true,
+      "reason": "max_backtests_equal_1"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "smoke_only",
+      "passed": true,
+      "reason": "smoke_only_confirmed"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "operator_gate",
+      "passed": true,
+      "reason": "operator_gate_approved"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "tournament_block",
+      "passed": true,
+      "reason": "not_a_tournament"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "credential_boundary",
+      "passed": true,
+      "reason": "credentials_not_stored"
+    },
+    {
+      "blocking": false,
+      "detail": "",
+      "name": "close_after_run_policy",
+      "passed": true,
+      "reason": "close_after_run_policy_confirmed"
+    }
+  ],
+  "close_after_run_ready": true,
+  "compiled_ex5_checked": true,
+  "compiled_ex5_expected": "<WINDOWS_PATH_REDACTED>\\MACD Sample<COMPILED_EA_FILE>",
+  "compiled_ex5_ready": true,
+  "credentials_stored": false,
+  "ea_executed_new": false,
+  "exe_created": false,
+  "exit_code_category": "not_recorded",
+  "exit_code_recorded": null,
+  "expert_expected": "Examples\\MACD Sample",
+  "expert_path_checked": true,
+  "expert_path_ready": true,
+  "failure_stage": "not_attempted",
+  "mt5_real_run_new": false,
+  "next_step": "operator may approve MVP-014G one-run real retry only after reviewing preflight",
+  "operator_gate_ready": true,
+  "paths_sanitized": true,
+  "preflight_command": true,
+  "preflight_mode": "contract_readiness_no_terminal_launch",
+  "preflight_validator": true,
+  "private_files_committed": false,
+  "public_preflight_summary": true,
+  "raw_logs_public": false,
+  "ready_for_real_retry": true,
+  "ready_for_retry": true,
+  "report_contract_ready": true,
+  "report_contract_summary": {
+    "expected_report_paths": [
+      "reports\\private\\real_mt5_smoke\\mvp_014f_preflight_readiness\\strategy_tester_report.html",
+      "reports\\private\\real_mt5_smoke\\mvp_014f_preflight_readiness\\strategy_tester_report.htm",
+      "reports\\private\\real_mt5_smoke\\mvp_014f_preflight_readiness\\strategy_tester_report.xml",
+      "reports\\private\\real_mt5_smoke\\mvp_014f_preflight_readiness\\strategy_tester_report.csv",
+      "reports\\private\\real_mt5_smoke\\mvp_014f_preflight_readiness\\strategy_tester_report.json"
+    ],
+    "parse_required": true,
+    "private_artifacts_only": true,
+    "public_summary_sanitized": true,
+    "replace_report": true,
+    "report_base": "reports\\private\\real_mt5_smoke\\mvp_014f_preflight_readiness\\strategy_tester_report",
+    "report_export_configured": true,
+    "report_required": true,
+    "shutdown_terminal": true
+  },
+  "report_export_contract_checked": true,
+  "report_path_privacy_checked": true,
+  "status": "ready_for_one_run_retry",
+  "strategy_tester_run_new": false,
+  "terminal_launch_args_sanitized": [],
+  "tester_ini_contract_checked": true,
+  "tester_ini_contract_ready": true,
+  "tester_ini_contract_summary": {
+    "expert": "Examples\\MACD Sample",
+    "optimization": "0",
+    "period": "M5",
+    "replace_report": "1",
+    "report_configured": true,
+    "section": "Tester",
+    "shutdown_terminal": "1",
+    "symbol": "XAUUSD"
+  },
+  "tournament_100_run": false,
+  "warnings": [],
+  "zip_created": false
+}

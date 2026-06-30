@@ -71,11 +71,17 @@ MT5 boundary, the retry must stop before launching MT5.
 
 ## Next Step
 
-The next technical step is:
+MVP-014F added the non-executing preflight readiness command:
 
 ```text
-MVP-014F - One-run Real Retry With Preflight
+python app\mt5_robot_lab_app.py --real-mt5-preflight
 ```
 
-MVP-014F is still only one execution. It is not a tournament, not optimization,
+The next real execution step is:
+
+```text
+MVP-014G - One-run Real Retry After Preflight
+```
+
+MVP-014G is still only one execution. It is not a tournament, not optimization,
 not 10/50/100 backtests and not a product ranking run.
