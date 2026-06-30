@@ -224,3 +224,9 @@ The current boundary remains: no multi-run, tournament, 10/50/100 backtests or
 new retry until the terminal contract audit proves the terminal DataDir,
 compiled EX5 and Strategy Tester expert mapping. The next retry is `MVP-014L`
 and is allowed only after `--terminal-contract-audit PASS`.
+
+MVP-014K2 narrows the blocker: the terminal DataDir is now resolved through
+`appdata_origin_txt`, but the expected compiled EX5 is still absent from that
+DataDir. Any future real execution remains blocked until the EX5 readiness
+bootstrap creates its ignored local marker and the terminal contract audit
+returns PASS.

@@ -31,7 +31,8 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-014I | One-run Real Retry With Runtime Dry-Run Proven | high | blocked_strategy_tester_failed_before_ea |
 | MVP-014J | Runtime vs Terminal Gap Diagnosis | high | completed |
 | MVP-014K | Terminal DataDir EX5 Verification | high | blocked_terminal_contract |
-| MVP-014L | One-run Real Retry With Terminal Contract Audit PASS | high | recommended_next_after_terminal_contract_pass |
+| MVP-014K2 | Terminal DataDir and EX5 Readiness Bootstrap | high | hold_ex5_not_found_in_terminal_datadir |
+| MVP-014L | One-run Real Retry With Terminal Contract Audit PASS | high | blocked_until_terminal_contract_pass |
 
 Use:
 
@@ -51,9 +52,11 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next recommended real retry is `MVP-014L One-run Real Retry With Terminal
-Contract Audit PASS`. It remains blocked until `MVP-014K` proves the terminal
-DataDir, compiled EX5 and Strategy Tester expert mapping contract.
+The next technical step is to place or compile the expected EX5 inside the
+resolved terminal DataDir without running MT5 or a backtest. `MVP-014L One-run
+Real Retry With Terminal Contract Audit PASS` remains blocked until `MVP-014K2`
+proves the terminal DataDir, compiled EX5 and Strategy Tester expert mapping
+contract.
 
 Before MVP-014D, every real execution path must carry the close-after-run
 policy:
@@ -235,4 +238,26 @@ mt5_real_run_new=false
 strategy_tester_run_new=false
 ea_executed_new=false
 next_mvp=MVP-014L One-run Real Retry With Terminal Contract Audit PASS
+```
+
+MVP-014K2 result:
+
+```text
+compiled_ex5_readiness_bootstrap=HOLD
+terminal_data_dir_found=true
+datadir_source=appdata_origin_txt
+compiled_ex5_found_in_terminal_datadir=false
+compiled_ex5_marker_created=false
+compiled_ex5_verified_in_terminal_datadir=false
+terminal_datadir_consistent=false
+expert_mapping_valid_for_tester=false
+tester_ini_contract_ready=false
+report_contract_ready=true
+close_after_run_ready=true
+ready_for_real_retry=false
+blocking_issues=compiled_ex5_readiness_marker_missing,terminal_data_dir_mismatch,compiled_ex5_not_found_in_terminal_datadir,compiled_ex5_not_verified_in_terminal_datadir,expert_mapping_invalid_for_strategy_tester
+mt5_real_run_new=false
+strategy_tester_run_new=false
+ea_executed_new=false
+next_step=compile_or_copy_ex5_to_terminal_datadir_before_retry
 ```

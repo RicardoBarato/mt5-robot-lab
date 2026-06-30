@@ -14,12 +14,13 @@ from pathlib import Path
 from typing import Any
 
 from app.core.compiled_ex5_readiness import (
+    load_compiled_ex5_readiness_marker,
     public_readiness_summary,
     validate_compiled_ex5_readiness,
     validate_expert_relative_path,
 )
+from app.core.mt5_datadir_resolver import public_datadir_resolution_summary, resolve_terminal_datadir
 from app.core.mt5_detection import build_local_mt5_environment_status, redact_public_path
-from app.core.real_mt5_preflight import DEFAULT_EXPERT
 from app.core.strategy_tester_report_config import (
     build_strategy_tester_report_contract,
     build_tester_ini_report_lines,
@@ -31,6 +32,7 @@ PUBLIC_TERMINAL_CONTRACT_MD = Path("reports") / "public" / "terminal_contract_au
 PUBLIC_TERMINAL_CONTRACT_REPORT = (
     Path("reports") / "public" / "MVP_014K_TERMINAL_DATADIR_EX5_VERIFICATION_REPORT.md"
 )
+DEFAULT_EXPERT = "Examples\\MACD Sample"
 
 PASS_STATUS = "PASS_MVP_014K_TERMINAL_DATADIR_EX5_VERIFICATION_COMPLETED"
 HOLD_STATUS = "HOLD_MVP_014K_TERMINAL_CONTRACT_BLOCKED"
@@ -150,6 +152,8 @@ def _validate_report_contract(report_contract: dict[str, object]) -> dict[str, o
 
 def _sanitize_public_value(value: object) -> object:
     if isinstance(value, str):
+        if not _looks_like_path(value):
+            return value
         sanitized = redact_public_path(value)
         sanitized = re.sub(r"(?i)\.ex5\b", "<COMPILED_EA_FILE>", sanitized)
         sanitized = re.sub(r"(?i)\.set\b", "<SET_FILE>", sanitized)
@@ -159,6 +163,19 @@ def _sanitize_public_value(value: object) -> object:
     if isinstance(value, dict):
         return {key: _sanitize_public_value(item) for key, item in value.items()}
     return value
+
+
+def _looks_like_path(value: str) -> bool:
+    text = value.strip()
+    lowered = text.lower()
+    return (
+        ":\\" in text
+        or ":/" in text
+        or "\\" in text
+        or "/" in text
+        or lowered.startswith(("file://", "%appdata%", "%localappdata%", "%userprofile%"))
+        or text.startswith(("\\\\", "//"))
+    )
 
 
 def sanitize_terminal_contract_summary(payload: dict[str, object]) -> dict[str, object]:
@@ -176,8 +193,30 @@ def build_terminal_contract_audit(
     report_contract: dict[str, object] | None = None,
     readiness_marker: dict[str, object] | None = None,
     allow_external_filesystem_check: bool = False,
+    resolve_datadir: bool = True,
 ) -> dict[str, object]:
-    env = environment or build_local_mt5_environment_status()
+    marker = readiness_marker if readiness_marker is not None else load_compiled_ex5_readiness_marker(project_root)
+    datadir_resolution: dict[str, object] = {}
+    env = dict(environment) if environment is not None else build_local_mt5_environment_status()
+    if marker.get("terminal_data_dir"):
+        datadir_resolution = {
+            "terminal_data_dir_found": True,
+            "terminal_data_dir_sanitized": redact_public_path(str(marker.get("terminal_data_dir", ""))),
+            "datadir_source": "compiled_ex5_readiness_marker",
+            "terminal_data_dir_structure_valid": True,
+            "mql5_dir_found": True,
+            "experts_dir_found": True,
+            "tester_profiles_dir_found": False,
+            "terminal_path_sanitized": "",
+            "origin_txt_found": False,
+            "origin_txt_matched_terminal": False,
+            "blocking_issues": [],
+            "warnings": [],
+        }
+    elif resolve_datadir and not env.get("terminal_data_dir"):
+        datadir_resolution = resolve_terminal_datadir(project_root)
+        if datadir_resolution.get("terminal_data_dir_found"):
+            env["terminal_data_dir"] = str(datadir_resolution.get("terminal_data_dir", ""))
     report = report_contract or build_strategy_tester_report_contract("mvp_014k_terminal_contract_audit")
     tester_text = tester_ini_text or _build_tester_ini(expert, symbol, timeframe, report)
     values = _parse_tester_ini(tester_text)
@@ -186,7 +225,7 @@ def build_terminal_contract_audit(
         project_root,
         environment=env,
         expert_relative_path=configured_expert,
-        readiness_marker=readiness_marker,
+        readiness_marker=marker,
         expert_parameters=values.get("ExpertParameters", ""),
         expert_parameters_required=False,
         allow_external_filesystem_check=allow_external_filesystem_check,
@@ -216,10 +255,21 @@ def build_terminal_contract_audit(
         and report_result.get("report_contract_ready")
         and report_result.get("close_after_run_ready")
     )
+    if ready:
+        next_step = "operator may approve MVP-014L one-run real retry only if terminal contract audit remains PASS"
+    elif "terminal_data_dir_missing" in blocking_issues:
+        next_step = "configure terminal_data_dir in ignored local config before retry"
+    elif "compiled_ex5_not_found_in_terminal_datadir" in blocking_issues:
+        next_step = "compile_or_copy_ex5_to_terminal_datadir_before_retry"
+    else:
+        next_step = "fix terminal contract blocking issues before any real retry"
     payload = {
         "status": PASS_STATUS if ready else HOLD_STATUS,
         "terminal_contract_audit": "PASS" if ready else "FAIL",
         "terminal_contract_audit_command": True,
+        "terminal_data_dir_found": bool(readiness.get("terminal_data_dir_recorded")),
+        "datadir_source": str(datadir_resolution.get("datadir_source", "")),
+        "datadir_resolution": public_datadir_resolution_summary(datadir_resolution) if datadir_resolution else {},
         "compiled_ex5_verified_in_terminal_datadir": bool(
             readiness.get("compiled_ex5_verified_in_terminal_datadir")
         ),
@@ -248,11 +298,7 @@ def build_terminal_contract_audit(
         "paths_sanitized": True,
         "public_summary_created": True,
         "next_mvp": "MVP-014L One-run Real Retry With Terminal Contract Audit PASS",
-        "next_step": (
-            "operator may approve MVP-014L one-run real retry only if terminal contract audit remains PASS"
-            if ready
-            else "fix terminal contract blocking issues before any real retry"
-        ),
+        "next_step": next_step,
     }
     return sanitize_terminal_contract_summary(payload)
 
@@ -263,6 +309,8 @@ def _terminal_contract_markdown(payload: dict[str, object]) -> str:
         "",
         f"- Status: {payload['status']}",
         f"- Terminal contract audit: {payload['terminal_contract_audit']}",
+        f"- Terminal DataDir found: {str(payload['terminal_data_dir_found']).lower()}",
+        f"- DataDir source: {payload['datadir_source'] or 'not_found'}",
         f"- Compiled EX5 verified in terminal DataDir: {str(payload['compiled_ex5_verified_in_terminal_datadir']).lower()}",
         f"- Terminal DataDir consistent: {str(payload['terminal_datadir_consistent']).lower()}",
         f"- Expert mapping valid for tester: {str(payload['expert_mapping_valid_for_tester']).lower()}",

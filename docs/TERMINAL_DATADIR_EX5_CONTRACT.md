@@ -44,11 +44,23 @@ python app\mt5_robot_lab_app.py --terminal-contract-audit
 This command writes sanitized public summaries and does not launch MT5,
 MetaEditor, Strategy Tester, compile an EX5 or execute an EA.
 
+MVP-014K2 adds a non-executing bootstrap command that resolves the terminal
+DataDir and creates the ignored local compiled-EX5 readiness marker only if the
+expected EX5 already exists under that terminal DataDir:
+
+```powershell
+python app\mt5_robot_lab_app.py --compiled-ex5-readiness-bootstrap
+```
+
 ## Current Decision
 
-The current MVP-014K audit is blocked:
+The current MVP-014K2 bootstrap/audit is blocked:
 
 ```text
+terminal_data_dir_found=true
+datadir_source=appdata_origin_txt
+compiled_ex5_found_in_terminal_datadir=false
+compiled_ex5_readiness_marker_missing
 terminal_contract_audit=FAIL
 compiled_ex5_verified_in_terminal_datadir=false
 terminal_datadir_consistent=false
@@ -56,7 +68,10 @@ expert_mapping_valid_for_tester=false
 ready_for_real_retry=false
 ```
 
-The next real retry remains blocked until this command returns PASS.
+This is an improvement over the previous missing-DataDir state, but it is still
+not enough for a real retry. The next real retry remains blocked until the EX5
+exists in the resolved terminal DataDir and the terminal contract audit returns
+PASS.
 
 ## Next MVP
 

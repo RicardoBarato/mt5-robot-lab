@@ -207,3 +207,16 @@ ready_for_real_retry=false
 Do not approve another real retry until the terminal DataDir, compiled EX5 and
 Strategy Tester expert mapping checks pass. The next planned real retry is
 `MVP-014L One-run Real Retry With Terminal Contract Audit PASS`.
+
+MVP-014K2 resolved the terminal DataDir through `appdata_origin_txt`, but the
+expected EX5 was not found in that terminal DataDir:
+
+```text
+terminal_data_dir_found=true
+compiled_ex5_found_in_terminal_datadir=false
+compiled_ex5_marker_created=false
+ready_for_real_retry=false
+```
+
+The next action is a non-backtest EX5 placement/compile readiness step, not a
+new real smoke.

@@ -281,6 +281,28 @@ ready_for_real_retry=false
 The next retry is `MVP-014L - One-run Real Retry With Terminal Contract Audit
 PASS`, and it remains blocked until `--terminal-contract-audit` returns PASS.
 
+MVP-014K2 adds a non-executing bootstrap command:
+
+```powershell
+python app\mt5_robot_lab_app.py --compiled-ex5-readiness-bootstrap
+```
+
+It resolves the terminal DataDir from the local terminal metadata and creates an
+ignored local EX5 readiness marker only if the expected compiled EX5 exists
+under that DataDir. The current 014K2 result is:
+
+```text
+terminal_data_dir_found=true
+datadir_source=appdata_origin_txt
+compiled_ex5_found_in_terminal_datadir=false
+compiled_ex5_marker_created=false
+ready_for_real_retry=false
+```
+
+So the next technical step is not another real smoke. It is to place or compile
+the expected EX5 into the resolved terminal DataDir, then rerun the bootstrap,
+preflight, runtime dry-run and terminal contract audit.
+
 ## MT5 Close After Real Run
 
 Every future gated real smoke or real backtest must use:
@@ -371,7 +393,7 @@ foundation, MVP factory, Operator Gate, publication guard, public/private
 artifact boundary and one gated real MT5 smoke attempt. Official report capture
 is still unresolved, no parseable real Strategy Tester report has been captured,
 the latest retry reached the Strategy Tester launch path but failed before EA
-execution, MVP-014K now blocks retry until the terminal DataDir EX5 contract
-passes, no multi-run
+execution, MVP-014K2 found the terminal DataDir but blocks retry until the
+compiled EX5 is present there and the terminal contract passes, no multi-run
 tournament has been run, no 100-backtest optimization has been run, no installer
 or portable zip exists and nothing is a financial recommendation.

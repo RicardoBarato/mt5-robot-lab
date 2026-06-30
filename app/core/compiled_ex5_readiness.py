@@ -16,12 +16,22 @@ import re
 from pathlib import Path
 from typing import Any
 
+from app.core.mt5_datadir_resolver import public_datadir_resolution_summary, resolve_terminal_datadir
 from app.core.mt5_detection import redact_public_path
 
 
-DEFAULT_READINESS_MARKER = Path("runs") / "terminal_contract" / "compiled_ex5_readiness.json"
+DEFAULT_READINESS_MARKER = Path("reports") / "private" / "local_readiness" / "compiled_ex5_readiness.local.json"
 DEFAULT_MARKER_MAX_AGE_SECONDS = 7 * 24 * 60 * 60
 WINDOWS_ABSOLUTE_RE = re.compile(r"(?i)^[a-z]:[\\/]")
+DEFAULT_BOOTSTRAP_EXPERT = "Examples\\MACD Sample"
+PUBLIC_BOOTSTRAP_JSON = Path("reports") / "public" / "compiled_ex5_readiness_bootstrap_summary.json"
+PUBLIC_BOOTSTRAP_MD = Path("reports") / "public" / "compiled_ex5_readiness_bootstrap_summary.md"
+PUBLIC_BOOTSTRAP_REPORT = (
+    Path("reports") / "public" / "MVP_014K2_TERMINAL_DATADIR_EX5_BOOTSTRAP_REPORT.md"
+)
+PASS_BOOTSTRAP_STATUS = "PASS_MVP_014K2_TERMINAL_DATADIR_EX5_BOOTSTRAP_COMPLETED"
+HOLD_DATADIR_STATUS = "HOLD_MVP_014K2_TERMINAL_DATADIR_NOT_FOUND"
+HOLD_EX5_STATUS = "HOLD_MVP_014K2_EX5_NOT_FOUND_IN_TERMINAL_DATADIR"
 
 
 @dataclass(frozen=True)
@@ -291,4 +301,193 @@ def public_readiness_summary(readiness: dict[str, object]) -> dict[str, object]:
         "expert_parameters_status": str(readiness.get("expert_parameters_status", "")),
         "blocking_issues": list(readiness.get("blocking_issues", [])),
         "warnings": list(readiness.get("warnings", [])),
+    }
+
+
+def _sanitize_bootstrap_value(value: object) -> object:
+    if isinstance(value, str):
+        if not _looks_like_path(value):
+            return value
+        return redact_public_path(value).replace(".ex5", "<COMPILED_EA_FILE>").replace(".set", "<SET_FILE>")
+    if isinstance(value, list):
+        return [_sanitize_bootstrap_value(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _sanitize_bootstrap_value(item) for key, item in value.items()}
+    return value
+
+
+def _looks_like_path(value: str) -> bool:
+    text = value.strip()
+    lowered = text.lower()
+    return (
+        ":\\" in text
+        or ":/" in text
+        or "\\" in text
+        or "/" in text
+        or lowered.startswith(("file://", "%appdata%", "%localappdata%", "%userprofile%"))
+        or text.startswith(("\\\\", "//"))
+    )
+
+
+def sanitize_bootstrap_summary(payload: dict[str, object]) -> dict[str, object]:
+    return {key: _sanitize_bootstrap_value(value) for key, value in payload.items()}
+
+
+def build_compiled_ex5_readiness_bootstrap(
+    project_root: Path,
+    *,
+    expert_relative_path: str = DEFAULT_BOOTSTRAP_EXPERT,
+    include_hash: bool = False,
+) -> dict[str, object]:
+    """Resolve the terminal DataDir and create an ignored marker if EX5 exists."""
+
+    resolution = resolve_terminal_datadir(project_root)
+    data_dir_found = bool(resolution.get("terminal_data_dir_found"))
+    data_dir = str(resolution.get("terminal_data_dir", "") or "")
+    expert_validation = validate_expert_relative_path(expert_relative_path)
+    expert = str(expert_validation["expert_relative_path"])
+    expected_path = expected_ex5_path_in_terminal_datadir(data_dir, expert) if data_dir and expert else Path()
+    ex5_exists = bool(expected_path and expected_path.exists() and expected_path.is_file())
+    marker_created = False
+    marker_payload: dict[str, object] = {}
+    readiness: dict[str, object] = {}
+
+    if data_dir_found and ex5_exists and bool(expert_validation["expert_format_valid"]):
+        marker_payload = write_compiled_ex5_readiness_marker(
+            project_root,
+            terminal_install_id=Path(data_dir).name,
+            terminal_fingerprint=Path(data_dir).name,
+            terminal_data_dir=data_dir,
+            expert_relative_path=expert,
+            include_hash=include_hash,
+        )
+        marker_created = True
+        readiness = validate_compiled_ex5_readiness(
+            project_root,
+            environment={"terminal_data_dir": data_dir},
+            expert_relative_path=expert,
+            readiness_marker=marker_payload,
+        )
+    else:
+        readiness = validate_compiled_ex5_readiness(
+            project_root,
+            environment={"terminal_data_dir": data_dir} if data_dir else {},
+            expert_relative_path=expert,
+            readiness_marker={},
+        )
+
+    blocking_issues = list(
+        dict.fromkeys(
+            [
+                *list(resolution.get("blocking_issues", [])),
+                *list(expert_validation["blocking_issues"]),
+                *list(readiness.get("blocking_issues", [])),
+            ]
+        )
+    )
+    if data_dir_found and not ex5_exists and "compiled_ex5_not_found_in_terminal_datadir" not in blocking_issues:
+        blocking_issues.append("compiled_ex5_not_found_in_terminal_datadir")
+
+    verified = bool(readiness.get("compiled_ex5_verified_in_terminal_datadir"))
+    if verified:
+        status = PASS_BOOTSTRAP_STATUS
+        next_step = "review/merge MVP-014K2, then operator may approve MVP-014L one-run real retry only if terminal contract audit remains PASS"
+    elif not data_dir_found:
+        status = HOLD_DATADIR_STATUS
+        next_step = "configure terminal_data_dir in ignored local config before retry"
+    else:
+        status = HOLD_EX5_STATUS
+        next_step = "compile_or_copy_ex5_to_terminal_datadir_before_retry"
+
+    payload = {
+        "status": status,
+        "datadir_resolver": True,
+        "datadir_source": str(resolution.get("datadir_source", "")),
+        "terminal_data_dir_found": data_dir_found,
+        "terminal_data_dir_structure_valid": bool(resolution.get("terminal_data_dir_structure_valid")),
+        "compiled_ex5_bootstrap_command": "PASS" if status == PASS_BOOTSTRAP_STATUS else "HOLD",
+        "compiled_ex5_found_in_terminal_datadir": ex5_exists,
+        "compiled_ex5_marker_created": marker_created,
+        "compiled_ex5_verified_in_terminal_datadir": verified,
+        "terminal_datadir_consistent": bool(readiness.get("terminal_data_dir_consistent")),
+        "expert_relative_path": expert,
+        "expert_relative_path_set": bool(expert_validation["expert_relative_path_set"]),
+        "expert_mapping_valid_for_tester": bool(readiness.get("expert_mapping_valid_for_strategy_tester")),
+        "marker_stale": bool(readiness.get("marker_stale")),
+        "blocking_issues": blocking_issues,
+        "warnings": list(dict.fromkeys([*list(resolution.get("warnings", [])), *list(readiness.get("warnings", []))])),
+        "datadir_resolution": public_datadir_resolution_summary(resolution),
+        "readiness": public_readiness_summary(readiness),
+        "compiled_ex5_expected_path_sanitized": (
+            redact_public_path(expected_path).replace(".ex5", "<COMPILED_EA_FILE>") if expected_path else ""
+        ),
+        "marker_path_sanitized": redact_public_path(marker_path(project_root)).replace(".json", "<JSON_MARKER>"),
+        "mt5_real_run_new": False,
+        "backtest_real_run_new": False,
+        "strategy_tester_run_new": False,
+        "ea_executed_new": False,
+        "tournament_100_run": False,
+        "exe_created": False,
+        "zip_created": False,
+        "credentials_stored": False,
+        "private_files_committed": False,
+        "ex5_committed": False,
+        "set_committed": False,
+        "paths_sanitized": True,
+        "public_summary_created": True,
+        "next_mvp": "MVP-014L One-run Real Retry With Terminal Contract Audit PASS",
+        "next_step": next_step,
+    }
+    return sanitize_bootstrap_summary(payload)
+
+
+def _bootstrap_markdown(payload: dict[str, object]) -> str:
+    lines = [
+        "# MVP-014K2 Terminal DataDir and EX5 Readiness Bootstrap",
+        "",
+        f"- Status: {payload['status']}",
+        f"- DataDir resolver: {str(payload['datadir_resolver']).lower()}",
+        f"- DataDir source: {payload['datadir_source']}",
+        f"- Terminal DataDir found: {str(payload['terminal_data_dir_found']).lower()}",
+        f"- Compiled EX5 found in terminal DataDir: {str(payload['compiled_ex5_found_in_terminal_datadir']).lower()}",
+        f"- Compiled EX5 marker created: {str(payload['compiled_ex5_marker_created']).lower()}",
+        f"- Compiled EX5 verified in terminal DataDir: {str(payload['compiled_ex5_verified_in_terminal_datadir']).lower()}",
+        f"- Terminal DataDir consistent: {str(payload['terminal_datadir_consistent']).lower()}",
+        f"- Expert mapping valid for tester: {str(payload['expert_mapping_valid_for_tester']).lower()}",
+        f"- Marker stale: {str(payload['marker_stale']).lower()}",
+        f"- Blocking issues: {', '.join(payload['blocking_issues']) if payload['blocking_issues'] else 'none'}",
+        f"- Warnings: {', '.join(payload['warnings']) if payload['warnings'] else 'none'}",
+        "- MT5 real run new: false",
+        "- Backtest real run new: false",
+        "- Strategy Tester run new: false",
+        "- EA executed new: false",
+        "- Credentials stored: false",
+        "- Private files committed: false",
+        "- EX5 committed: false",
+        "- SET committed: false",
+        "- Paths sanitized: true",
+        "",
+        "This bootstrap is non-executing. It does not launch MT5, MetaEditor or Strategy Tester, and it does not compile or create an EX5.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def generate_compiled_ex5_readiness_bootstrap(project_root: Path) -> dict[str, object]:
+    payload = build_compiled_ex5_readiness_bootstrap(project_root)
+    public_json = project_root / PUBLIC_BOOTSTRAP_JSON
+    public_md = project_root / PUBLIC_BOOTSTRAP_MD
+    public_report = project_root / PUBLIC_BOOTSTRAP_REPORT
+    public_json.parent.mkdir(parents=True, exist_ok=True)
+    public_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    markdown = _bootstrap_markdown(payload)
+    public_md.write_text(markdown, encoding="utf-8")
+    public_report.write_text(markdown, encoding="utf-8")
+    return {
+        "status": payload["status"],
+        "summary": payload,
+        "files": {
+            "json": str(public_json),
+            "markdown": str(public_md),
+            "report": str(public_report),
+        },
     }

@@ -25,6 +25,7 @@ from app.core.strategy_tester_report_config import (
     build_strategy_tester_report_contract,
     build_tester_ini_report_lines,
 )
+from app.core.terminal_contract_audit import build_terminal_contract_audit
 
 
 PUBLIC_RUNTIME_DRY_RUN_JSON = Path("reports") / "public" / "real_mt5_runtime_dry_run_summary.json"
@@ -229,7 +230,17 @@ def build_real_mt5_runtime_contract(
         {"candidate_id": run_id, "expert": expert_path},
         tester_ini_text=tester_text,
     )
-    terminal_readiness = public_readiness_summary(
+    terminal_contract = build_terminal_contract_audit(
+        project_root,
+        environment=env,
+        expert=expert_path,
+        symbol=symbol,
+        timeframe=timeframe,
+        tester_ini_text=tester_text,
+        report_contract=report,
+        allow_external_filesystem_check=False,
+    )
+    terminal_readiness = dict(terminal_contract.get("readiness", {})) or public_readiness_summary(
         validate_compiled_ex5_readiness(
             project_root,
             environment=env,
@@ -237,8 +248,20 @@ def build_real_mt5_runtime_contract(
             allow_external_filesystem_check=False,
         )
     )
-    all_issues = list(dict.fromkeys([*contract_issues, *list(runtime_preflight.get("blocking_issues", []))]))
-    ready = not all_issues and bool(runtime_preflight.get("ready_for_real_retry"))
+    all_issues = list(
+        dict.fromkeys(
+            [
+                *contract_issues,
+                *list(runtime_preflight.get("blocking_issues", [])),
+                *list(terminal_contract.get("blocking_issues", [])),
+            ]
+        )
+    )
+    ready = (
+        not all_issues
+        and bool(runtime_preflight.get("ready_for_real_retry"))
+        and bool(terminal_contract.get("ready_for_real_retry"))
+    )
     root_cause = (
         "compiled_ex5_ready_but_not_attached_to_runtime"
         if "compiled_ex5_ready_but_not_attached_to_runtime" in all_issues

@@ -167,9 +167,13 @@ class RealMT5PreflightTests(unittest.TestCase):
                 + (root / "reports" / "public" / "real_mt5_preflight_summary.md").read_text(encoding="utf-8")
             )
 
-        self.assertEqual(result["status"], "PASS_MVP_014F_PREFLIGHT_READY_FOR_REAL_RETRY")
-        self.assertTrue(payload["ready_for_retry"])
-        self.assertEqual(payload["blocking_issues"], [])
+        self.assertEqual(result["status"], "HOLD_MVP_014F_PREFLIGHT_BLOCKED")
+        self.assertFalse(payload["ready_for_retry"])
+        self.assertTrue(
+            "terminal_data_dir_missing" in payload["blocking_issues"]
+            or "compiled_ex5_readiness_marker_missing" in payload["blocking_issues"]
+        )
+        self.assertEqual(payload["terminal_contract_audit"], "FAIL")
         self.assertFalse(payload["mt5_real_run_new"])
         self.assertFalse(payload["backtest_real_run_new"])
         self.assertFalse(payload["strategy_tester_run_new"])

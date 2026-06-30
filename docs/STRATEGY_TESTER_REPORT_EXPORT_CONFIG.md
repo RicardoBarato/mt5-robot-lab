@@ -95,6 +95,10 @@ The report export contract is necessary but not sufficient. The current blocker
 is earlier in the Strategy Tester launch path: the compiled EX5 has not been
 verified in the terminal DataDir and the tester expert mapping is not proven.
 
+MVP-014K2 resolves the terminal DataDir through local terminal metadata, but the
+expected compiled EX5 is not present there yet. Report export remains ready, but
+execution remains blocked until EX5 placement and terminal contract audit pass.
+
 `MVP-014L One-run Real Retry With Terminal Contract Audit PASS` may use one real
 execution only after review, Operator Gate, close-after-run, report
 export/capture enabled, parse enabled, preflight success, runtime dry-run
