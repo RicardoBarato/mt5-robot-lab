@@ -8,7 +8,7 @@
 6. Add robust exports and submission packages. [completed as samples/specs]
 7. Execute gated one-run MT5 smoke. [completed]
 8. Add result capture/parser contract. [completed]
-9. Execute one-run capture smoke. [in PR: no official report captured]
+9. Execute one-run capture smoke. [completed: failed no retry]
 10. Add backtest budget product policy. [completed]
 11. Fix Strategy Tester report export/capture. [recommended next]
 12. Add installer and portable package after release review. [future]
@@ -19,7 +19,7 @@ PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
 REAL_MT5_STATUS = one_run_smoke_completed_no_report_captured
 
-NEXT_REQUIRED_STEP = mvp_014d_one_run_real_report_capture_smoke
+NEXT_REQUIRED_STEP = review_milestone_014_failure_summary_before_retry
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -33,7 +33,7 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014B | completed_no_report_found | One real capture smoke ran, but no official Strategy Tester report was found. |
 | Policy | completed | Public minimum is 10 backtests, default is 10, options are 10/50/100 and ranking is unified. |
 | MVP-014C | completed_in_pr | Defines Strategy Tester report export before any multi-run smoke. |
-| MVP-014D | recommended_next | One-run real report capture smoke with Operator Gate, export/capture and parser enabled. |
+| MVP-014D | failed_no_retry | One real report capture smoke was attempted once and failed with sanitized exit-code evidence. |
 
 ## Backtest Budget Policy
 
@@ -58,10 +58,12 @@ so that the next one-run real smoke can capture a parseable report.
 MVP-014C must not start a tournament, must not run 100 backtests and must remain
 behind explicit Operator Gate controls for any real smoke retry.
 
-## MVP-014D Recommended Scope
+## MVP-014D Result
 
 Title: MVP-014D - One-run Real Report Capture Smoke
 
-Objective: Run one gated real smoke with report export/capture enabled and parse
-enabled. MVP-014D must not run multi-run execution, a tournament, optimization
-or 10/50/100 public backtests.
+Result: one gated real smoke was attempted with report export/capture enabled.
+The Strategy Tester process returned exit code `3294954941`, no official report
+was found and no retry was attempted.
+
+Next decision: review the failure summary before approving any retry.

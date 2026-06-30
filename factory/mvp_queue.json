@@ -614,8 +614,14 @@
       {
         "id": "MVP-014D",
         "objective": "Run one gated real smoke with report export/capture enabled and parse enabled. No multi-run, tournament, optimization or 10/50/100 public backtests.",
-        "status": "recommended_next",
+        "status": "failed_no_retry",
         "title": "One-run Real Report Capture Smoke"
+      },
+      {
+        "id": "MILESTONE-014-FAILURE-REVIEW",
+        "objective": "Review the sanitized failed-no-retry result, generated tester configuration and MT5/Strategy Tester launch mechanics before approving any retry.",
+        "status": "recommended_next",
+        "title": "Milestone 014 Failure Summary Review"
       }
     ],
     "priority": "high",
