@@ -200,5 +200,15 @@ failure_stage=strategy_tester_failed_before_ea
 mt5_closed_after_run=true
 ```
 
+MVP-014J completed the non-executing runtime versus terminal diagnosis. It found
+that the compiled EA readiness marker is still project-local and has not been
+verified inside the terminal DataDir used by Strategy Tester:
+
+```text
+root_cause=compiled_ex5_marker_not_verified_in_terminal_datadir
+ready_for_real_retry=false
+```
+
 The current boundary remains: no multi-run, tournament, 10/50/100 backtests or
-new retry until `MVP-014J Runtime vs Terminal Gap Diagnosis` is completed.
+new retry until the `MVP-014K` terminal contract checks prove the terminal
+DataDir and Strategy Tester expert mapping.

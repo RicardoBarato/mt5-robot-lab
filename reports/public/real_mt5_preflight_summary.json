@@ -123,7 +123,7 @@
   "expert_path_ready": true,
   "failure_stage": "not_attempted",
   "mt5_real_run_new": false,
-  "next_step": "operator may approve MVP-014G one-run real retry only after reviewing preflight",
+  "next_step": "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
   "operator_gate_ready": true,
   "paths_sanitized": true,
   "preflight_command": true,

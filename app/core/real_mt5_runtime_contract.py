@@ -296,7 +296,7 @@ def make_runtime_contract_summary(runtime_contract: dict[str, object]) -> dict[s
         "private_files_committed": False,
         "paths_sanitized": True,
         "public_summary_created": True,
-        "next_step": "operator may approve MVP-014I one-run real retry after reviewing runtime dry-run",
+        "next_step": "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
     }
     return sanitize_runtime_contract_summary(payload)
 

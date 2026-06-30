@@ -29,6 +29,7 @@ from app.core.intelligence_modes import validate_intelligence_modes
 from app.core.lab_registry import load_lab_registry
 from app.core.leaderboard_schema import make_public_leaderboard_sample, validate_leaderboard_entry
 from app.core.mt5_detection import generate_diagnostics, write_local_mt5_environment_status
+from app.core.mt5_terminal_runtime_diagnostics import generate_terminal_runtime_diagnostics
 from app.core.operator_gate import (
     APPROVAL_PHRASE_EN,
     APPROVAL_PHRASE_PT,
@@ -251,6 +252,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Validate the real MT5 runtime contract without launching MT5",
     )
+    parser.add_argument(
+        "--terminal-runtime-diagnostics",
+        action="store_true",
+        help="Diagnose terminal/runtime gaps without launching MT5",
+    )
     parser.add_argument("--run-real-mt5-smoke", action="store_true", help="Run one explicitly approved local MT5 smoke")
     parser.add_argument("--operator-approval-phrase", default="", help="Exact operator approval phrase for real smoke")
     parser.add_argument("--mt5-terminal-path", default="", help="Optional manual terminal64.exe path for safe detection only")
@@ -324,6 +330,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.real_mt5_runtime_dry_run:
         result = generate_real_mt5_runtime_dry_run(PROJECT_ROOT)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.terminal_runtime_diagnostics:
+        result = generate_terminal_runtime_diagnostics(PROJECT_ROOT)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     if args.run_real_mt5_smoke:

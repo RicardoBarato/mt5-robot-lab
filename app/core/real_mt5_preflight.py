@@ -554,7 +554,7 @@ def generate_real_mt5_preflight_readiness(project_root: Path) -> dict[str, objec
         "raw_logs_public": False,
         "paths_sanitized": True,
         "preflight_mode": "contract_readiness_no_terminal_launch",
-        "next_step": "operator may approve MVP-014G one-run real retry only after reviewing preflight",
+        "next_step": "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
     }
     payload = _sanitize_preflight_public_payload(payload)
     public_json = project_root / PUBLIC_PREFLIGHT_JSON

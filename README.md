@@ -243,6 +243,22 @@ the Strategy Tester launch path, but the EA did not execute, no official report
 was captured and no retry was attempted. The next required technical step is
 `MVP-014J - Runtime vs Terminal Gap Diagnosis`.
 
+MVP-014J adds a non-executing diagnostic command:
+
+```powershell
+python app\mt5_robot_lab_app.py --terminal-runtime-diagnostics
+```
+
+The diagnostic reviews local private run artifacts and publishes only sanitized
+public summaries. It does not launch MT5, does not start Strategy Tester and
+does not execute an EA. The current root cause is
+`compiled_ex5_marker_not_verified_in_terminal_datadir`: the runtime contract can
+see a project-local compiled EX5 readiness marker, but it has not proven that
+the compiled EA exists in the terminal DataDir used by Strategy Tester.
+`ready_for_real_retry=false` until the terminal DataDir and expert mapping are
+proven. The next planned step is `MVP-014K - One-run Real Retry only after
+terminal contract diagnosis passes`.
+
 ## MT5 Close After Real Run
 
 Every future gated real smoke or real backtest must use:
@@ -307,9 +323,10 @@ Raw Strategy Tester reports must stay under `reports/private/real_mt5_smoke/`.
 Public summaries must stay sanitized. Controlled multi-run execution remains
 blocked until a future one-run smoke captures and parses an official report.
 
-The next required technical step is `MVP-014J - Runtime vs Terminal Gap
-Diagnosis`, still requiring no multi-run or 10/50/100 public backtests until a
-single controlled smoke executes and captures a parseable official report.
+The current technical gate is `MVP-014K - One-run Real Retry only after terminal
+contract diagnosis passes`. It still requires no multi-run or 10/50/100 public
+backtests until a single controlled smoke executes and captures a parseable
+official report.
 
 ## Development Validation
 
@@ -332,6 +349,6 @@ foundation, MVP factory, Operator Gate, publication guard, public/private
 artifact boundary and one gated real MT5 smoke attempt. Official report capture
 is still unresolved, no parseable real Strategy Tester report has been captured,
 the latest retry reached the Strategy Tester launch path but failed before EA
-execution, no multi-run tournament has been run, no 100-backtest optimization
-has been run, no installer or portable zip exists and nothing is a financial
-recommendation.
+execution, MVP-014J diagnosed the terminal/DataDir contract gap, no multi-run
+tournament has been run, no 100-backtest optimization has been run, no installer
+or portable zip exists and nothing is a financial recommendation.

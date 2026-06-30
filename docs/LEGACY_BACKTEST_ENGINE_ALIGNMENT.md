@@ -104,4 +104,24 @@ parse_status=no_report_found
 mt5_closed_after_run=true
 ```
 
-The next alignment task is `MVP-014J Runtime vs Terminal Gap Diagnosis`.
+## MVP-014J Result
+
+MVP-014J added a non-executing diagnostic command:
+
+```text
+python app\mt5_robot_lab_app.py --terminal-runtime-diagnostics
+```
+
+The diagnostic reviews local private run artifacts and publishes only sanitized
+conclusions. It found the current root cause:
+
+```text
+root_cause=compiled_ex5_marker_not_verified_in_terminal_datadir
+exit_code=3294954941
+failure_stage=strategy_tester_failed_before_ea
+ready_for_real_retry=false
+```
+
+The next alignment task is `MVP-014K One-run Real Retry only after terminal
+contract diagnosis passes`, blocked until the terminal DataDir and Strategy
+Tester expert mapping are proven.

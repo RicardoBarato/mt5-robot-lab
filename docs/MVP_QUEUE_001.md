@@ -28,8 +28,9 @@ The Grand MVP queue tracks the current public-safe desktop product roadmap.
 | MVP-014F | Preflight Readiness | high | completed |
 | MVP-014G | One-run Real Retry After Preflight | high | completed_not_parseable |
 | MVP-014H | Runtime Gap Diagnosis | high | completed |
-| MVP-014I | One-run Real Retry With Runtime Dry-Run Proven | high | blocked_runtime_vs_terminal_gap |
-| MVP-014J | Runtime vs Terminal Gap Diagnosis | high | recommended_next |
+| MVP-014I | One-run Real Retry With Runtime Dry-Run Proven | high | blocked_strategy_tester_failed_before_ea |
+| MVP-014J | Runtime vs Terminal Gap Diagnosis | high | completed |
+| MVP-014K | One-run Real Retry After Terminal Contract Diagnosis | high | recommended_next |
 
 Use:
 
@@ -49,7 +50,9 @@ capture contract and conservative parser. MVP-014B ran one capture smoke and
 recorded `no_report_found` because no official Strategy Tester report was
 captured.
 
-The next recommended step is `MVP-014J Runtime vs Terminal Gap Diagnosis`.
+The next recommended step is `MVP-014K One-run Real Retry After Terminal
+Contract Diagnosis`, but only after the terminal DataDir and Strategy Tester
+expert mapping checks pass.
 
 Before MVP-014D, every real execution path must carry the close-after-run
 policy:
@@ -192,4 +195,24 @@ failure_stage=strategy_tester_failed_before_ea
 exit_code=3294954941
 mt5_closed_after_run=true
 next_mvp=MVP-014J Runtime vs Terminal Gap Diagnosis
+```
+
+MVP-014J result:
+
+```text
+terminal_runtime_diagnostics_command=PASS
+root_cause=compiled_ex5_marker_not_verified_in_terminal_datadir
+exit_code=3294954941
+failure_stage=strategy_tester_failed_before_ea
+tester_ini_reviewed=true
+expert_mapping_checked=true
+data_dir_consistency_checked=true
+report_contract_checked=true
+terminal_args_checked=true
+contract_bug_fixed=false
+ready_for_real_retry=false
+mt5_real_run_new=false
+strategy_tester_run_new=false
+ea_executed_new=false
+next_mvp=MVP-014K One-run Real Retry only after terminal contract diagnosis passes
 ```

@@ -13,7 +13,7 @@
   "expert_path": "Examples\\MACD Sample",
   "max_backtests": 1,
   "mt5_real_run_new": false,
-  "next_step": "operator may approve MVP-014I one-run real retry after reviewing runtime dry-run",
+  "next_step": "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
   "operator_gate_approved": true,
   "paths_sanitized": true,
   "private_files_committed": false,

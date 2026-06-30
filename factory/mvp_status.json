@@ -21,9 +21,10 @@
   "MVP-014F": "completed",
   "MVP-014G": "completed_not_parseable",
   "MVP-014H": "completed",
-  "MVP-014I": "blocked_runtime_vs_terminal_gap",
+  "MVP-014I": "blocked_strategy_tester_failed_before_ea",
   "MILESTONE-014-FAILURE-REVIEW": "completed_by_mvp_014e",
   "MT5_CLOSE_AFTER_REAL_RUN_POLICY": "completed",
   "BACKTEST_BUDGET_PRODUCT_POLICY": "completed",
-  "MVP-014J": "recommended_next"
+  "MVP-014J": "completed",
+  "MVP-014K": "recommended_next"
 }
