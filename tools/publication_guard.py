@@ -53,6 +53,7 @@ TEXT_EXTENSIONS = {
     ".yml",
     ".yaml",
     ".toml",
+    ".mq5",
 }
 
 SCAN_ROOTS = (
@@ -63,6 +64,7 @@ SCAN_ROOTS = (
     "docs/",
     "factory/",
     ".github/workflows/",
+    "MQL5/",
 )
 
 PRIVATE_PATH_PATTERNS = [

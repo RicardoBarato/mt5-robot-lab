@@ -65,7 +65,7 @@ when a safe source exists and the MetaEditor path is configured.
 
 ## Current Decision
 
-The current MVP-014K3 bootstrap/audit is blocked:
+The MVP-014K3 bootstrap/audit was blocked:
 
 ```text
 status=HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND
@@ -96,6 +96,14 @@ DataDir and the terminal contract audit returns PASS.
 
 `MVP-014L - One-run Real Retry With Terminal Contract Audit PASS` may be
 requested only after:
+
+MVP-014K4 adds a public, non-trading smoke harness source at
+`MQL5/Experts/MT5RobotLab/SmokeHarness_Public.mq5` and changes the default
+Strategy Tester expert mapping to `MT5RobotLab\SmokeHarness_Public`. The source
+has no trade operations, grid, martingale or credential handling. The bootstrap
+may invoke MetaEditor only to compile this source into the resolved terminal
+DataDir; it still must not launch `terminal64.exe`, Strategy Tester or any
+backtest.
 
 ```text
 --real-mt5-preflight PASS

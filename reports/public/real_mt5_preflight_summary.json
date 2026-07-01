@@ -1,12 +1,6 @@
 {
   "backtest_real_run_new": false,
-  "blocking_issues": [
-    "compiled_ex5_readiness_marker_missing",
-    "terminal_data_dir_mismatch",
-    "compiled_ex5_not_found_in_terminal_datadir",
-    "compiled_ex5_not_verified_in_terminal_datadir",
-    "expert_mapping_invalid_for_strategy_tester"
-  ],
+  "blocking_issues": [],
   "candidate_id": "mvp_014f_preflight_readiness",
   "checks": [
     {
@@ -25,14 +19,14 @@
     },
     {
       "blocking": false,
-      "detail": "Examples\\MACD Sample",
+      "detail": "MT5RobotLab\\SmokeHarness_Public",
       "name": "expert_path",
       "passed": true,
       "reason": "expert_path_present"
     },
     {
       "blocking": false,
-      "detail": "<WINDOWS_PATH_REDACTED>\\MACD Sample<COMPILED_EA_FILE>",
+      "detail": "<APPDATA>\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Experts\\MT5RobotLab\\SmokeHarness_Public<COMPILED_EA_FILE>",
       "name": "compiled_ex5_expected",
       "passed": true,
       "reason": "compiled_ex5_found"
@@ -117,20 +111,20 @@
   ],
   "close_after_run_ready": true,
   "compiled_ex5_checked": true,
-  "compiled_ex5_expected": "<WINDOWS_PATH_REDACTED>\\MACD Sample<COMPILED_EA_FILE>",
+  "compiled_ex5_expected": "<APPDATA>\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Experts\\MT5RobotLab\\SmokeHarness_Public<COMPILED_EA_FILE>",
   "compiled_ex5_ready": true,
-  "compiled_ex5_verified_in_terminal_datadir": false,
+  "compiled_ex5_verified_in_terminal_datadir": true,
   "credentials_stored": false,
   "ea_executed_new": false,
   "exe_created": false,
   "exit_code_category": "not_recorded",
   "exit_code_recorded": null,
-  "expert_expected": "Examples\\MACD Sample",
+  "expert_expected": "MT5RobotLab\\SmokeHarness_Public",
   "expert_path_checked": true,
   "expert_path_ready": true,
   "failure_stage": "not_attempted",
   "mt5_real_run_new": false,
-  "next_step": "compile_or_copy_ex5_to_terminal_datadir_before_retry",
+  "next_step": "operator may approve MVP-014L only after review and fresh Operator Gate approval",
   "operator_gate_ready": true,
   "paths_sanitized": true,
   "preflight_command": true,
@@ -139,8 +133,8 @@
   "private_files_committed": false,
   "public_preflight_summary": true,
   "raw_logs_public": false,
-  "ready_for_real_retry": false,
-  "ready_for_retry": false,
+  "ready_for_real_retry": true,
+  "ready_for_retry": true,
   "report_contract_ready": true,
   "report_contract_summary": {
     "expected_report_paths": [
@@ -161,31 +155,26 @@
   },
   "report_export_contract_checked": true,
   "report_path_privacy_checked": true,
-  "status": "blocked_preflight_failed",
+  "status": "ready_for_one_run_retry",
   "strategy_tester_run_new": false,
-  "terminal_contract_audit": "FAIL",
+  "terminal_contract_audit": "PASS",
   "terminal_contract_audit_required": true,
   "terminal_contract_readiness": {
-    "blocking_issues": [
-      "compiled_ex5_readiness_marker_missing",
-      "terminal_data_dir_mismatch",
-      "compiled_ex5_not_found_in_terminal_datadir",
-      "compiled_ex5_not_verified_in_terminal_datadir"
-    ],
-    "compiled_ex5_verified_in_terminal_datadir": false,
-    "expert_mapping_valid_for_strategy_tester": false,
+    "blocking_issues": [],
+    "compiled_ex5_verified_in_terminal_datadir": true,
+    "expert_mapping_valid_for_strategy_tester": true,
     "expert_parameters_status": "not_required",
     "expert_relative_path_set": true,
     "marker_stale": false,
-    "terminal_datadir_consistent": false,
+    "terminal_datadir_consistent": true,
     "warnings": []
   },
-  "terminal_datadir_consistent": false,
+  "terminal_datadir_consistent": true,
   "terminal_launch_args_sanitized": [],
   "tester_ini_contract_checked": true,
   "tester_ini_contract_ready": true,
   "tester_ini_contract_summary": {
-    "expert": "Examples\\MACD Sample",
+    "expert": "MT5RobotLab\\SmokeHarness_Public",
     "optimization": "0",
     "period": "M5",
     "replace_report": "1",

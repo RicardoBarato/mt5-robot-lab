@@ -227,7 +227,14 @@ MVP-014K3 implements that non-backtest bootstrap command:
 python app\mt5_robot_lab_app.py --compiled-ex5-terminal-bootstrap
 ```
 
-The command currently holds with
-`HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND` because no safe MQL5 source or
-ignored local EX5 is available. It did not launch MT5, did not start Strategy
-Tester and did not run a backtest.
+The command held with `HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND` because no
+safe MQL5 source or ignored local EX5 was available. It did not launch MT5, did
+not start Strategy Tester and did not run a backtest.
+
+MVP-014K4 provides the safe public source
+`MQL5/Experts/MT5RobotLab/SmokeHarness_Public.mq5` and updates the tester expert
+mapping to `MT5RobotLab\SmokeHarness_Public`. The source is a smoke harness
+only: no trade operations, no grid, no martingale and no credential handling.
+The bootstrap may use MetaEditor for compile only; `terminal64.exe`, Strategy
+Tester and backtests remain blocked until MVP-014L receives a fresh Operator
+Gate approval after all non-executing contracts pass.

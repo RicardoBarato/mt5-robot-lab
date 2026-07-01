@@ -25,13 +25,13 @@ READY_ENVIRONMENT = {
 
 def _attach_terminal_contract(root: Path) -> dict[str, object]:
     data_dir = root / "terminal_data"
-    ex5 = data_dir / "MQL5" / "Experts" / "Examples" / "MACD Sample.ex5"
+    ex5 = data_dir / "MQL5" / "Experts" / "MT5RobotLab" / "SmokeHarness_Public.ex5"
     ex5.parent.mkdir(parents=True)
     ex5.write_text("compiled fake", encoding="utf-8")
     write_compiled_ex5_readiness_marker(
         root,
         terminal_data_dir=data_dir,
-        expert_relative_path="Examples\\MACD Sample",
+        expert_relative_path="MT5RobotLab\\SmokeHarness_Public",
     )
     return {**READY_ENVIRONMENT, "terminal_data_dir": str(data_dir)}
 

@@ -23,7 +23,7 @@ from app.core.mt5_detection import redact_public_path
 DEFAULT_READINESS_MARKER = Path("reports") / "private" / "local_readiness" / "compiled_ex5_readiness.local.json"
 DEFAULT_MARKER_MAX_AGE_SECONDS = 7 * 24 * 60 * 60
 WINDOWS_ABSOLUTE_RE = re.compile(r"(?i)^[a-z]:[\\/]")
-DEFAULT_BOOTSTRAP_EXPERT = "Examples\\MACD Sample"
+DEFAULT_BOOTSTRAP_EXPERT = "MT5RobotLab\\SmokeHarness_Public"
 PUBLIC_BOOTSTRAP_JSON = Path("reports") / "public" / "compiled_ex5_readiness_bootstrap_summary.json"
 PUBLIC_BOOTSTRAP_MD = Path("reports") / "public" / "compiled_ex5_readiness_bootstrap_summary.md"
 PUBLIC_BOOTSTRAP_REPORT = (

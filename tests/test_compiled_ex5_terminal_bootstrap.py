@@ -20,7 +20,7 @@ def _make_root() -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
     temp = tempfile.TemporaryDirectory()
     root = Path(temp.name)
     data_dir = root / "terminal_data"
-    (data_dir / "MQL5" / "Experts" / "Examples").mkdir(parents=True)
+    (data_dir / "MQL5" / "Experts" / "MT5RobotLab").mkdir(parents=True)
     (data_dir / "MQL5" / "Profiles" / "Tester").mkdir(parents=True)
     (root / "config").mkdir()
     (root / "config" / "mt5.local.json").write_text(
@@ -34,7 +34,7 @@ class CompiledEX5TerminalBootstrapTests(unittest.TestCase):
     def test_existing_ex5_in_terminal_datadir_returns_pass(self) -> None:
         temp, root, data_dir = _make_root()
         with temp:
-            ex5 = data_dir / "MQL5" / "Experts" / "Examples" / "MACD Sample.ex5"
+            ex5 = data_dir / "MQL5" / "Experts" / "MT5RobotLab" / "SmokeHarness_Public.ex5"
             ex5.write_bytes(b"compiled")
 
             result = build_compiled_ex5_terminal_bootstrap(root)
@@ -70,9 +70,9 @@ class CompiledEX5TerminalBootstrapTests(unittest.TestCase):
     def test_ambiguous_source_returns_hold(self) -> None:
         temp, root, data_dir = _make_root()
         with temp:
-            target_mq5 = data_dir / "MQL5" / "Experts" / "Examples" / "MACD Sample.mq5"
+            target_mq5 = data_dir / "MQL5" / "Experts" / "MT5RobotLab" / "SmokeHarness_Public.mq5"
             target_mq5.write_text("// source in datadir", encoding="utf-8")
-            repo_source = root / "app" / "assets" / "mql5" / "Examples" / "MACD Sample.mq5"
+            repo_source = root / "app" / "assets" / "mql5" / "MT5RobotLab" / "SmokeHarness_Public.mq5"
             repo_source.parent.mkdir(parents=True)
             repo_source.write_text("// repo source", encoding="utf-8")
 
@@ -91,10 +91,10 @@ class CompiledEX5TerminalBootstrapTests(unittest.TestCase):
                 json.dumps({"terminal_data_dir": str(data_dir), "metaeditor_path": str(metaeditor)}),
                 encoding="utf-8",
             )
-            source = root / "app" / "assets" / "mql5" / "Examples" / "MACD Sample.mq5"
+            source = root / "app" / "assets" / "mql5" / "MT5RobotLab" / "SmokeHarness_Public.mq5"
             source.parent.mkdir(parents=True)
             source.write_text("// safe repo source", encoding="utf-8")
-            target_ex5 = data_dir / "MQL5" / "Experts" / "Examples" / "MACD Sample.ex5"
+            target_ex5 = data_dir / "MQL5" / "Experts" / "MT5RobotLab" / "SmokeHarness_Public.ex5"
 
             def runner(command, *, cwd, timeout, capture_output, text, check):
                 self.assertIn("metaeditor64.exe", command[0])
@@ -112,6 +112,33 @@ class CompiledEX5TerminalBootstrapTests(unittest.TestCase):
         self.assertTrue(result["compiled_ex5_created_or_copied"])
         self.assertTrue(result["compiled_ex5_found_after"])
         self.assertEqual(marker["bootstrap_method"], METHOD_COMPILED)
+
+    def test_metaeditor_nonzero_with_zero_error_log_is_accepted(self) -> None:
+        temp, root, data_dir = _make_root()
+        with temp:
+            metaeditor = root / "metaeditor64.exe"
+            metaeditor.write_text("", encoding="utf-8")
+            (root / "config" / "mt5.local.json").write_text(
+                json.dumps({"terminal_data_dir": str(data_dir), "metaeditor_path": str(metaeditor)}),
+                encoding="utf-8",
+            )
+            source = root / "app" / "assets" / "mql5" / "MT5RobotLab" / "SmokeHarness_Public.mq5"
+            source.parent.mkdir(parents=True)
+            source.write_text("// safe repo source", encoding="utf-8")
+            target_ex5 = data_dir / "MQL5" / "Experts" / "MT5RobotLab" / "SmokeHarness_Public.ex5"
+
+            def runner(command, *, cwd, timeout, capture_output, text, check):
+                target_ex5.write_bytes(b"compiled")
+                log_arg = next(arg for arg in command if str(arg).startswith("/log:"))
+                Path(str(log_arg)[5:]).write_text("Result: 0 errors, 0 warnings", encoding="utf-8")
+                return subprocess.CompletedProcess(command, 1, "", "")
+
+            result = build_compiled_ex5_terminal_bootstrap(root, compile_runner=runner)
+
+        self.assertEqual(result["status"], PASS_STATUS)
+        self.assertEqual(result["bootstrap_method"], METHOD_COMPILED)
+        self.assertEqual(result["metaeditor_exit_code"], 1)
+        self.assertTrue(result["compiled_ex5_created_or_copied"])
 
 
 if __name__ == "__main__":

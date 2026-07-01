@@ -13,7 +13,11 @@ import time
 from pathlib import Path
 from typing import Any
 
-from app.core.compiled_ex5_readiness import public_readiness_summary, validate_compiled_ex5_readiness
+from app.core.compiled_ex5_readiness import (
+    load_compiled_ex5_readiness_marker,
+    public_readiness_summary,
+    validate_compiled_ex5_readiness,
+)
 from app.core.mt5_detection import build_local_mt5_environment_status, redact_public_path
 from app.core.real_mt5_preflight import (
     DEFAULT_EXPERT,
@@ -111,12 +115,20 @@ def attach_ex5_readiness_to_runtime_contract(
     marker_max_age_seconds: int = DEFAULT_MARKER_MAX_AGE_SECONDS,
 ) -> dict[str, object]:
     marker = marker_path or expected_preflight_ex5_marker_path(project_root)
+    readiness_marker = load_compiled_ex5_readiness_marker(project_root)
     updated = dict(contract)
     updated["ex5_readiness_marker_present"] = marker.exists() and marker.is_file()
     updated["ex5_readiness_marker_stale"] = False
     updated["compiled_ex5_expected"] = ""
     updated["compiled_ex5_configured"] = False
     updated["ex5_marker_issue"] = ""
+
+    marker_expected = Path(str(readiness_marker.get("compiled_ex5_expected_path", "") or ""))
+    if marker_expected.suffix.lower() == ".ex5" and marker_expected.exists() and marker_expected.is_file():
+        updated["ex5_readiness_marker_present"] = True
+        updated["compiled_ex5_expected"] = str(marker_expected)
+        updated["compiled_ex5_configured"] = True
+        return updated
 
     if not updated["ex5_readiness_marker_present"]:
         updated["ex5_marker_issue"] = "compiled_ex5_marker_missing"
@@ -344,7 +356,9 @@ def make_runtime_contract_summary(runtime_contract: dict[str, object]) -> dict[s
         "private_files_committed": False,
         "paths_sanitized": True,
         "public_summary_created": True,
-        "next_step": "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
+        "next_step": "operator may approve MVP-014L only after review and fresh Operator Gate approval"
+        if bool(runtime_preflight.get("ready_for_real_retry"))
+        else "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
     }
     return sanitize_runtime_contract_summary(payload)
 

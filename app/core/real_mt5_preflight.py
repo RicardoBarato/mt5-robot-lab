@@ -13,7 +13,12 @@ import json
 from pathlib import Path
 from typing import Any
 
-from app.core.compiled_ex5_readiness import public_readiness_summary, validate_compiled_ex5_readiness
+from app.core.compiled_ex5_readiness import (
+    DEFAULT_BOOTSTRAP_EXPERT,
+    load_compiled_ex5_readiness_marker,
+    public_readiness_summary,
+    validate_compiled_ex5_readiness,
+)
 from app.core.mt5_detection import redact_public_path, validate_mt5_executable_path
 from app.core.strategy_tester_report_config import (
     build_strategy_tester_report_contract,
@@ -22,7 +27,7 @@ from app.core.strategy_tester_report_config import (
 from app.core.terminal_contract_audit import build_terminal_contract_audit
 
 
-DEFAULT_EXPERT = "Examples\\MACD Sample"
+DEFAULT_EXPERT = DEFAULT_BOOTSTRAP_EXPERT
 BLOCKED_STATUS = "blocked_preflight_failed"
 READY_STATUS = "ready_for_one_run_retry"
 UNKNOWN_EXIT_CODE_CATEGORY = "unknown_terminal_exit"
@@ -30,7 +35,7 @@ PUBLIC_PREFLIGHT_JSON = Path("reports") / "public" / "real_mt5_preflight_summary
 PUBLIC_PREFLIGHT_MD = Path("reports") / "public" / "real_mt5_preflight_summary.md"
 PUBLIC_PREFLIGHT_REPORT = Path("reports") / "public" / "MVP_014F_PREFLIGHT_READINESS_REPORT.md"
 EX5_READINESS_MARKER_RELATIVE_PATH = (
-    Path("runs") / "preflight_readiness" / "mvp_014f" / "compiled" / "MACD Sample.ex5"
+    Path("runs") / "preflight_readiness" / "mvp_014f" / "compiled" / "SmokeHarness_Public.ex5"
 )
 
 
@@ -451,6 +456,14 @@ def expected_preflight_ex5_marker_path(project_root: Path) -> Path:
     return project_root / EX5_READINESS_MARKER_RELATIVE_PATH
 
 
+def resolve_preflight_expected_ex5_path(project_root: Path) -> Path | None:
+    marker = load_compiled_ex5_readiness_marker(project_root)
+    candidate = Path(str(marker.get("compiled_ex5_expected_path", "") or ""))
+    if candidate.suffix.lower() == ".ex5" and candidate.exists() and candidate.is_file():
+        return candidate
+    return None
+
+
 def ensure_ignored_preflight_ex5_marker(project_root: Path) -> Path:
     """Create an ignored local readiness marker for the EX5 existence check.
 
@@ -512,7 +525,7 @@ def generate_real_mt5_preflight_readiness(project_root: Path) -> dict[str, objec
 
     report_contract = build_strategy_tester_report_contract("mvp_014f_preflight_readiness")
     tester_ini_text = _build_preflight_tester_ini(report_contract)
-    expected_ex5_path = ensure_ignored_preflight_ex5_marker(project_root)
+    expected_ex5_path = resolve_preflight_expected_ex5_path(project_root) or expected_preflight_ex5_marker_path(project_root)
     summary = build_real_mt5_preflight_check(
         RealMT5PreflightConfig(
             terminal_found=True,
@@ -556,7 +569,9 @@ def generate_real_mt5_preflight_readiness(project_root: Path) -> dict[str, objec
         "raw_logs_public": False,
         "paths_sanitized": True,
         "preflight_mode": "contract_readiness_no_terminal_launch",
-        "next_step": "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
+        "next_step": "operator may approve MVP-014L only after review and fresh Operator Gate approval"
+        if bool(summary["ready_for_real_retry"])
+        else "retry remains blocked until terminal DataDir and expert mapping diagnostics pass",
     }
     terminal_contract = build_terminal_contract_audit(project_root)
     terminal_contract_readiness = dict(terminal_contract.get("readiness", {})) or public_readiness_summary(

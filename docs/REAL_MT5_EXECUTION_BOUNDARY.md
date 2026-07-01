@@ -233,8 +233,13 @@ returns PASS.
 
 MVP-014K3 adds `python app\mt5_robot_lab_app.py --compiled-ex5-terminal-bootstrap`.
 It can only bootstrap from an existing terminal DataDir EX5, an explicitly
-configured ignored local EX5, or one safe MQL5 source. The current result is
+configured ignored local EX5, or one safe MQL5 source. The K3 result was
 `HOLD_MVP_014K3_MQL5_SOURCE_OR_EX5_NOT_FOUND`, with no MetaEditor run and no
-MT5 terminal launch. Any future real execution remains blocked until this
-bootstrap returns PASS and the terminal contract audit, preflight and runtime
-dry-run also pass.
+MT5 terminal launch.
+
+MVP-014K4 provides the safe source
+`MQL5/Experts/MT5RobotLab/SmokeHarness_Public.mq5` and maps the tester expert to
+`MT5RobotLab\SmokeHarness_Public`. The harness is non-trading and contains no
+grid, martingale, live credential handling or order operations. Any future real
+execution remains blocked until this bootstrap returns PASS and the terminal
+contract audit, preflight and runtime dry-run also pass.

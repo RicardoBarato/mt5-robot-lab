@@ -129,7 +129,7 @@ class CompiledEX5ReadinessTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             data_dir = root / "terminal_data"
-            ex5 = data_dir / "MQL5" / "Experts" / "Examples" / "MACD Sample.ex5"
+            ex5 = data_dir / "MQL5" / "Experts" / "MT5RobotLab" / "SmokeHarness_Public.ex5"
             ex5.parent.mkdir(parents=True)
             ex5.write_text("compiled fake", encoding="utf-8")
             config_dir = root / "config"

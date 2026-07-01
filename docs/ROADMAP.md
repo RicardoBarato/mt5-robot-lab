@@ -19,16 +19,17 @@
 17. Verify terminal DataDir EX5 and Strategy Tester contract before any new retry. [completed: retry blocked]
 18. Bootstrap terminal DataDir EX5 readiness before any retry. [blocked: EX5 absent in DataDir]
 19. Bootstrap terminal DataDir EX5 from safe source or ignored local EX5. [hold: source or EX5 missing]
-20. Retry one-run real smoke only after terminal contract audit passes. [blocked until contract pass]
-21. Add installer and portable package after release review. [future]
+20. Add safe smoke EA source and EX5 compile bootstrap. [in progress]
+21. Retry one-run real smoke only after terminal contract audit passes. [blocked until contract pass]
+22. Add installer and portable package after release review. [future]
 
 ## Current Stage
 
 PROJECT_STAGE = advanced_technical_mvp_not_final_product
 
-REAL_MT5_STATUS = terminal_contract_audit_blocks_retry_until_ex5_datadir_mapping_proven
+REAL_MT5_STATUS = safe_smoke_ea_source_ex5_bootstrap_in_progress
 
-NEXT_REQUIRED_STEP = provide_safe_MQ5_source_or_ignored_EX5_before_MVP_014L
+NEXT_REQUIRED_STEP = compile_safe_smoke_ea_into_terminal_datadir_and_verify_contracts_before_MVP_014L
 
 BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 
@@ -52,6 +53,7 @@ BACKTEST_BUDGET_POLICY = minimum_public_backtests_10_default_10_unified_ranking
 | MVP-014K | blocked_terminal_contract | Terminal DataDir EX5 contract audit added; retry remains blocked. |
 | MVP-014K2 | hold_ex5_not_found_in_terminal_datadir | Terminal DataDir resolved from `origin.txt`, but expected EX5 is absent in that DataDir. |
 | MVP-014K3 | hold_mql5_source_or_ex5_not_found | Terminal DataDir bootstrap command added; no safe MQL5 source or ignored local EX5 was available. |
+| MVP-014K4 | safe_smoke_ea_source_ex5_bootstrap_in_progress | Safe non-trading smoke EA source added; bootstrap compiles/copies it into terminal DataDir and verifies contracts. |
 | MVP-014L | blocked_until_terminal_contract_pass | One-run real retry only after terminal contract audit PASS. |
 
 ## Backtest Budget Policy
@@ -286,3 +288,29 @@ blocking_issues=mql5_source_or_ex5_not_found
 Next decision: provide or generate a safe EA source, or provide an explicitly
 configured ignored local EX5, then rerun the bootstrap and terminal contract
 audit before any MVP-014L approval.
+
+## MVP-014K4 Result
+
+Title: MVP-014K4 - Safe Smoke EA Source and EX5 Compile Bootstrap
+
+Result: adds a public, non-trading smoke harness source at
+`MQL5/Experts/MT5RobotLab/SmokeHarness_Public.mq5` and updates the terminal
+bootstrap to use `MT5RobotLab\SmokeHarness_Public` as the Strategy Tester
+expert path. The harness contains initialization/deinitialization/tester hooks
+and an intentionally empty tick handler; it contains no trade operations, no
+grid, no martingale and no live credential handling.
+
+The bootstrap remains non-executing for `terminal64.exe` and Strategy Tester.
+It may run MetaEditor only to compile this safe source into the resolved
+terminal DataDir. MVP-014L remains blocked until all of these commands pass:
+
+```text
+--compiled-ex5-terminal-bootstrap
+--terminal-contract-audit
+--real-mt5-preflight
+--real-mt5-runtime-dry-run
+```
+
+Next decision: if the K4 bootstrap and all non-executing contracts pass, the
+operator may approve `MVP-014L - One-run Real Retry With Terminal Contract Audit
+PASS`.
