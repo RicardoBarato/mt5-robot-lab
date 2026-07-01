@@ -1,10 +1,11 @@
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
 from app.core.mt5_runner import MT5SmokeRunResult
-from app.core.operator_gate import APPROVAL_PHRASE_PT
+from app.core.operator_gate import APPROVAL_METHOD_CLI_FLAG, APPROVAL_PHRASE_PT, OPERATOR_GATE_VERSION_V2
 from app.core.compiled_ex5_readiness import write_compiled_ex5_readiness_marker
 from app.core.real_mt5_preflight import ensure_ignored_preflight_ex5_marker
 from app.core.real_mt5_smoke import execute_one_run_real_mt5_smoke
@@ -165,6 +166,29 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         for marker in ["C:\\Users\\", "C:/Users/", "file://", "\\\\server\\"]:
             self.assertNotIn(marker, public_text)
 
+    def test_v2_approved_smoke_records_cli_gate_method(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            result = execute_one_run_real_mt5_smoke(
+                root,
+                approve_one_run_local_smoke_flag=True,
+                runner=_fake_success_runner,
+                environment_override=READY_ENVIRONMENT,
+                preflight_override=READY_PREFLIGHT,
+            )
+            public_json = root / "reports" / "public" / "real_mt5_smoke_summary.json"
+            capture_json = root / "reports" / "public" / "real_mt5_capture_smoke_summary.json"
+            payload = json.loads(public_json.read_text(encoding="utf-8"))
+            capture_payload = json.loads(capture_json.read_text(encoding="utf-8"))
+
+        self.assertEqual(result["status"], "PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED")
+        self.assertTrue(payload["operator_gate_approved"])
+        self.assertEqual(payload["operator_gate_version"], OPERATOR_GATE_VERSION_V2)
+        self.assertEqual(payload["operator_approval_method"], APPROVAL_METHOD_CLI_FLAG)
+        self.assertFalse(payload["operator_approval_persistent"])
+        self.assertEqual(capture_payload["operator_gate_version"], OPERATOR_GATE_VERSION_V2)
+        self.assertEqual(capture_payload["operator_approval_method"], APPROVAL_METHOD_CLI_FLAG)
+
     def test_approved_smoke_parses_local_report_when_present(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
@@ -228,6 +252,32 @@ class RealMT5SmokeGateTests(unittest.TestCase):
         self.assertEqual(result["status"], "HOLD_REAL_MT5_PREFLIGHT_BLOCKED_NO_RETRY")
         self.assertFalse(result["summary"]["ready_for_real_retry"])
         self.assertIn("compiled_ex5_marker_missing", result["summary"]["preflight_blocking_issues"])
+
+    def test_v2_approved_smoke_blocks_dirty_worktree_before_runner(self) -> None:
+        calls = []
+
+        def runner(*args, **kwargs):
+            calls.append("called")
+            return _fake_success_runner(*args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            subprocess.run(["git", "init"], cwd=root, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            (root / ".git" / "info" / "exclude").write_text("reports/private/\n", encoding="utf-8")
+            (root / "dirty.txt").write_text("dirty", encoding="utf-8")
+            result = execute_one_run_real_mt5_smoke(
+                root,
+                approve_one_run_local_smoke_flag=True,
+                runner=runner,
+                environment_override=READY_ENVIRONMENT,
+                preflight_override=READY_PREFLIGHT,
+            )
+
+        self.assertEqual(calls, [])
+        self.assertEqual(result["status"], "HOLD_REAL_MT5_PREFLIGHT_BLOCKED_NO_RETRY")
+        self.assertFalse(result["summary"]["ready_for_real_retry"])
+        self.assertFalse(result["summary"]["worktree_clean"])
+        self.assertIn("worktree_dirty", result["summary"]["preflight_blocking_issues"])
 
 
 if __name__ == "__main__":

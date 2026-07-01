@@ -35,6 +35,7 @@ from app.core.mt5_terminal_runtime_diagnostics import generate_terminal_runtime_
 from app.core.operator_gate import (
     APPROVAL_PHRASE_EN,
     APPROVAL_PHRASE_PT,
+    approve_one_run_local_smoke,
     approve_operator_gate,
     create_operator_approval_request,
     default_operator_gate,
@@ -164,6 +165,11 @@ def run_self_test() -> dict[str, object]:
     approved_gate = approve_operator_gate(technical_ready_request, APPROVAL_PHRASE_EN)
     if not approved_gate["execution_allowed"]:
         raise AssertionError("Correct phrase and technical readiness should approve the gate")
+    approved_gate_v2 = approve_one_run_local_smoke(technical_ready_request)
+    if not approved_gate_v2["execution_allowed"]:
+        raise AssertionError("Gate V2 one-run CLI approval should approve the gate")
+    if approved_gate_v2["operator_approval_persistent"]:
+        raise AssertionError("Gate V2 approval must not be persistent")
     too_many = create_operator_approval_request(
         {"real_execution_requested": True, "max_backtests": 2},
         {"mt5_installed": True, "terminal_found": True, "metaeditor_found": True},
@@ -227,11 +233,15 @@ def run_operator_gate_self_test() -> dict[str, object]:
         },
     )
     approved = approve_operator_gate(technical_ready, APPROVAL_PHRASE_EN)
+    approved_v2 = approve_one_run_local_smoke(technical_ready)
     return {
         "status": "operator_gate_self_test_passed",
         "default_blocks": not gate["execution_allowed"],
         "wrong_phrase_blocks": not wrong_phrase["execution_allowed"],
         "correct_phrase_can_approve_when_ready": approved["execution_allowed"],
+        "gate_v2_can_approve_when_ready": approved_v2["execution_allowed"],
+        "gate_v2_approval_method": approved_v2["operator_approval_method"],
+        "gate_v2_approval_persistent": approved_v2["operator_approval_persistent"],
         "mt5_real_run": False,
         "backtest_real_run": False,
         "credentials_stored": False,
@@ -275,7 +285,21 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Bootstrap compiled EX5 readiness inside the resolved terminal DataDir without launching MT5",
     )
-    parser.add_argument("--run-real-mt5-smoke", action="store_true", help="Run one explicitly approved local MT5 smoke")
+    parser.add_argument(
+        "--run-real-mt5-smoke",
+        action="store_true",
+        help="Run one explicitly approved local MT5 smoke using the legacy phrase path",
+    )
+    parser.add_argument(
+        "--run-real-mt5-smoke-once",
+        action="store_true",
+        help="Run one explicitly approved local MT5 smoke using Operator Gate V2",
+    )
+    parser.add_argument(
+        "--approve-one-run-local-smoke",
+        action="store_true",
+        help="Approve exactly one local smoke run for this process",
+    )
     parser.add_argument("--operator-approval-phrase", default="", help="Exact operator approval phrase for real smoke")
     parser.add_argument("--mt5-terminal-path", default="", help="Optional manual terminal64.exe path for safe detection only")
     parser.add_argument("--mt5-metaeditor-path", default="", help="Optional manual metaeditor64.exe path for safe detection only")
@@ -366,8 +390,48 @@ def main(argv: list[str] | None = None) -> int:
         result = generate_compiled_ex5_terminal_bootstrap(PROJECT_ROOT)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
-    if args.run_real_mt5_smoke:
-        result = execute_one_run_real_mt5_smoke(PROJECT_ROOT, approval_phrase=args.operator_approval_phrase)
+    if args.run_real_mt5_smoke or args.run_real_mt5_smoke_once:
+        if args.run_real_mt5_smoke_once and not args.approve_one_run_local_smoke:
+            print(
+                json.dumps(
+                    {
+                        "status": "HOLD_OPERATOR_APPROVAL_REQUIRED",
+                        "operator_gate_version": "v2",
+                        "operator_approval_method": "cli_flag_one_run_local_smoke",
+                        "operator_approval_persistent": False,
+                        "mt5_real_run": False,
+                        "backtest_real_run": False,
+                        "strategy_tester_run": False,
+                        "ea_executed": False,
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 2
+        if args.run_real_mt5_smoke and not args.run_real_mt5_smoke_once and not args.operator_approval_phrase:
+            print(
+                json.dumps(
+                    {
+                        "status": "HOLD_OPERATOR_APPROVAL_REQUIRED",
+                        "operator_gate_version": "legacy_phrase",
+                        "operator_approval_method": "legacy_phrase_deprecated",
+                        "operator_approval_persistent": False,
+                        "mt5_real_run": False,
+                        "backtest_real_run": False,
+                        "strategy_tester_run": False,
+                        "ea_executed": False,
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 2
+        result = execute_one_run_real_mt5_smoke(
+            PROJECT_ROOT,
+            approval_phrase=args.operator_approval_phrase,
+            approve_one_run_local_smoke_flag=bool(args.approve_one_run_local_smoke),
+        )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     launch_app(PROJECT_ROOT)
