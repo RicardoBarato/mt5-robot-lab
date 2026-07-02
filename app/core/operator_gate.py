@@ -16,6 +16,11 @@ from typing import Any
 APPROVAL_PHRASE_EN = "I understand this will attempt one local MT5 smoke run only"
 APPROVAL_PHRASE_PT = "Eu entendo que isso tentara apenas um smoke local do MT5"
 BLOCKED_REASON = "Real MT5 smoke execution requires explicit operator approval."
+OPERATOR_GATE_VERSION_V2 = "v2"
+OPERATOR_GATE_VERSION_LEGACY = "legacy_phrase"
+APPROVAL_METHOD_NONE = "none"
+APPROVAL_METHOD_CLI_FLAG = "cli_flag_one_run_local_smoke"
+APPROVAL_METHOD_LEGACY_PHRASE = "legacy_phrase_deprecated"
 
 REQUIRED_GATE_FIELDS = {
     "operator_confirmed",
@@ -28,6 +33,16 @@ REQUIRED_GATE_FIELDS = {
     "tournament_100_run",
     "no_credentials_stored",
     "approval_phrase_matched",
+    "operator_gate_version",
+    "operator_approval_method",
+    "operator_approval_persistent",
+    "one_run_local_smoke_approved",
+    "max_runs",
+    "strategy_tester_runs",
+    "backtest_budget_run",
+    "optimization_requested",
+    "loop_execution",
+    "mt5_close_after_run_authorized",
 }
 
 
@@ -66,6 +81,15 @@ def default_operator_gate() -> dict[str, Any]:
         "tournament_100_run": False,
         "no_credentials_stored": True,
         "approval_phrase_matched": False,
+        "operator_gate_version": OPERATOR_GATE_VERSION_V2,
+        "operator_approval_method": APPROVAL_METHOD_NONE,
+        "operator_approval_persistent": False,
+        "one_run_local_smoke_approved": False,
+        "max_runs": 1,
+        "strategy_tester_runs": 1,
+        "backtest_budget_run": False,
+        "optimization_requested": False,
+        "loop_execution": False,
         "execution_allowed": False,
         "mt5_real_run": False,
         "backtest_real_run": False,
@@ -93,7 +117,12 @@ def create_operator_approval_request(config: Any, mt5_diagnostics: Any) -> dict[
             "real_execution_requested": bool(config_data.get("real_execution_requested", False)),
             "smoke_only": bool(config_data.get("smoke_only", True)),
             "max_backtests": int(config_data.get("max_backtests", 1) or 1),
+            "max_runs": int(config_data.get("max_runs", 1) or 1),
+            "strategy_tester_runs": int(config_data.get("strategy_tester_runs", 1) or 1),
             "tournament_100_run": bool(config_data.get("tournament_100_run", False)),
+            "backtest_budget_run": bool(config_data.get("backtest_budget_run", False)),
+            "optimization_requested": bool(config_data.get("optimization_requested", config_data.get("optimization", False))),
+            "loop_execution": bool(config_data.get("loop_execution", False)),
             "no_credentials_stored": not bool(config_data.get("credentials_stored", False)),
             "mt5_close_policy": config_data.get("mt5_close_policy", "always_after_real_run"),
             "mt5_close_after_run_authorized": bool(
@@ -122,7 +151,30 @@ def approve_operator_gate(request: dict[str, Any], approval_phrase: str) -> dict
     gate = deepcopy(request)
     gate["operator_confirmed"] = True
     gate["approval_phrase_matched"] = _approval_phrase_matches(approval_phrase)
+    gate["operator_gate_version"] = OPERATOR_GATE_VERSION_LEGACY
+    gate["operator_approval_method"] = APPROVAL_METHOD_LEGACY_PHRASE
+    gate["operator_approval_persistent"] = False
+    gate["one_run_local_smoke_approved"] = False
     gate["approved_at"] = _utc_now() if gate["approval_phrase_matched"] else ""
+    return validate_operator_approval_request(gate)
+
+
+def approve_one_run_local_smoke(request: dict[str, Any]) -> dict[str, Any]:
+    """Approve exactly one local smoke run for the current process.
+
+    The approval is represented in memory only by the caller and is not a
+    durable or global authorization. Saved manifests record the method for audit
+    purposes, but they must never be treated as reusable approval tokens.
+    """
+
+    gate = deepcopy(request)
+    gate["operator_confirmed"] = True
+    gate["approval_phrase_matched"] = False
+    gate["operator_gate_version"] = OPERATOR_GATE_VERSION_V2
+    gate["operator_approval_method"] = APPROVAL_METHOD_CLI_FLAG
+    gate["operator_approval_persistent"] = False
+    gate["one_run_local_smoke_approved"] = True
+    gate["approved_at"] = _utc_now()
     return validate_operator_approval_request(gate)
 
 
@@ -130,6 +182,7 @@ def reject_operator_gate(request: dict[str, Any], reason: str) -> dict[str, Any]
     gate = deepcopy(request)
     gate["operator_confirmed"] = False
     gate["approval_phrase_matched"] = False
+    gate["one_run_local_smoke_approved"] = False
     gate["execution_allowed"] = False
     gate["status"] = "operator_gate_rejected"
     gate["reason"] = reason or BLOCKED_REASON
@@ -137,6 +190,20 @@ def reject_operator_gate(request: dict[str, Any], reason: str) -> dict[str, Any]
     gate["backtest_real_run"] = False
     gate["strategy_tester_run"] = False
     return gate
+
+
+def _approval_is_valid_for_one_run(gate_state: dict[str, Any]) -> bool:
+    method = gate_state.get("operator_approval_method", APPROVAL_METHOD_NONE)
+    if (
+        method == APPROVAL_METHOD_CLI_FLAG
+        and gate_state.get("operator_gate_version") == OPERATOR_GATE_VERSION_V2
+        and bool(gate_state.get("one_run_local_smoke_approved"))
+        and not bool(gate_state.get("operator_approval_persistent"))
+    ):
+        return True
+    if method == APPROVAL_METHOD_LEGACY_PHRASE and bool(gate_state.get("approval_phrase_matched")):
+        return True
+    return False
 
 
 def is_real_mt5_execution_allowed(gate_state: dict[str, Any]) -> bool:
@@ -149,9 +216,15 @@ def is_real_mt5_execution_allowed(gate_state: dict[str, Any]) -> bool:
             bool(gate_state.get("real_execution_requested")),
             bool(gate_state.get("smoke_only")),
             int(gate_state.get("max_backtests", 0) or 0) == 1,
+            int(gate_state.get("max_runs", 0) or 0) == 1,
+            int(gate_state.get("strategy_tester_runs", 0) or 0) == 1,
             not bool(gate_state.get("tournament_100_run")),
+            not bool(gate_state.get("backtest_budget_run")),
+            not bool(gate_state.get("optimization_requested")),
+            not bool(gate_state.get("loop_execution")),
             bool(gate_state.get("no_credentials_stored")),
-            bool(gate_state.get("approval_phrase_matched")),
+            bool(gate_state.get("mt5_close_after_run_authorized")),
+            _approval_is_valid_for_one_run(gate_state),
         ]
     )
 
@@ -168,8 +241,17 @@ def make_operator_gate_summary(gate_state: dict[str, Any]) -> dict[str, Any]:
         "smoke_only": gate["smoke_only"],
         "max_backtests": gate["max_backtests"],
         "tournament_100_run": gate["tournament_100_run"],
+        "backtest_budget_run": gate["backtest_budget_run"],
+        "optimization_requested": gate["optimization_requested"],
+        "loop_execution": gate["loop_execution"],
+        "max_runs": gate["max_runs"],
+        "strategy_tester_runs": gate["strategy_tester_runs"],
         "no_credentials_stored": gate["no_credentials_stored"],
         "approval_phrase_matched": gate["approval_phrase_matched"],
+        "operator_gate_version": gate["operator_gate_version"],
+        "operator_approval_method": gate["operator_approval_method"],
+        "operator_approval_persistent": gate["operator_approval_persistent"],
+        "one_run_local_smoke_approved": gate["one_run_local_smoke_approved"],
         "mt5_real_run": False,
         "backtest_real_run": False,
         "mt5_close_policy": gate.get("mt5_close_policy", "always_after_real_run"),
@@ -200,9 +282,15 @@ def _operator_gate_markdown(summary: dict[str, Any]) -> str:
             f"- Terminal found: {str(summary['terminal_found']).lower()}",
             f"- MetaEditor found: {str(summary['metaeditor_found']).lower()}",
             f"- Operator confirmed: {str(summary['operator_confirmed']).lower()}",
+            f"- Operator gate version: {summary['operator_gate_version']}",
+            f"- Operator approval method: {summary['operator_approval_method']}",
+            f"- Operator approval persistent: {str(summary['operator_approval_persistent']).lower()}",
             f"- Smoke only: {str(summary['smoke_only']).lower()}",
             f"- Max backtests: {summary['max_backtests']}",
+            f"- Max runs: {summary['max_runs']}",
+            f"- Strategy Tester runs: {summary['strategy_tester_runs']}",
             f"- Tournament 100 run: {str(summary['tournament_100_run']).lower()}",
+            f"- Backtest budget run: {str(summary['backtest_budget_run']).lower()}",
             "- MT5 real run: false",
             "- Backtest real run: false",
             f"- MT5 close policy: {summary['mt5_close_policy']}",
