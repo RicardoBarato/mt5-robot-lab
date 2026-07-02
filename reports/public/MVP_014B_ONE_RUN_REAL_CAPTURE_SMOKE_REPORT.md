@@ -1,10 +1,13 @@
 # MVP-014B One-Run Real Capture Smoke Summary
 
-- Result status: HOLD_REAL_CAPTURE_SMOKE_FAILED_NO_RETRY
+- Result status: HOLD_REAL_CAPTURE_SMOKE_NO_REPORT_FOUND
+- Operator gate version: v2
+- Operator approval method: cli_flag_one_run_local_smoke
+- Operator approval persistent: false
 - MT5 real run: true
-- Backtest real run: false
+- Backtest real run: true
 - Strategy Tester run: true
-- EA executed: false
+- EA executed: true
 - Runs attempted: 1
 - Real smoke runs: 1
 - Tournament 100 run: false
@@ -27,7 +30,12 @@
 - MT5 closed after run: true
 - MT5 close method: owned_process_already_closed
 - Manual close required: false
+- Preflight status: ready_for_one_run_retry
+- Ready for retry: true
+- Failure stage: completed_report_pending_capture
+- Exit code recorded: 0
+- Exit code category: success
+- Worktree clean checked: true
+- Worktree clean: true
 
 Raw local artifacts remain only in the ignored private smoke folder.
-
-- Failure reason: MT5 Strategy Tester smoke failed with exit code 3294954941
