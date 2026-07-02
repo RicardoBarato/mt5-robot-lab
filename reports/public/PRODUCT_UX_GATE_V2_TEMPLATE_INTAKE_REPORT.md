@@ -1,39 +1,36 @@
-# Product UX Gate V2 and Template Intake
+﻿# Product UX Gate V2 and Template Intake
 
-Status: HOLD_TEMPLATE_FILES_NOT_FOUND_LOCALLY
+Status: PASS_PR37_TEMPLATE_INTAKE_COMPLETED
 
 ## What Changed
 
-- Added Operator Gate V2 for one local smoke approval by CLI flag.
-- Added `--run-real-mt5-smoke-once`.
-- Added `--approve-one-run-local-smoke`.
-- Kept the old long phrase as a deprecated legacy path.
+- Operator Gate V2 remains active for one local smoke approval by CLI flag.
+- Premium template files were found locally in the intake package.
+- Template assets were copied into `frontend/templates/clade/`.
+- A product adapter was created at `frontend/mt5-robot-lab-premium.html`.
 - No real MT5 run was executed.
 
 ## Gate V2
 
-- Approval method: cli_flag_one_run_local_smoke
+- Operator Gate V2: true
+- CLI approval flag: `--approve-one-run-local-smoke`
 - Approval persistence: false
 - Scope: current process, one local smoke run only
-- Max runs: 1
-- Max backtests: 1
-- Strategy Tester runs: 1
 - Tournament run: blocked
 - Backtest budget run: blocked
-- Optimization: blocked
-- Loop execution: blocked
 - Close after run: required
 
 ## Template Intake Status
 
-- Checked `_incoming/CLADE-template/`.
-- Checked `_incoming/Copy of Website premium de laboratorio evolutivo de trading/`.
-- Checked `design/templates/CLADE-template/`.
-- Template files were not found locally.
-- Created `frontend/templates/clade/` as the future intake target.
-- No template JavaScript was executed.
-- No frontend adapter was created yet.
+- Template found: true
+- Template imported: true
+- Frontend adapter created: true
+- Template JavaScript executed: false
+- Visible product: MT5 Robot Lab
+- Visible mode: Evolutionary Backtest Lab
+- Budget selector: 10 / 50 / 100 / custom >= 10
+- Run rules: unified ranking, sequential execution, max_concurrent_mt5=1, close MT5 after each run
 
 ## Next Step
 
-Copy the premium template into one allowed intake path, then run a follow-up intake that imports static assets and creates the MT5 Robot Lab adapter.
+Merge PR #37, then run MVP-014L with `--run-real-mt5-smoke-once --approve-one-run-local-smoke`.

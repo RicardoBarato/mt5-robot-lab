@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--c35);}
+  ::selection{background:var(--c7);color:var(--c36);}
+  *::-webkit-scrollbar{width:10px;height:10px;}
+  *::-webkit-scrollbar-thumb{background:var(--c24);border-radius:8px;}
+  *::-webkit-scrollbar-thumb:hover{background:var(--c25);}
+  *::-webkit-scrollbar-track{background:transparent;}
+  @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes dashflow{to{stroke-dashoffset:-400}}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(900%)}}
+
+  :root{--c0:rgba(245,248,243,.82);--c1:rgba(255,255,255,.01);--c2:rgba(217,138,30,.22);--c3:rgba(217,138,30,.06);--c4:rgba(15,163,140,.28);--c5:rgba(15,163,140,.08);--c6:rgba(217,138,30,.05);--c7:rgba(31,158,87,.24);--c8:rgba(31,158,87,.12);--c9:rgba(31,158,87,.26);--c10:rgba(31,158,87,.16);--c11:rgba(220,75,62,.11);--c12:rgba(31,158,87,.30);--c13:rgba(31,158,87,.09);--c14:rgba(31,158,87,.18);--c15:rgba(31,158,87,.07);--c16:rgba(220,75,62,.55);--c17:rgba(22,163,74,.26);--c18:rgba(22,163,74,.07);--c19:rgba(220,75,62,.24);--c20:rgba(220,75,62,.06);--c21:rgba(31,158,87,.08);--c22:rgba(31,158,87,.05);--c23:rgba(31,158,87,.04);--c24:rgba(20,50,30,.14);--c25:rgba(20,50,30,.22);--c26:rgba(20,50,30,.11);--c27:rgba(20,50,30,.09);--c28:rgba(20,50,30,.12);--c29:rgba(20,60,35,.05);--c30:rgba(22,90,50,.05);--c31:rgba(20,50,30,.16);--c32:rgba(20,50,30,.08);--c33:rgba(20,50,30,.07);--c34:rgba(0,0,0,.5);--c35:#EEF2EA;--c36:#0A2415;--c37:#16201A;--c38:#FFFFFF;--c39:#F4F7F2;--c40:#7E8E80;--c41:#94A29A;--c42:#16A34A;--c43:#6A7B6F;--c44:#A6B3AA;--c45:#7E8C82;--c46:#566B5D;--c47:#15823F;--c48:#F3F7F1;--c49:#1F9E57;--c50:#0E1A12;--c51:#0FA38C;--c52:#DC4B3E;--c53:#34C06E;--c54:#2B3A30;--c55:#FBFDFA;--c56:#F1F5EF;--c57:#F6F9F4;--c58:#76867A;--c59:#E0892E;--c60:#D98A1E;--c61:#C2912A;--c-tglbd:rgba(20,50,30,.14);--c-tglbg:rgba(20,50,30,.04);--c-tglfg:#566B5D;--sig-head:linear-gradient(110deg,#1F9E57,#0FA38C,#DC4B3E);}
+  .theme-dark{--c0:rgba(8,9,12,.72);--c1:rgba(255,255,255,.01);--c2:rgba(242,180,94,.18);--c3:rgba(242,180,94,.04);--c4:rgba(52,224,224,.25);--c5:rgba(52,224,224,.06);--c6:rgba(242,180,94,.03);--c7:rgba(110,168,254,.2);--c8:rgba(110,168,254,.1);--c9:rgba(110,168,254,.22);--c10:rgba(110,168,254,.1);--c11:rgba(63,217,149,.06);--c12:rgba(110,168,254,.32);--c13:rgba(110,168,254,.07);--c14:rgba(110,168,254,.16);--c15:rgba(110,168,254,.05);--c16:rgba(240,114,106,.55);--c17:rgba(63,217,149,.2);--c18:rgba(63,217,149,.05);--c19:rgba(240,114,106,.2);--c20:rgba(240,114,106,.05);--c21:rgba(110,168,254,.06);--c22:rgba(110,168,254,.04);--c23:rgba(110,168,254,.03);--c24:rgba(255,255,255,.09);--c25:rgba(255,255,255,.16);--c26:rgba(255,255,255,.07);--c27:rgba(255,255,255,.06);--c28:rgba(255,255,255,.08);--c29:rgba(255,255,255,.022);--c30:rgba(255,255,255,.03);--c31:rgba(255,255,255,.12);--c32:rgba(255,255,255,.05);--c33:rgba(255,255,255,.04);--c34:rgba(0,0,0,.5);--c35:#07080A;--c36:#06121f;--c37:#E9EDF3;--c38:#12151B;--c39:#0B0E13;--c40:#566071;--c41:#475063;--c42:#3FD995;--c43:#8A93A0;--c44:#3B4250;--c45:#6B7280;--c46:#9AA3B2;--c47:#9CC0FF;--c48:#090C11;--c49:#6EA8FE;--c50:#F2F5F9;--c51:#34E0E0;--c52:#F0726A;--c53:#8FC0FF;--c54:#C8CFDA;--c55:#161A21;--c56:#0A0D12;--c57:#0E1217;--c58:#7A8494;--c59:#B79CFF;--c60:#F2B45E;--c61:#E7C46B;--c-tglbd:rgba(255,255,255,.12);--c-tglbg:rgba(255,255,255,.05);--c-tglfg:#9AA3B2;--sig-head:linear-gradient(120deg,#6EA8FE,#34E0E0,#3FD995);}
+</style>
+</helmet>
+<div class="{{ themeClass }}" style="display:flex;height:100vh;width:100%;overflow:hidden;background:var(--c35);color:var(--c37);font-family:'Hanken Grotesk',-apple-system,sans-serif;font-size:15.8px;line-height:1.5;-webkit-font-smoothing:antialiased;">
+
+  <aside style="width:250px;flex:none;height:100%;border-right:1px solid var(--c26);background:linear-gradient(180deg,var(--c38),var(--c39));display:flex;flex-direction:column;z-index:5;">
+    <div style="padding:22px 22px 18px;border-bottom:1px solid var(--c27);">
+      <div style="display:flex;align-items:center;gap:11px;cursor:pointer;" onClick="{{ goHome }}">
+        <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">{{ logoEl }}</div>
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.2em;font-size:19.2px;line-height:1;">MT5 Robot Lab</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;color:var(--c40);text-transform:uppercase;margin-top:4px;">Evolutionary Backtest Lab</div>
+        </div>
+      </div>
+    </div>
+    <nav style="flex:1;overflow-y:auto;padding:16px 14px;">
+      <sc-for list="{{ navGroups }}" as="grp" hint-placeholder-count="4">
+        <div style="margin-bottom:18px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;color:var(--c41);text-transform:uppercase;padding:0 10px 9px;">{{ grp.title }}</div>
+          <sc-for list="{{ grp.items }}" as="item" hint-placeholder-count="3">
+            <button onClick="{{ item.onClick }}" style="{{ item.style }}" style-hover="{{ navHover }}">
+              <span style="{{ item.bar }}"></span>
+              <span style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;flex:none;">{{ item.icon }}</span>
+              <span style="{{ item.labelStyle }}">{{ item.label }}</span>
+              <sc-if value="{{ item.count }}" hint-placeholder-val="{{ true }}"><span style="{{ item.countStyle }}">{{ item.count }}</span></sc-if>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </nav>
+    <div style="padding:15px 20px;border-top:1px solid var(--c27);font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--c42);box-shadow:0 0 10px var(--c42);animation:pulse 2.4s infinite;"></span>
+        <span style="color:var(--c43);">Lab online Â· ea-xau</span>
+      </div>
+      <div style="margin-top:7px;color:var(--c44);">Cycle 64 Â· 3 live experiments</div>
+    </div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column;height:100%;min-width:0;">
+    <header style="height:60px;flex:none;border-bottom:1px solid var(--c26);display:flex;align-items:center;gap:16px;padding:0 26px;background:var(--c0);backdrop-filter:blur(10px);z-index:4;">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;">{{ screenTitle }}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c41);letter-spacing:.1em;padding-top:2px;">{{ screenKey }}</div>
+      <div style="flex:1;"></div>
+      <div style="display:none;align-items:center;gap:9px;height:34px;padding:0 13px;border:1px solid var(--c28);border-radius:8px;color:var(--c45);font-size:14.5px;width:230px;background:var(--c38);">Search specimens, genesâ€¦</div>
+      <button onClick="{{ toggleTheme }}" style="{{ themeBtnStyle }}" title="Toggle theme">{{ themeIconEl }}<span>{{ themeLabel }}</span></button>
+      <div style="{{ riskChipStyle }}">{{ riskModeLabel }}</div>
+      <div style="display:flex;align-items:center;gap:7px;height:30px;padding:0 11px;border:1px solid var(--c28);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:12.7px;color:var(--c46);letter-spacing:.04em;">Dynamic symbol Â· timeframe</div>
+      <div style="display:flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:7px;background:var(--c8);border:1px solid var(--c9);font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c47);letter-spacing:.12em;">RESEARCH ARCHIVE</div>
+    </header>
+
+    <main style="flex:1;overflow-y:auto;overflow-x:hidden;">
+
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <section style="position:relative;padding:74px 56px 64px;overflow:hidden;border-bottom:1px solid var(--c27);background:radial-gradient(900px 520px at 80% 6%,var(--c10),transparent 60%),radial-gradient(780px 520px at 4% 98%,var(--c11),transparent 55%),var(--c48);">
+          <div style="position:absolute;inset:0;background-image:linear-gradient(var(--c29) 1px,transparent 1px),linear-gradient(90deg,var(--c29) 1px,transparent 1px);background-size:46px 46px;pointer-events:none;"></div>
+          <div style="position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;max-width:1280px;">
+            <div>
+              <div style="display:inline-flex;align-items:center;gap:9px;padding:6px 13px;border-radius:100px;border:1px solid var(--c12);background:var(--c13);font-family:'JetBrains Mono',monospace;font-size:12.2px;letter-spacing:.16em;color:var(--c47);text-transform:uppercase;margin-bottom:26px;">
+                <span style="width:6px;height:6px;border-radius:50%;background:var(--c49);box-shadow:0 0 8px var(--c49);"></span> Genetic strategy research
+              </div>
+              <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:67.6px;line-height:1.02;letter-spacing:-.025em;margin:0 0 22px;color:var(--c50);">Trading robots,<br>bred like <span style="background:var(--sig-head);-webkit-background-clip:text;background-clip:text;color:transparent;">organisms.</span></h1>
+              <p style="font-size:19.8px;line-height:1.62;color:var(--c46);max-width:520px;margin:0 0 34px;">MT5 Robot Lab is a genetic laboratory for automated strategies. We seed, mutate and stress-test thousands of robots, decode the genes behind each one, and rank only the fittest â€” measured by robustness, not promises.</p>
+              <div style="display:flex;gap:13px;align-items:center;">
+                <button onClick="{{ goRanking }}" style="font-family:'Hanken Grotesk',sans-serif;font-weight:600;font-size:16.4px;padding:14px 26px;border-radius:11px;border:none;cursor:pointer;color:var(--c36);background:linear-gradient(120deg,var(--c53),var(--c49));box-shadow:0 8px 30px var(--c12);" style-hover="{{ ctaHover }}">Explore the ranking â†’</button>
+                <button onClick="{{ goMethod }}" style="font-family:'Hanken Grotesk',sans-serif;font-weight:600;font-size:16.4px;padding:14px 24px;border-radius:11px;cursor:pointer;color:var(--c54);background:var(--c30);border:1px solid var(--c31);" style-hover="{{ ghostHover }}">How evolution works</button>
+              </div>
+              <div style="display:flex;gap:34px;margin-top:42px;">
+                <sc-for list="{{ heroStats }}" as="s" hint-placeholder-count="3">
+                  <div>
+                    <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--c37);letter-spacing:-.01em;">{{ s.v }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:11.7px;letter-spacing:.12em;color:var(--c40);text-transform:uppercase;margin-top:4px;">{{ s.l }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="position:relative;aspect-ratio:1/1;border-radius:18px;border:1px solid var(--c24);background:linear-gradient(160deg,var(--c55),var(--c56));overflow:hidden;box-shadow:0 30px 80px var(--c34),inset 0 1px 0 var(--c32);">
+              <canvas ref="{{ heroCanvasRef }}" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+              <div style="position:absolute;top:16px;left:16px;font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c45);letter-spacing:.1em;">SPECIMEN Â· APEX-Î”7</div>
+              <div style="position:absolute;top:16px;right:16px;font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c45);letter-spacing:.1em;">GEN 7 Â· LIVE</div>
+              <div style="position:absolute;bottom:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-end;font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c45);letter-spacing:.08em;">
+                <span>FITNESS 94.2</span><span>9 GENES SEQUENCED</span>
+              </div>
+              <div style="position:absolute;left:0;right:0;top:0;height:34px;background:linear-gradient(180deg,var(--c14),transparent);animation:scan 5.5s linear infinite;pointer-events:none;"></div>
+            </div>
+          </div>
+        </section>
+
+        <section style="padding:54px 56px;border-bottom:1px solid var(--c27);">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:30px;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;letter-spacing:.2em;color:var(--c49);text-transform:uppercase;margin-bottom:9px;">// The fittest cohort</div>
+              <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:34.9px;margin:0;letter-spacing:-.02em;">Top specimens, generation 8</h2>
+            </div>
+            <button onClick="{{ goRanking }}" style="font-family:'Hanken Grotesk',sans-serif;font-size:15px;color:var(--c47);background:none;border:none;cursor:pointer;font-weight:600;">View full ranking â†’</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+            <sc-for list="{{ topRobots }}" as="r" hint-placeholder-count="4">
+              <div onClick="{{ r.open }}" style="cursor:pointer;border:1px solid var(--c28);border-radius:15px;padding:20px;background:linear-gradient(165deg,var(--c38),var(--c57));position:relative;overflow:hidden;" style-hover="{{ cardHover }}">
+                <div style="position:absolute;top:0;left:0;right:0;height:2px;{{ r.tierBar }}"></div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                  <div>
+                    <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:20.3px;">{{ r.name }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c40);margin-top:3px;letter-spacing:.06em;">{{ r.code }}</div>
+                  </div>
+                  <div style="width:54px;height:54px;flex:none;">{{ r.ring }}</div>
+                </div>
+                <div style="{{ r.tierStyle }}">{{ r.tier }}</div>
+                <div style="display:flex;gap:2px;align-items:flex-end;height:26px;margin:16px 0 14px;">
+                  <sc-for list="{{ r.dnaMini }}" as="seg" hint-placeholder-count="9"><span style="{{ seg.style }}"></span></sc-for>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:13.2px;">
+                  <div><div style="color:var(--c40);font-size:11.5px;letter-spacing:.1em;">RETURN</div><div style="{{ r.retCss }}">{{ r.retStr }}</div></div>
+                  <div><div style="color:var(--c40);font-size:11.5px;letter-spacing:.1em;">MAX DD</div><div style="color:var(--c54);">{{ r.ddStr }}</div></div>
+                  <div><div style="color:var(--c40);font-size:11.5px;letter-spacing:.1em;">PF</div><div style="color:var(--c54);">{{ r.pfStr }}</div></div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="padding:54px 56px;border-bottom:1px solid var(--c27);">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;letter-spacing:.2em;color:var(--c51);text-transform:uppercase;margin-bottom:9px;">// Phylogeny</div>
+              <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:34.9px;margin:0;letter-spacing:-.02em;">One ancestor. Sixty-four generations.</h2>
+            </div>
+            <button onClick="{{ goLineage }}" style="font-family:'Hanken Grotesk',sans-serif;font-size:15px;color:var(--c47);background:none;border:none;cursor:pointer;font-weight:600;">Open lineage map â†’</button>
+          </div>
+          <div style="border:1px solid var(--c28);border-radius:16px;padding:14px;background:radial-gradient(700px 300px at 50% 0%,var(--c15),transparent);overflow:hidden;">{{ lineagePreviewEl }}</div>
+        </section>
+
+        <section style="padding:56px;border-bottom:1px solid var(--c27);background:var(--c38);">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;letter-spacing:.2em;color:var(--c42);text-transform:uppercase;margin-bottom:9px;">// Natural selection, automated</div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:34.9px;margin:0 0 8px;letter-spacing:-.02em;">How a robot evolves</h2>
+          <p style="color:var(--c43);max-width:620px;margin:0 0 34px;font-size:17px;">Every cycle runs the full evolutionary loop. Survivors breed the next generation; the unfit are retired into the archive.</p>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative;">
+            <sc-for list="{{ howSteps }}" as="st" hint-placeholder-count="6">
+              <div style="position:relative;padding:0 16px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c41);margin-bottom:14px;">{{ st.n }}</div>
+                <div style="width:42px;height:42px;border-radius:11px;border:1px solid var(--c31);display:flex;align-items:center;justify-content:center;margin-bottom:15px;background:var(--c38);">{{ st.icon }}</div>
+                <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17.5px;margin-bottom:7px;">{{ st.t }}</div>
+                <div style="color:var(--c58);font-size:14.5px;line-height:1.55;">{{ st.d }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="padding:56px;border-bottom:1px solid var(--c27);">
+          <div style="display:grid;grid-template-columns:1fr 1.1fr;gap:54px;align-items:center;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;letter-spacing:.2em;color:var(--c59);text-transform:uppercase;margin-bottom:9px;">// The genome</div>
+              <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:34.9px;margin:0 0 18px;letter-spacing:-.02em;">A robot's DNA is its parameters</h2>
+              <p style="color:var(--c46);font-size:17.5px;line-height:1.65;margin:0 0 22px;">Each strategy carries a genome of nine genes â€” entry, trend, volatility, filter, session, risk, stop, target and confirmation. Mutating a gene rewrites behaviour. Decoding the genome shows <em style="color:var(--c54);font-style:normal;">why</em> a specimen wins.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;">
+                <sc-for list="{{ geneLegend }}" as="g" hint-placeholder-count="9">
+                  <div style="display:flex;align-items:center;gap:9px;font-size:14.5px;color:var(--c46);">
+                    <span style="{{ g.dot }}"></span><span style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);width:30px;">{{ g.code }}</span>{{ g.label }}
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="border:1px solid var(--c24);border-radius:16px;padding:26px;background:linear-gradient(165deg,var(--c38),var(--c39));">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;">APEX-Î”7 Â· genome</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);">9 / 9 expressed</div>
+              </div>
+              <div style="display:flex;gap:7px;align-items:flex-end;height:150px;">
+                <sc-for list="{{ demoGenes }}" as="g" hint-placeholder-count="9">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end;">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c43);">{{ g.pct }}</div>
+                    <div style="width:100%;border-radius:5px;{{ g.barStyle }}"></div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c40);letter-spacing:.04em;">{{ g.code }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section style="padding:56px;border-bottom:1px solid var(--c27);">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+            <sc-for list="{{ labMetrics }}" as="m" hint-placeholder-count="4">
+              <div style="border:1px solid var(--c28);border-radius:14px;padding:22px;background:var(--c38);">
+                <div style="{{ m.dot }}"></div>
+                <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:37.1px;letter-spacing:-.02em;margin:14px 0 5px;{{ m.css }}">{{ m.v }}</div>
+                <div style="font-size:15px;color:var(--c46);">{{ m.l }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);margin-top:5px;">{{ m.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="padding:54px 56px 70px;">
+          <div style="border:1px solid var(--c2);border-radius:14px;padding:22px 26px;background:var(--c3);display:flex;gap:16px;align-items:flex-start;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;letter-spacing:.16em;color:var(--c60);text-transform:uppercase;flex:none;padding-top:2px;">Research only</div>
+            <p style="margin:0;font-size:14.5px;line-height:1.7;color:var(--c43);">MT5 Robot Lab is an educational research archive. Nothing here is investment advice or a promise of returns. All figures are <strong style="color:var(--c54);font-weight:600;">historical backtests</strong>, not live trading â€” results depend on market regime, spread, slippage, execution and broker conditions. A high ranking does not equal operational approval.</p>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:34px;font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c41);letter-spacing:.06em;">
+            <span>MT5 Robot Lab Â· Evolutionary Backtest Lab</span><span>MT5 Robot Lab · multi-asset research archive Â· cycle 64</span>
+          </div>
+        </section>
+      </div>
+      </sc-if>
+      <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+<div style="padding:32px 40px 60px;">
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:13px;margin-bottom:18px;">
+    <sc-for list="{{ dashKpis }}" as="m" hint-placeholder-count="6">
+      <div style="border:1px solid var(--c26);border-radius:13px;padding:17px;background:var(--c38);">
+        <div style="{{ m.dotStyle }}"></div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30.2px;letter-spacing:-.02em;margin:11px 0 3px;"><span style="{{ m.valStyle }}">{{ m.v }}</span></div>
+        <div style="font-size:14px;color:var(--c46);">{{ m.l }}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c40);margin-top:4px;">{{ m.sub }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:16px;">
+    <div style="border:1px solid var(--c26);border-radius:15px;padding:22px;background:var(--c38);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18.1px;">Global fitness by generation</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);">mean fitness Â· G4 â†’ G8</div>
+      </div>
+      <div style="color:var(--c58);font-size:14.5px;margin-bottom:20px;">Average specimen fitness is climbing as selection pressure compounds.</div>
+      <div style="height:150px;">{{ genFitnessEl }}</div>
+      <div style="display:flex;justify-content:space-around;margin-top:10px;">
+        <sc-for list="{{ genLabels }}" as="g" hint-placeholder-count="5"><span style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);">{{ g.label }}</span></sc-for>
+      </div>
+    </div>
+    <div style="border:1px solid var(--c26);border-radius:15px;padding:22px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18.1px;margin-bottom:18px;">Population by status</div>
+      <sc-for list="{{ statusBars }}" as="s" hint-placeholder-count="7">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:11px;">
+          <div style="{{ s.dotStyle }}"></div>
+          <div style="width:96px;font-size:14.5px;color:var(--c46);">{{ s.label }}</div>
+          <div style="flex:1;height:8px;border-radius:4px;background:var(--c33);overflow:hidden;"><div style="{{ s.barStyle }}"></div></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c54);width:20px;text-align:right;">{{ s.n }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;">
+    <div style="border:1px solid var(--c26);border-radius:15px;padding:22px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18.1px;margin-bottom:6px;">Drawdown distribution</div>
+      <div style="color:var(--c58);font-size:14.5px;margin-bottom:20px;">Most surviving specimens stay under 20% max drawdown.</div>
+      <div style="height:150px;">{{ ddDistEl }}</div>
+      <div style="display:flex;justify-content:space-around;margin-top:10px;">
+        <sc-for list="{{ ddLabels }}" as="d" hint-placeholder-count="4"><span style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);">{{ d.label }}</span></sc-for>
+      </div>
+    </div>
+    <div style="border:1px solid var(--c26);border-radius:15px;padding:22px;background:var(--c38);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18.1px;">Dominant specimens Â· current cohort</div>
+        <button onClick="{{ goRanking }}" style="font-size:14px;color:var(--c47);background:none;border:none;cursor:pointer;font-weight:600;">All â†’</button>
+      </div>
+      <sc-for list="{{ dominants }}" as="r" hint-placeholder-count="3">
+        <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:48px 1.4fr 1fr 1fr 1fr;gap:14px;align-items:center;padding:12px 6px;border-bottom:1px solid var(--c32);cursor:pointer;">
+          <div style="width:48px;height:48px;">{{ r.ring }}</div>
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;">{{ r.name }}</div>
+            <div style="{{ r.tierStyle }}">{{ r.tier }}</div>
+          </div>
+          <div><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c40);">RETURN</div><div style="font-family:'JetBrains Mono',monospace;font-size:15px;"><span style="{{ r.retCss }}">{{ r.retStr }}</span></div></div>
+          <div><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c40);">PF</div><div style="font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--c54);">{{ r.pfStr }}</div></div>
+          <div style="height:34px;opacity:.8;">{{ r.sparkEl }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ isRank }}" hint-placeholder-val="{{ true }}">
+<div style="padding:30px 40px 60px;">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:16px;">
+    <div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:29.1px;margin:0 0 6px;letter-spacing:-.02em;">Specimen ranking</h2>
+      <p style="color:var(--c58);font-size:15.3px;margin:0;">Every robot is a catalogued organism, ranked by fitness across the Dynamic symbol Â· timeframe Â· 2-year Â· controlled-DD category.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end;">
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c40);letter-spacing:.1em;">SORT BY</span>
+        <sc-for list="{{ sortOptions }}" as="s" hint-placeholder-count="7"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.l }}</button></sc-for>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;">
+    <sc-for list="{{ filterOptions }}" as="f" hint-placeholder-count="8"><button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.l }}</button></sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:48px 1.7fr 90px 1fr 1fr 1fr 1fr 1fr 1.1fr;gap:14px;padding:0 20px 10px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.1em;color:var(--c41);text-transform:uppercase;">
+    <div>#</div><div>Specimen</div><div>DNA</div><div>Fitness</div><div>Return</div><div>Max DD</div><div>PF</div><div>Robust</div><div>Survival Â· flags</div>
+  </div>
+  <sc-for list="{{ ranked }}" as="r" hint-placeholder-count="10">
+    <div onClick="{{ r.open }}" style="{{ r.rowStyle }}" style-hover="{{ cardHover }}">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:21.3px;color:{{ r.rankColor }};">{{ r.dispRank }}</div>
+      <div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17.5px;display:flex;align-items:center;gap:9px;">{{ r.name }} <span style="{{ r.tierStyle }}">{{ r.tier }}</span></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c40);margin-top:3px;">{{ r.code }} Â· {{ r.genStr }} Â· {{ r.family }}</div>
+      </div>
+      <div style="display:flex;gap:2px;align-items:flex-end;height:24px;">
+        <sc-for list="{{ r.dnaMini }}" as="seg" hint-placeholder-count="9"><span style="{{ seg.style }}"></span></sc-for>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;color:var(--c37);">{{ r.fitStr }}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:15.3px;"><span style="{{ r.retCss }}">{{ r.retStr }}</span></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:15.3px;color:var(--c54);">{{ r.ddStr }}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:15.3px;color:var(--c54);">{{ r.pfStr }}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:15.3px;color:var(--c54);">{{ r.robStr }}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--c54);">{{ r.survStr }}</span>
+        <sc-for list="{{ r.flagChips }}" as="fc" hint-placeholder-count="1"><span style="{{ fc.style }}">{{ fc.label }}</span></sc-for>
+      </div>
+    </div>
+  </sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ isDetail }}" hint-placeholder-val="{{ true }}">
+<div style="padding:24px 40px 60px;">
+  <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:18px;margin-bottom:6px;">
+    <sc-for list="{{ selPicker }}" as="p" hint-placeholder-count="10"><button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.name }}</button></sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:16px;">
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:26px;background:linear-gradient(160deg,var(--c38),var(--c57));position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;{{ sel.tierBar }}"></div>
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="width:72px;height:72px;flex:none;">{{ selRing }}</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:31.4px;margin:0;letter-spacing:-.02em;">{{ sel.name }}</h2>
+            <span style="{{ sel.tierStyle }}">{{ sel.tier }}</span>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12.7px;color:var(--c40);margin-top:6px;letter-spacing:.04em;">{{ sel.code }} Â· {{ sel.genStr }} Â· {{ sel.ver }} Â· {{ sel.family }} Â· {{ sel.sym }} {{ sel.tf }}</div>
+          <p style="color:var(--c46);font-size:15.3px;line-height:1.6;margin:14px 0 0;">{{ sel.note }}</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px;">
+        <sc-for list="{{ selKpis }}" as="k" hint-placeholder-count="6">
+          <div style="border:1px solid var(--c27);border-radius:11px;padding:13px 15px;background:var(--c38);">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.1em;color:var(--c40);text-transform:uppercase;">{{ k.l }}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:21.3px;font-weight:700;margin-top:5px;"><span style="{{ k.valStyle }}">{{ k.v }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;">Equity curve</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c40);">backtest Â· 2 years</div>
+      </div>
+      <div style="color:var(--c58);font-size:14px;margin-bottom:14px;">Historical simulation. Not live trading.</div>
+      <div style="height:200px;">{{ selEquityEl }}</div>
+    </div>
+  </div>
+
+  <div style="border:1px solid var(--c28);border-radius:16px;padding:24px;background:linear-gradient(160deg,var(--c38),var(--c39));margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:19.2px;display:flex;align-items:center;gap:10px;">Genome sequence <span style="font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c40);font-weight:400;letter-spacing:.1em;">9 GENES Â· DOMINANT MARKED â—</span></div>
+    </div>
+    <div style="color:var(--c58);font-size:14.5px;margin-bottom:22px;">Each gene maps to a real strategy parameter. Bar height shows expression intensity within the cohort.</div>
+    <div style="display:flex;gap:10px;align-items:flex-end;height:170px;">
+      <sc-for list="{{ selGenes }}" as="g" hint-placeholder-count="9">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:9px;height:100%;justify-content:flex-end;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13.2px;color:var(--c54);"><span style="{{ g.headStyle }}">{{ g.valStr }}</span></div>
+          <div style="width:100%;height:100%;display:flex;align-items:flex-end;position:relative;"><div style="{{ g.barStyle }}"></div><sc-if value="{{ g.dominant }}" hint-placeholder-val="{{ true }}"><span style="{{ g.domStyle }}"></span></sc-if></div>
+          <div style="text-align:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c46);">{{ g.code }}</div><div style="font-size:11.7px;color:var(--c40);margin-top:2px;">{{ g.label }}</div></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:18px;">Performance by year</div>
+      <sc-for list="{{ selPeriods }}" as="p" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:46px 1fr 60px;gap:12px;align-items:center;margin-bottom:13px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13.2px;color:var(--c46);">{{ p.year }}</div>
+          <div style="display:flex;flex-direction:column;gap:4px;"><div style="{{ p.retBarStyle }}"></div><div style="{{ p.ddBarStyle }}"></div></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;text-align:right;"><span style="color:{{ p.retColor }};">{{ p.retStr }}</span></div>
+        </div>
+      </sc-for>
+      <div style="display:flex;gap:18px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c40);"><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--c42);margin-right:5px;"></span>RETURN</span><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--c16);margin-right:5px;"></span>DRAWDOWN</span></div>
+    </div>
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:6px;">Robustness matrix</div>
+      <div style="color:var(--c58);font-size:14px;margin-bottom:18px;">Score retained under each stress condition.</div>
+      <sc-for list="{{ selRobust }}" as="x" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:130px 1fr 36px;gap:12px;align-items:center;margin-bottom:13px;">
+          <div style="font-size:14.5px;color:var(--c46);">{{ x.label }}</div>
+          <div style="height:9px;border-radius:5px;background:var(--c33);overflow:hidden;"><div style="{{ x.barStyle }}"></div></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c54);text-align:right;">{{ x.sStr }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;">
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:6px;">Mutation log Â· what changed from parent</div>
+      <div style="color:var(--c58);font-size:14px;margin-bottom:20px;">Genetic diff against the ancestor version.</div>
+      <sc-for list="{{ selMut }}" as="m" hint-placeholder-count="3">
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--c32);">
+          <div style="width:3px;align-self:stretch;border-radius:3px;background:{{ m.color }};"></div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--c37);">{{ m.param }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13.2px;color:var(--c40);">{{ m.before }}</span>
+              <span style="color:{{ m.color }};">â†’</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13.2px;color:var(--c54);">{{ m.after }}</span>
+              <span style="{{ m.chipStyle }}">{{ m.chipLabel }}</span>
+            </div>
+            <div style="color:var(--c58);font-size:14px;margin-top:6px;">{{ m.note }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:16px;">Ancestry</div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+          <sc-for list="{{ selAncestry }}" as="a" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div onClick="{{ a.open }}" style="display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:9px;cursor:pointer;border:1px solid {{ a.color }}55;background:{{ a.color }}1a;">
+                <span style="width:7px;height:7px;border-radius:50%;background:{{ a.color }};"></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:12.7px;color:var(--c54);">{{ a.name }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c40);">{{ a.genStr }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);flex:1;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:6px;">Best & worst environment</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;margin-bottom:18px;">
+          <div style="border:1px solid var(--c17);border-radius:11px;padding:14px;background:var(--c18);">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c42);letter-spacing:.1em;">STRONGEST Â· {{ selEnv.bestYear }}</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24.6px;color:var(--c42);margin-top:6px;">{{ selEnv.bestRet }}</div>
+          </div>
+          <div style="border:1px solid var(--c19);border-radius:11px;padding:14px;background:var(--c20);">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c52);letter-spacing:.1em;">WEAKEST Â· {{ selEnv.worstYear }}</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24.6px;color:var(--c52);margin-top:6px;">{{ selEnv.worstRet }}</div>
+          </div>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:11px;color:var(--c46);">Descendants</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;">
+          <sc-for list="{{ selDescend }}" as="d" hint-placeholder-count="2"><button onClick="{{ d.open }}" style="font-family:'JetBrains Mono',monospace;font-size:12.2px;padding:5px 10px;border-radius:7px;cursor:pointer;border:1px solid {{ d.color }}44;background:{{ d.color }}14;color:var(--c54);">{{ d.name }}</button></sc-for>
+          <sc-if value="{{ selEnv.bestYear }}" hint-placeholder-val="{{ true }}"></sc-if>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ isCompare }}" hint-placeholder-val="{{ true }}">
+<div style="padding:28px 40px 60px;">
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:29.1px;margin:0 0 6px;letter-spacing:-.02em;">Genome comparison</h2>
+  <p style="color:var(--c58);font-size:15.3px;margin:0 0 22px;">Place two specimens side by side â€” like comparing two organisms' genomes.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 56px 1fr;gap:14px;align-items:stretch;margin-bottom:18px;">
+    <div style="border:1px solid var(--c12);border-radius:16px;padding:22px;background:linear-gradient(160deg,var(--c21),var(--c57));">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c49);letter-spacing:.14em;margin-bottom:12px;">SPECIMEN A</div>
+      <div style="display:flex;gap:16px;align-items:center;">
+        <div style="width:60px;height:60px;flex:none;">{{ cmpA.ring }}</div>
+        <div><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24.6px;">{{ cmpA.name }}</div><div style="{{ cmpA.tierStyle }}">{{ cmpA.tier }}</div></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);margin-top:12px;">{{ cmpA.code }} Â· {{ cmpA.genStr }} Â· {{ cmpA.family }}</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--c41);font-size:20.3px;">VS</div>
+    <div style="border:1px solid var(--c4);border-radius:16px;padding:22px;background:linear-gradient(160deg,var(--c5),var(--c57));">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c51);letter-spacing:.14em;margin-bottom:12px;">SPECIMEN B</div>
+      <div style="display:flex;gap:16px;align-items:center;">
+        <div style="width:60px;height:60px;flex:none;">{{ cmpB.ring }}</div>
+        <div><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24.6px;">{{ cmpB.name }}</div><div style="{{ cmpB.tierStyle }}">{{ cmpB.tier }}</div></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);margin-top:12px;">{{ cmpB.code }} Â· {{ cmpB.genStr }} Â· {{ cmpB.family }}</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:24px;margin-bottom:22px;flex-wrap:wrap;">
+    <div><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c49);letter-spacing:.12em;margin-bottom:8px;">SET A</div><div style="display:flex;gap:5px;flex-wrap:wrap;"><sc-for list="{{ robotOptions }}" as="o" hint-placeholder-count="10"><button onClick="{{ o.onA }}" style="{{ o.aStyle }}">{{ o.name }}</button></sc-for></div></div>
+    <div><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c51);letter-spacing:.12em;margin-bottom:8px;">SET B</div><div style="display:flex;gap:5px;flex-wrap:wrap;"><sc-for list="{{ robotOptions }}" as="o" hint-placeholder-count="10"><button onClick="{{ o.onB }}" style="{{ o.bStyle }}">{{ o.name }}</button></sc-for></div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:24px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:20px;">Metric comparison <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c42);font-weight:400;">â— = advantage</span></div>
+      <sc-for list="{{ cmpMetrics }}" as="m" hint-placeholder-count="8">
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:13.2px;margin-bottom:6px;">
+            <span style="color:{{ m.aColor }};">{{ m.aStr }}</span>
+            <span style="color:var(--c58);font-size:12.2px;text-transform:uppercase;letter-spacing:.08em;">{{ m.label }}</span>
+            <span style="color:{{ m.bColor }};">{{ m.bStr }}</span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <div style="flex:1;height:7px;border-radius:4px;background:var(--c33);display:flex;justify-content:flex-end;overflow:hidden;"><div style="{{ m.aBarStyle }}"></div></div>
+            <div style="flex:1;height:7px;border-radius:4px;background:var(--c33);overflow:hidden;"><div style="{{ m.bBarStyle }}"></div></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:24px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:6px;">Genetic difference map</div>
+      <div style="color:var(--c58);font-size:14px;margin-bottom:20px;">Front bar = A, faded bar = B. <span style="color:var(--c61);">Î”</span> marks a significant divergence.</div>
+      <div style="display:flex;gap:8px;align-items:flex-end;height:150px;">
+        <sc-for list="{{ cmpGenes }}" as="g" hint-placeholder-count="9">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end;">
+            <div style="{{ g.diffStyle }}">{{ g.diff }}</div>
+            <div style="width:100%;height:100%;display:flex;gap:2px;align-items:flex-end;"><div style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ g.aBarStyle }}"></div></div><div style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ g.bBarStyle }}"></div></div></div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c46);">{{ g.code }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ isGenome }}" hint-placeholder-val="{{ true }}">
+<div style="padding:28px 40px 60px;">
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:29.1px;margin:0 0 6px;letter-spacing:-.02em;">Genome lab</h2>
+  <p style="color:var(--c58);font-size:15.3px;margin:0 0 24px;max-width:680px;">Aggregate genetics across the whole population. A robot's "DNA" is its parameter set â€” here we read which genes recur in the fittest specimens, which dominate, and which mutations actually pay off.</p>
+
+  <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-bottom:16px;">
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:24px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:6px;">Gene expression frequency</div>
+      <div style="color:var(--c58);font-size:14px;margin-bottom:20px;">Mean expression intensity across the population, by gene.</div>
+      <sc-for list="{{ geneFreq }}" as="g" hint-placeholder-count="9">
+        <div style="display:grid;grid-template-columns:140px 1fr 40px;gap:12px;align-items:center;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:9px;"><span style="{{ g.dotStyle }}"></span><span style="font-size:14.5px;color:var(--c46);">{{ g.label }}</span></div>
+          <div style="height:10px;border-radius:5px;background:var(--c33);overflow:hidden;"><div style="{{ g.barStyle }}"></div></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c54);text-align:right;">{{ g.pct }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div style="border:1px solid var(--c7);border-radius:16px;padding:22px;background:var(--c22);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c49);letter-spacing:.12em;margin-bottom:14px;">DOMINANT GENES</div>
+        <sc-for list="{{ dominantGenes }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="{{ g.dotStyle }}"></span><span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15.8px;flex:1;">{{ g.label }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c47);">{{ g.pct }}%</span></div>
+        </sc-for>
+      </div>
+      <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c40);letter-spacing:.12em;margin-bottom:14px;">RECESSIVE GENES</div>
+        <sc-for list="{{ recessiveGenes }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="{{ g.dotStyle }}"></span><span style="font-size:15.3px;color:var(--c46);flex:1;">{{ g.label }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c58);">{{ g.pct }}%</span></div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:16px;">
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:24px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:6px;">Genome map Â· gene Ã— specimen</div>
+      <div style="color:var(--c58);font-size:14px;margin-bottom:20px;">Expression heatmap. Brighter = more strongly expressed.</div>
+      {{ heatmapEl }}
+    </div>
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:24px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:6px;">Mutation impact</div>
+      <div style="color:var(--c58);font-size:14px;margin-bottom:20px;">Share of mutations that survived selection, by type.</div>
+      <sc-for list="{{ mutationSuccess }}" as="m" hint-placeholder-count="6">
+        <div style="margin-bottom:15px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><div style="display:flex;align-items:center;gap:9px;"><span style="font-size:15px;color:var(--c54);">{{ m.name }}</span><span style="{{ m.chipStyle }}">{{ m.chipLabel }}</span></div><span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c54);">{{ m.sStr }}</span></div>
+          <div style="height:8px;border-radius:4px;background:var(--c33);overflow:hidden;"><div style="{{ m.barStyle }}"></div></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLineage }}" hint-placeholder-val="{{ true }}">
+<div style="padding:28px 40px 60px;">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:14px;">
+    <div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:29.1px;margin:0 0 6px;letter-spacing:-.02em;">Evolutionary lineage</h2>
+      <p style="color:var(--c58);font-size:15.3px;margin:0;max-width:640px;">The phylogenetic tree of the XAUUSD population. Trace every elite specimen back to a common ancestor; dashed red edges lead to retired, extinct branches. Click any node to open its profile.</p>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:11px;">
+      <sc-for list="{{ lineageLegend }}" as="l" hint-placeholder-count="8"><div style="display:flex;align-items:center;gap:7px;"><span style="{{ l.dotStyle }}"></span><span style="font-size:13.2px;color:var(--c46);">{{ l.label }}</span></div></sc-for>
+    </div>
+  </div>
+  <div style="border:1px solid var(--c28);border-radius:18px;padding:16px;background:radial-gradient(800px 400px at 50% 10%,var(--c15),transparent),var(--c1);overflow-x:auto;">{{ lineageEl }}</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isExp }}" hint-placeholder-val="{{ true }}">
+<div style="padding:28px 40px 60px;">
+  <div style="display:grid;grid-template-columns:260px 1fr;gap:20px;">
+    <div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:24.6px;margin:0 0 16px;letter-spacing:-.02em;">Experiments</h2>
+      <sc-for list="{{ expList }}" as="e" hint-placeholder-count="3">
+        <div style="border:1px solid var(--c28);border-radius:13px;padding:16px;background:var(--c38);margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;"><span style="font-family:'JetBrains Mono',monospace;font-size:13.2px;color:var(--c54);">{{ e.code }}</span><span style="{{ e.chipStyle }}">{{ e.status }}</span></div>
+          <div style="font-size:15px;color:var(--c46);line-height:1.4;">{{ e.title }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div>
+      <div style="border:1px solid var(--c17);border-radius:16px;padding:26px;background:linear-gradient(160deg,var(--c18),var(--c57));margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c42);letter-spacing:.12em;margin-bottom:8px;">{{ experiment.code }} Â· {{ experiment.status }}</div>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:24.6px;margin:0;letter-spacing:-.01em;">{{ experiment.title }}</h3>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:6px;"><div style="flex:1;height:8px;border-radius:100px;background:var(--c27);overflow:hidden;"><div style="{{ expProgressStyle }}"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c42);">{{ experiment.progress }}%</span></div>
+        <div style="display:flex;gap:6px;align-items:baseline;color:var(--c58);font-family:'JetBrains Mono',monospace;font-size:12.2px;"><span>Gen {{ experiment.generation }}</span>Â·<span>{{ experiment.population }} population</span>Â·<span>{{ experiment.mutations }} mutations</span>Â·<span>{{ experiment.survivors }} survivors</span></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c49);letter-spacing:.12em;margin-bottom:12px;">HYPOTHESIS</div>
+          <p style="margin:0 0 22px;font-size:15.3px;line-height:1.6;color:var(--c54);">{{ experiment.hypothesis }}</p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c59);letter-spacing:.12em;margin-bottom:12px;">SELECTION CRITERIA</div>
+          <sc-for list="{{ experiment.criteria }}" as="c" hint-placeholder-count="4"><div style="display:flex;gap:9px;align-items:center;margin-bottom:8px;font-size:14.5px;color:var(--c46);"><span style="width:5px;height:5px;border-radius:50%;background:var(--c59);flex:none;"></span>{{ c }}</div></sc-for>
+        </div>
+        <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c61);letter-spacing:.12em;margin-bottom:14px;">RESULTS</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:18px;">
+            <sc-for list="{{ experiment.results }}" as="r" hint-placeholder-count="4"><div style="border:1px solid var(--c27);border-radius:10px;padding:12px;"><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c40);letter-spacing:.08em;text-transform:uppercase;">{{ r.l }}</div><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20.3px;margin-top:5px;">{{ r.v }}</div></div></sc-for>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c42);letter-spacing:.12em;margin-bottom:11px;">LEARNINGS</div>
+          <sc-for list="{{ experiment.learnings }}" as="l" hint-placeholder-count="3"><div style="display:flex;gap:9px;align-items:flex-start;margin-bottom:9px;font-size:14.5px;color:var(--c46);line-height:1.45;"><span style="color:var(--c42);flex:none;">â†’</span>{{ l }}</div></sc-for>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--c28);border-radius:16px;padding:22px;background:var(--c38);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;">Population sample</div><span style="font-family:'JetBrains Mono',monospace;font-size:12.2px;color:var(--c40);">click to inspect</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <sc-for list="{{ expPopulation }}" as="r" hint-placeholder-count="6">
+            <div onClick="{{ r.open }}" style="border:1px solid var(--c26);border-radius:11px;padding:13px;cursor:pointer;display:flex;align-items:center;gap:11px;" style-hover="{{ cardHover }}">
+              <div style="display:flex;gap:1.5px;align-items:flex-end;height:22px;"><sc-for list="{{ r.dnaMini }}" as="seg" hint-placeholder-count="9"><span style="{{ seg.style }}"></span></sc-for></div>
+              <div style="flex:1;min-width:0;"><div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;white-space:nowrap;">{{ r.name }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:11.7px;color:var(--c40);">{{ r.genStr }} Â· fit {{ r.fitStr }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="border:1px dashed var(--c12);border-radius:14px;padding:18px 22px;background:var(--c23);margin-top:16px;display:flex;align-items:center;gap:14px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--c49);letter-spacing:.12em;flex:none;">NEXT CYCLE</span>
+        <span style="font-size:15.3px;color:var(--c54);">{{ experiment.next }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMethod }}" hint-placeholder-val="{{ true }}">
+<div style="padding:28px 40px 70px;">
+  <div style="max-width:760px;margin-bottom:34px;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;letter-spacing:.2em;color:var(--c42);text-transform:uppercase;margin-bottom:10px;">// How the lab works</div>
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:32.7px;margin:0 0 12px;letter-spacing:-.02em;">Methodology</h2>
+    <p style="color:var(--c46);font-size:17px;line-height:1.65;margin:0;">MT5 Robot Lab applies a genetic algorithm to trading strategies. Each robot carries a genome of parameters; mutation and selection across generations surface the specimens that hold up under stress. Everything below is research â€” historical simulation, never live trading.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-bottom:40px;position:relative;">
+    <sc-for list="{{ howSteps }}" as="st" hint-placeholder-count="6">
+      <div style="position:relative;padding:0 16px;border-left:1px solid var(--c27);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13.2px;color:var(--c41);margin-bottom:14px;">{{ st.n }}</div>
+        <div style="width:42px;height:42px;border-radius:11px;border:1px solid var(--c31);display:flex;align-items:center;justify-content:center;margin-bottom:15px;background:var(--c38);">{{ st.icon }}</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17.5px;margin-bottom:7px;">{{ st.t }}</div>
+        <div style="color:var(--c58);font-size:14.5px;line-height:1.55;">{{ st.d }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+    <div style="border:1px solid var(--c28);border-radius:16px;padding:26px;background:var(--c38);">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18.1px;margin-bottom:20px;">Glossary</div>
+      <sc-for list="{{ glossary }}" as="g" hint-placeholder-count="6">
+        <div style="padding:14px 0;border-bottom:1px solid var(--c32);">
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15.8px;color:var(--c37);margin-bottom:4px;">{{ g.term }}</div>
+          <div style="color:var(--c43);font-size:14.5px;line-height:1.55;">{{ g.def }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="border:1px solid var(--c2);border-radius:16px;padding:26px;background:var(--c6);">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12.2px;letter-spacing:.16em;color:var(--c60);text-transform:uppercase;margin-bottom:8px;">Research disclaimer</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18.1px;margin-bottom:20px;">This is not a promise of returns</div>
+      <sc-for list="{{ disclaimers }}" as="d" hint-placeholder-count="6">
+        <div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:13px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--c60);flex:none;margin-top:6px;"></span>
+          <span style="font-size:15px;line-height:1.5;color:var(--c46);">{{ d }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+<!--SCREENS-->
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Lab controls&quot;},&quot;motion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Lab controls&quot;},&quot;riskMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;wild&quot;,&quot;controlled&quot;],&quot;default&quot;:&quot;wild&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Lab controls&quot;},&quot;compactRanking&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Lab controls&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { screen:'home', sel:'apex', a:'apex', b:'stratum', sort:'fitness', filterTier:'all', exp:0, theme:(this.props.theme==='light'?'light':'dark') };
+    this.THEMES = {
+      light:{
+        C:{ blue:'#1F9E57', cyan:'#0FA38C', green:'#16A34A', violet:'#E0892E', gold:'#C2912A', amber:'#D98A1E', red:'#DC4B3E', txt:'#16201A', txt2:'#566B5D', txt3:'#7E8E80', line:'rgba(20,50,30,.12)' },
+        CAT:{ Entry:'#1F9E57', Trend:'#0FA38C', Volatility:'#13B59A', Filter:'#E0892E', Session:'#16A34A', Risk:'#D98A1E', Stop:'#DC4B3E', Target:'#C2912A', Confirmation:'#6E8A78' },
+        TIER:{ Elite:'#C2912A', Dominant:'#1F9E57', Survivor:'#16A34A', Hybrid:'#0FA38C', Mutant:'#E0892E', Experimental:'#D98A1E', Rejected:'#DC4B3E' },
+        UI:{ text1:'#16201A', text2:'#2B3A30', label:'#7E8E80', muted:'#6A7B6F', nodeBg:'#FFFFFF', ringTrack:'rgba(20,50,30,.14)', edge:'rgba(46,92,64,.32)', hoverBg:'rgba(20,50,30,.07)', hoverBd:'rgba(20,50,30,.26)', softBg:'rgba(20,50,30,.08)' }
+      },
+      dark:{
+        C:{ blue:'#6EA8FE', cyan:'#34E0E0', green:'#3FD995', violet:'#B79CFF', gold:'#E7C46B', amber:'#F2B45E', red:'#F0726A', txt:'#E9EDF3', txt2:'#9AA3B2', txt3:'#566071', line:'rgba(255,255,255,.08)' },
+        CAT:{ Entry:'#6EA8FE', Trend:'#34E0E0', Volatility:'#3FD9C9', Filter:'#B79CFF', Session:'#3FD995', Risk:'#F2B45E', Stop:'#F0726A', Target:'#E7C46B', Confirmation:'#8FA0B5' },
+        TIER:{ Elite:'#E7C46B', Dominant:'#6EA8FE', Survivor:'#3FD995', Hybrid:'#34E0E0', Mutant:'#B79CFF', Experimental:'#F2B45E', Rejected:'#F0726A' },
+        UI:{ text1:'#E9EDF3', text2:'#C8CFDA', label:'#566071', muted:'#8A93A0', nodeBg:'#0C0E12', ringTrack:'rgba(255,255,255,.09)', edge:'rgba(150,170,200,.26)', hoverBg:'rgba(255,255,255,.07)', hoverBd:'rgba(255,255,255,.2)', softBg:'rgba(255,255,255,.05)' }
+      }
+    };
+    this._applyTheme();
+    this.GENE_DEFS = [
+      {code:'ENT',label:'Entry trigger',cat:'Entry',param:'ADX_min'},
+      {code:'TRD',label:'Trend window',cat:'Trend',param:'ATR_period'},
+      {code:'VOL',label:'Volatility',cat:'Volatility',param:'ATR_mult'},
+      {code:'FLT',label:'Regime filter',cat:'Filter',param:'regime_filter'},
+      {code:'SES',label:'Session',cat:'Session',param:'session_filter'},
+      {code:'RSK',label:'Risk',cat:'Risk',param:'risk_percent'},
+      {code:'STP',label:'Stop loss',cat:'Stop',param:'SL'},
+      {code:'TGT',label:'Target',cat:'Target',param:'TP_R'},
+      {code:'CNF',label:'Confirmation',cat:'Confirmation',param:'break_even'},
+    ];
+    this._build();
+  }
+
+  _rng(seed){ let x=(seed>>>0)||1; return ()=>{ x=(x*1664525+1013904223)>>>0; return x/4294967296; }; }
+  _hash(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+  _geneVal(p,r){
+    switch(p){
+      case 'ADX_min': return Math.round(18+r()*14);
+      case 'ATR_period': return Math.round(10+r()*12);
+      case 'ATR_mult': return (1.5+r()*2).toFixed(1)+'Ã—';
+      case 'regime_filter': return r()>0.4?'on':'off';
+      case 'session_filter': return r()>0.45?'london+ny':'off';
+      case 'risk_percent': return (0.5+r()*1.6).toFixed(1)+'%';
+      case 'SL': return Math.round(280+r()*280)+'pt';
+      case 'TP_R': return (1.8+r()*1.7).toFixed(1)+'R';
+      case 'break_even': return r()>0.5?'on':'off';
+      default: return 'â€”';
+    }
+  }
+  _equity(seed){ const r=this._rng(seed); let v=10000; const a=[v]; const down = r()>0.85; for(let i=0;i<34;i++){ const drift=(down?-0.004:0.004)+r()*0.012; const shock=(r()-0.42)*0.05; v=Math.max(1500,v*(1+drift+shock)); a.push(Math.round(v)); } return a; }
+  _periods(seed){ const r=this._rng(seed); const out=[]; for(let y=2020;y<=2025;y++){ out.push({ year:y, ret:Math.round((r()-0.28)*70), dd:Math.round(6+r()*26) }); } return out; }
+  _robustRows(seed){ const r=this._rng(seed); return [
+    {label:'Spread Ã—2', s:Math.round(55+r()*42)},
+    {label:'Slippage 1.5pt', s:Math.round(55+r()*42)},
+    {label:'Commission +30%', s:Math.round(50+r()*45)},
+    {label:'Out-of-sample', s:Math.round(45+r()*50)},
+    {label:'Regime shift', s:Math.round(40+r()*55)},
+    {label:'Walk-forward', s:Math.round(50+r()*45)},
+  ]; }
+  _mutations(r){ const pool=[
+    {param:'SL', before:'380pt', after:'500pt', impact:'risk_decrease', note:'Widened stop to survive volatility spikes'},
+    {param:'TP_R', before:'2.2R', after:'3.0R', impact:'profit_aggressive', note:'Extended target for asymmetric payoff'},
+    {param:'trailing_stop', before:'off', after:'on', impact:'risk_decrease', note:'Enabled adaptive trailing'},
+    {param:'ADX_min', before:'20', after:'25', impact:'neutral', note:'Stricter trend gate'},
+    {param:'session_filter', before:'off', after:'london+ny', impact:'risk_decrease', note:'Restricted to liquid sessions'},
+    {param:'risk_percent', before:'1.5%', after:'1.0%', impact:'risk_decrease', note:'Lower per-trade exposure'},
+    {param:'use_grid', before:'off', after:'on', impact:'risk_increase', note:'Grid recovery layer (flagged)'},
+  ]; const idx=Math.floor(r()*3); return pool.slice(idx,idx+3); }
+
+  _impactColor(i){ return {risk_decrease:this.C.green, profit_aggressive:this.C.gold, risk_increase:this.C.red, neutral:this.C.txt3, unknown:this.C.txt3}[i]; }
+
+  _build(){
+    const specs=[
+      {id:'apex',name:'APEX-Î”7',code:'XAUÂ·G7Â·0ff1c8',tier:'Elite',gen:7,ver:'v7.3',family:'XAU Trend Breakout',sym:'XAUUSD',tf:'M5',fitness:94.2,ret:218.4,dd:14.8,pf:2.41,robust:91,consist:88,surv:96,win:58,trades:1840,ep:42.7,risk:'controlled',flags:[],parent:'stratum',note:'Asymmetric-payoff breakout with adaptive trailing. Held positive expectancy across nine stress windows.'},
+      {id:'stratum',name:'STRATUM-9',code:'XAUÂ·G6Â·ac00bf',tier:'Dominant',gen:6,ver:'v6.1',family:'XAU Trend Breakout',sym:'XAUUSD',tf:'M5',fitness:90.7,ret:186.0,dd:17.2,pf:2.18,robust:87,consist:84,surv:92,win:55,trades:2010,ep:33.5,risk:'controlled',flags:[],parent:'oryx',note:'High-frequency trend continuation. The ancestral backbone of the current elite cohort.'},
+      {id:'vanta',name:'VANTA-M1',code:'XAUÂ·G8Â·e00d49',tier:'Mutant',gen:8,ver:'v8.0',family:'XAU Trend Breakout',sym:'XAUUSD',tf:'M5',fitness:88.1,ret:201.3,dd:19.0,pf:2.05,robust:80,consist:76,surv:78,win:56,trades:1610,ep:37.2,risk:'controlled',flags:[],parent:'apex',note:'Fresh mutation of APEX with a stricter trend gate. Promising but few stress windows survived.'},
+      {id:'kestrel',name:'KESTREL-3',code:'XAUÂ·G5Â·b08f74',tier:'Survivor',gen:5,ver:'v5.4',family:'Range Reversion',sym:'XAUUSD',tf:'M15',fitness:82.3,ret:121.5,dd:12.1,pf:1.92,robust:85,consist:80,surv:90,win:61,trades:980,ep:28.0,risk:'controlled',flags:[],parent:'oryx',note:'Conservative mean-reversion. Low drawdown, steady survival across regimes.'},
+      {id:'helios',name:'HELIOS-2',code:'XAUÂ·G5Â·cbc86a',tier:'Hybrid',gen:5,ver:'v5.0',family:'Trend Ã— Reversion',sym:'XAUUSD',tf:'M15',fitness:79.4,ret:142.8,dd:21.6,pf:1.78,robust:74,consist:71,surv:81,win:53,trades:1320,ep:24.6,risk:'wild',flags:['grid'],parent:'oryx',note:'Crossbred lineage blending breakout entries with reversion exits. Uses flagged grid recovery.'},
+      {id:'sable',name:'SABLE-4',code:'XAUÂ·G7Â·3df9a2',tier:'Survivor',gen:7,ver:'v7.2',family:'Range Reversion',sym:'XAUUSD',tf:'H1',fitness:76.5,ret:79.6,dd:11.0,pf:1.83,robust:84,consist:82,surv:89,win:63,trades:610,ep:30.1,risk:'controlled',flags:[],parent:'stratum',note:'Slow-cadence reversion on H1. Excellent risk control, low trade count.'},
+      {id:'oryx',name:'ORYX-5',code:'XAUÂ·G4Â·5a1c20',tier:'Survivor',gen:4,ver:'v4.2',family:'XAU Trend Breakout',sym:'XAUUSD',tf:'M5',fitness:74.0,ret:98.4,dd:15.5,pf:1.71,robust:82,consist:79,surv:88,win:54,trades:1750,ep:19.4,risk:'controlled',flags:[],parent:'seed',note:'Early stable ancestor. Modest returns, durable behaviour across years.'},
+      {id:'quartz',name:'QUARTZ-2',code:'XAUÂ·G8Â·91aa7d',tier:'Mutant',gen:8,ver:'v8.0',family:'XAU Trend Breakout',sym:'XAUUSD',tf:'M5',fitness:71.5,ret:110.2,dd:24.8,pf:1.62,robust:66,consist:60,surv:62,win:51,trades:1480,ep:18.0,risk:'wild',flags:['martingale'],parent:'apex',note:'Aggressive APEX mutation using flagged martingale sizing. Research-only.'},
+      {id:'nimbus',name:'NIMBUS-7',code:'XAUÂ·G6Â·77be01',tier:'Experimental',gen:6,ver:'v6.0',family:'Volatility Expansion',sym:'XAUUSD',tf:'M5',fitness:68.9,ret:88.0,dd:26.3,pf:1.54,robust:61,consist:58,surv:54,win:49,trades:1190,ep:14.8,risk:'wild',flags:['no_stop'],parent:'helios',note:'Volatility-expansion experiment. High variance, currently under observation.'},
+      {id:'cinder',name:'CINDER-X',code:'XAUÂ·G7Â·deadc0',tier:'Rejected',gen:7,ver:'v7.0',family:'Volatility Expansion',sym:'XAUUSD',tf:'M1',fitness:41.2,ret:-32.0,dd:48.6,pf:0.88,robust:28,consist:24,surv:12,win:43,trades:2240,ep:-6.2,risk:'wild',flags:['no_stop','martingale'],parent:'kestrel',note:'Unstable mutation. Failed drawdown tolerance and was retired from the active population.'},
+    ];
+    const flagLabel={grid:'GRID',martingale:'MART',no_stop:'NO-SL'};
+    this.robots = specs.map(s=>{
+      const r=this._rng(this._hash(s.id));
+      const genes=this.GENE_DEFS.map(g=>{ const intensity=Math.min(1,0.32+r()*0.66); return {...g, value:this._geneVal(g.param,r), intensity, dominant:intensity>0.78, color:this.CAT[g.cat]}; });
+      const tc=this.TIER[s.tier];
+      const retPos=s.ret>=0;
+      return {...s, genes,
+        equity:this._equity(this._hash(s.id)+7),
+        periods:this._periods(this._hash(s.id)+3),
+        robustRows:this._robustRows(this._hash(s.id)+5),
+        mutations:this._mutations(r),
+        color:tc,
+        genStr:'G'+s.gen, fitStr:s.fitness.toFixed(1),
+        retStr:(retPos?'+':'')+s.ret.toFixed(1)+'%', retCss:{color:retPos?this.C.green:this.C.red},
+        retColor:retPos?this.C.green:this.C.red,
+        ddStr:s.dd.toFixed(1)+'%', pfStr:s.pf.toFixed(2), robStr:s.robust+'', survStr:s.surv+'%', winStr:s.win+'%',
+        tierStyle:{display:'inline-block',fontFamily:"'JetBrains Mono',monospace",fontSize:'11.7px',letterSpacing:'.12em',textTransform:'uppercase',padding:'4px 10px',borderRadius:'6px',color:tc,background:this._rgba(tc,.12),border:'1px solid '+this._rgba(tc,.3)},
+        tierBar:'background:linear-gradient(90deg,'+tc+','+this._rgba(tc,.2)+');',
+        dnaMini:genes.map(g=>({style:{width:'4px',height:Math.max(20,Math.round(g.intensity*100))+'%',background:g.color,borderRadius:'2px',opacity:0.5+g.intensity*0.5}})),
+        flagChips:(s.flags||[]).map(f=>({label:flagLabel[f]||f, style:{fontFamily:"'JetBrains Mono',monospace",fontSize:'11px',letterSpacing:'.08em',padding:'2px 6px',borderRadius:'4px',color:this.C.red,background:this._rgba(this.C.red,.12),border:'1px solid '+this._rgba(this.C.red,.30)}})),
+      };
+    });
+    this.byId={}; this.robots.forEach(r=>this.byId[r.id]=r);
+  }
+  _rgba(hex,a){ const h=hex.replace('#',''); const n=parseInt(h.length===3?h.split('').map(c=>c+c).join(''):h,16); return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+  _applyTheme(){ const t=this.THEMES[this.state.theme]||this.THEMES.light; this.C=t.C; this.CAT=t.CAT; this.TIER=t.TIER; this.UI=t.UI; }
+  _syncHtmlTheme(){ try{ const c=document.documentElement.classList; c.remove('theme-dark','theme-light'); c.add(this.state.theme==='dark'?'theme-dark':'theme-light'); }catch(e){} }
+  componentDidMount(){ this._syncHtmlTheme(); }
+  toggleTheme(){ this.setState(s=>({theme:s.theme==='dark'?'light':'dark'}), ()=>{ this._applyTheme(); this._build(); this._syncHtmlTheme(); this.forceUpdate(); }); }
+  _themeIcon(theme){ const h=React.createElement; const base={width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round'};
+    if(theme==='dark') return h('svg',base,[h('path',{key:'m',d:'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'})]);
+    return h('svg',base,[h('circle',{key:'c',cx:12,cy:12,r:4.2}),h('path',{key:'r',d:'M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7'})]); }
+
+  // ---- chart builders ----
+  _ring(pct,size,color){
+    const r=(size-6)/2, c=2*Math.PI*r, off=c*(1-pct/100), h=React.createElement;
+    return h('svg',{width:size,height:size,viewBox:'0 0 '+size+' '+size},[
+      h('circle',{key:'b',cx:size/2,cy:size/2,r,fill:'none',stroke:this.UI.ringTrack,strokeWidth:4}),
+      h('circle',{key:'f',cx:size/2,cy:size/2,r,fill:'none',stroke:color,strokeWidth:4,strokeLinecap:'round',strokeDasharray:c,strokeDashoffset:off,transform:'rotate(-90 '+size/2+' '+size/2+')'}),
+      h('text',{key:'t',x:size/2,y:size/2,textAnchor:'middle',dominantBaseline:'central',fill:this.UI.text1,fontSize:size*0.27,fontFamily:"'JetBrains Mono',monospace",fontWeight:700},String(Math.round(pct))),
+    ]);
+  }
+  _equityChart(series,color,height){
+    const h=React.createElement, w=600, min=Math.min(...series), max=Math.max(...series), rng=(max-min)||1;
+    const pts=series.map((v,i)=>[(i/(series.length-1))*w, height-((v-min)/rng)*(height-10)-5]);
+    const d='M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L ');
+    return h('svg',{viewBox:'0 0 '+w+' '+height,preserveAspectRatio:'none',style:{width:'100%',height:height+'px',display:'block'}},[
+      h('path',{key:'a',d:d+' L '+w+' '+height+' L 0 '+height+' Z',fill:color,opacity:0.09}),
+      h('path',{key:'l',d,fill:'none',stroke:color,strokeWidth:1.8,strokeLinejoin:'round'}),
+    ]);
+  }
+  _spark(series,color,height){
+    const h=React.createElement, w=140, min=Math.min(...series), max=Math.max(...series), rng=(max-min)||1;
+    const d='M'+series.map((v,i)=>((i/(series.length-1))*w).toFixed(1)+' '+(height-((v-min)/rng)*(height-4)-2).toFixed(1)).join(' L ');
+    return h('svg',{viewBox:'0 0 '+w+' '+height,preserveAspectRatio:'none',style:{width:'100%',height:height+'px',display:'block'}},[h('path',{key:'l',d,fill:'none',stroke:color,strokeWidth:1.6})]);
+  }
+  _bars(data,height){
+    const h=React.createElement, w=600, n=data.length, max=Math.max(...data.map(d=>d.v)), bw=w/n;
+    return h('svg',{viewBox:'0 0 '+w+' '+height,preserveAspectRatio:'none',style:{width:'100%',height:height+'px',display:'block'}},
+      data.map((d,i)=>h('rect',{key:i,x:i*bw+bw*0.2,y:height-(d.v/max)*(height-4),width:bw*0.6,height:(d.v/max)*(height-4),rx:2,fill:d.c||this.C.blue,opacity:0.4+0.6*(d.v/max)})));
+  }
+  _logo(){
+    const h=React.createElement;
+    const dots=[];
+    const dark=this.state.theme==='dark';
+    const cA=dark?'#6EA8FE':'#1F9E57', cB=dark?'#3FD995':'#DC4B3E', rung=dark?'rgba(150,170,200,.35)':'rgba(46,92,64,.35)';
+    for(let i=0;i<7;i++){ const t=i/6; const y=4+t*24; const x1=16+Math.sin(t*Math.PI*2)*9; const x2=16-Math.sin(t*Math.PI*2)*9;
+      dots.push(h('circle',{key:'a'+i,cx:x1,cy:y,r:1.7,fill:cA})); dots.push(h('circle',{key:'b'+i,cx:x2,cy:y,r:1.7,fill:cB}));
+      if(i%2===0) dots.push(h('line',{key:'r'+i,x1,y1:y,x2,y2:y,stroke:rung,strokeWidth:1}));
+    }
+    return h('svg',{width:32,height:32,viewBox:'0 0 32 32'},dots);
+  }
+
+  icon(name,color){
+    const h=React.createElement, base={width:18,height:18,viewBox:'0 0 24 24',fill:'none',stroke:color,strokeWidth:1.6,strokeLinecap:'round',strokeLinejoin:'round'};
+    const P=(d,k)=>h('path',{key:k||'p',d}); const C=(cx,cy,r,k)=>h('circle',{key:k,cx,cy,r}); const R=(x,y,w,ht,k)=>h('rect',{key:k,x,y,width:w,height:ht,rx:1.6}); const L=(x1,y1,x2,y2,k)=>h('line',{key:k,x1,y1,x2,y2});
+    const sets={
+      home:[C(12,12,8.5,'a'),C(12,12,2.4,'b')],
+      dashboard:[R(4,4,7,7,'a'),R(13,4,7,7,'b'),R(4,13,7,7,'c'),R(13,13,7,7,'d')],
+      ranking:[L(4,6,12,6,'a'),L(4,12,16,12,'b'),L(4,18,20,18,'c')],
+      specimen:[P('M12 3l7 4v8l-7 4-7-4V7z','a'),C(12,11,2.2,'b')],
+      compare:[C(9,12,5,'a'),C(15,12,5,'b')],
+      genome:[P('M8 3c7 4 -3 13 0 18','a'),P('M16 3c-7 4 3 13 0 18','b'),L(9,8,15,8,'c'),L(9,16,15,16,'d')],
+      lineage:[C(12,5,2,'a'),C(6,18,2,'b'),C(18,18,2,'c'),P('M12 7v3M12 10c-4 0-6 2-6 6M12 10c4 0 6 2 6 6','d')],
+      experiments:[P('M9 3h6M10 3v6l-5 8.5a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3L15 9V3','a'),L(7.5,15,16.5,15,'b')],
+      method:[C(5,12,2,'a'),C(12,7,2,'b'),C(12,17,2,'c'),C(19,12,2,'d'),P('M7 12h2.5M14 8l3 2.5M14 16l3-2.5','e')],
+    };
+    return h('svg',base,sets[name]||sets.home);
+  }
+
+  // ---- lineage graph ----
+  _lineageEl(compact){
+    const h=React.createElement;
+    const POS={ seed:{x:70,y:250}, oryx:{x:225,y:250}, kestrel:{x:395,y:120}, helios:{x:395,y:395}, stratum:{x:565,y:235}, nimbus:{x:565,y:430}, apex:{x:735,y:195}, sable:{x:735,y:305}, cinder:{x:735,y:90}, vanta:{x:905,y:155}, quartz:{x:905,y:255} };
+    const seed={id:'seed',name:'SEED-Î±',gen:3,color:this.C.green,fitStr:'â€”',tier:'Ancestor'};
+    const all=[seed,...this.robots];
+    const meta={}; all.forEach(r=>meta[r.id]=r);
+    const edges=[['seed','oryx'],['oryx','kestrel'],['oryx','helios'],['oryx','stratum'],['helios','nimbus'],['stratum','apex'],['stratum','sable'],['kestrel','cinder'],['apex','vanta'],['apex','quartz']];
+    const edgeEls=edges.map((e,i)=>{ const a=POS[e[0]], b=POS[e[1]]; const mx=(a.x+b.x)/2; const rej=meta[e[1]]&&meta[e[1]].tier==='Rejected';
+      return h('path',{key:'e'+i,d:'M'+a.x+' '+a.y+' C '+mx+' '+a.y+', '+mx+' '+b.y+', '+b.x+' '+b.y, fill:'none', stroke:rej?'rgba(220,75,62,.5)':this.UI.edge, strokeWidth:1.5, strokeDasharray:rej?'4 4':'none'}); });
+    const nodeEls=[];
+    all.forEach(r=>{ const p=POS[r.id]; if(!p) return; const c=r.color; const isElite=r.tier==='Elite'; const rr=isElite?15:(r.id==='seed'?9:11.5);
+      const g=[];
+      if(isElite) g.push(h('circle',{key:'glow',cx:0,cy:0,r:rr+8,fill:'none',stroke:this._rgba(c,.25),strokeWidth:1}));
+      g.push(h('circle',{key:'bg',cx:0,cy:0,r:rr,fill:this.UI.nodeBg,stroke:c,strokeWidth:2}));
+      g.push(h('circle',{key:'dot',cx:0,cy:0,r:rr*0.4,fill:c}));
+      g.push(h('text',{key:'nm',x:0,y:rr+15,textAnchor:'middle',fill:this.UI.text2,fontSize:11,fontFamily:"'Space Grotesk',sans-serif",fontWeight:600},r.name));
+      g.push(h('text',{key:'gn',x:0,y:rr+28,textAnchor:'middle',fill:this.UI.label,fontSize:9,fontFamily:"'JetBrains Mono',monospace"},'G'+r.gen+(r.fitStr&&r.fitStr!=='â€”'?' Â· '+r.fitStr:'')));
+      nodeEls.push(h('g',{key:r.id,transform:'translate('+p.x+','+p.y+')',style:{cursor:r.id==='seed'?'default':'pointer'},onClick:r.id==='seed'?null:()=>{this.setState({sel:r.id,screen:'detail'});}},g));
+    });
+    return h('svg',{viewBox:'0 0 1000 510',preserveAspectRatio:'xMidYMid meet',style:{width:'100%',height:compact?'auto':'560px',maxHeight:compact?'760px':'none',display:'block'}},[h('g',{key:'edges'},edgeEls),h('g',{key:'nodes'},nodeEls)]);
+  }
+
+  // ---- genome heatmap ----
+  _heatmapEl(){
+    const h=React.createElement;
+    const cols=this.robots.slice(0,7);
+    const cell=(intensity)=>h('div',{style:{height:'30px',borderRadius:'4px',background:this._rgba(this.C.blue,0.08+0.82*intensity),border:'1px solid '+this.C.line,display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'11.5px',color:intensity>0.55?(this.state.theme==='dark'?'#06121f':'#0A2415'):this.UI.muted}},Math.round(intensity*100));
+    const rows=[];
+    const headcells=[h('div',{key:'hh'},'')];
+    cols.forEach(c=>headcells.push(h('div',{key:'h'+c.id,style:{textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'11.5px',color:this.UI.muted,paddingBottom:'2px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}},c.name.split('-')[0])));
+    rows.push(h('div',{key:'head',style:{display:'grid',gridTemplateColumns:'92px repeat('+cols.length+',1fr)',gap:'5px'}},headcells));
+    this.GENE_DEFS.forEach((g,gi)=>{ const rc=[h('div',{key:'l',style:{display:'flex',alignItems:'center',gap:'7px',fontFamily:"'JetBrains Mono',monospace",fontSize:'12.2px',color:this.C.txt2}},[h('span',{key:'d',style:{width:'7px',height:'7px',borderRadius:'2px',background:this.CAT[g.cat]}}),g.code])];
+      cols.forEach(c=>rc.push(h('div',{key:c.id},cell(c.genes[gi].intensity))));
+      rows.push(h('div',{key:g.code,style:{display:'grid',gridTemplateColumns:'92px repeat('+cols.length+',1fr)',gap:'5px'}},rc));
+    });
+    return h('div',{style:{display:'flex',flexDirection:'column',gap:'5px'}},rows);
+  }
+
+  // ---- helix canvas ----
+  _startHelix(canvas){ this._stopHelix(); if(!canvas) return; const ctx=canvas.getContext('2d'); let phase=0;
+    const loop=()=>{ const dpr=Math.min(2,window.devicePixelRatio||1); const w=canvas.clientWidth, ht=canvas.clientHeight; if(canvas.width!==w*dpr){canvas.width=w*dpr;canvas.height=ht*dpr;} ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,ht);
+      const cx=w/2, n=26, span=ht*0.74, top=ht*0.13, amp=w*0.26;
+      const moving=this.props.motion!==false;
+      const dark=this.state.theme==='dark';
+      const sA=dark?'110,168,254':'31,158,87', gA=dark?'#6EA8FE':'#1F9E57';
+      const sB=dark?'63,217,149':'220,75,62', gB=dark?'#3FD995':'#DC4B3E';
+      const rung=dark?'150,170,200':'46,92,64';
+      for(let i=0;i<n;i++){ const t=i/(n-1); const y=top+t*span; const a=t*Math.PI*3.4+phase; const x1=cx+Math.sin(a)*amp; const x2=cx+Math.sin(a+Math.PI)*amp; const depth1=(Math.cos(a)+1)/2; const depth2=(Math.cos(a+Math.PI)+1)/2;
+        ctx.strokeStyle='rgba('+rung+','+(0.07+0.16*Math.min(depth1,depth2))+')'; ctx.lineWidth=1; if(i%2===0){ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();}
+        const r1=1.6+depth1*3.4; ctx.beginPath(); ctx.arc(x1,y,r1,0,7); ctx.fillStyle='rgba('+sA+','+(0.35+depth1*0.6)+')'; ctx.shadowBlur=depth1*11; ctx.shadowColor=gA; ctx.fill();
+        const r2=1.6+depth2*3.4; ctx.beginPath(); ctx.arc(x2,y,r2,0,7); ctx.fillStyle='rgba('+sB+','+(0.35+depth2*0.6)+')'; ctx.shadowBlur=depth2*11; ctx.shadowColor=gB; ctx.fill();
+        ctx.shadowBlur=0;
+      }
+      if(moving) phase+=0.012; this._raf=requestAnimationFrame(loop);
+    }; loop();
+  }
+  _stopHelix(){ if(this._raf) cancelAnimationFrame(this._raf); this._raf=null; }
+  componentWillUnmount(){ this._stopHelix(); }
+
+  go(s){ this.setState({screen:s}); const m=document.querySelector('main'); if(m) m.scrollTop=0; }
+  pick(id){ this.setState({sel:id,screen:'detail'}); const m=document.querySelector('main'); if(m) m.scrollTop=0; }
+
+  renderVals(){
+    const S=this.state, C=this.C;
+    const titles={home:'Overview',dashboard:'Lab Dashboard',ranking:'Specimen Ranking',detail:'Specimen Profile',compare:'Genome Comparison',genome:'Genome Lab',lineage:'Evolutionary Lineage',experiments:'Experiments',method:'Methodology'};
+    const keys={home:'/ overview',dashboard:'/ lab/dashboard',ranking:'/ lab/ranking',detail:'/ specimen/'+S.sel,compare:'/ lab/compare',genome:'/ lab/genome',lineage:'/ lab/lineage',experiments:'/ lab/experiments',method:'/ about/methodology'};
+    const navHover={background:'rgba(22,90,50,.07)',color:'#16201A'};
+    const mkItem=(key,label,count)=>{ const active=S.screen===key; const fg=active?this.C.txt:this.C.txt3;
+      return { key,label,count, onClick:()=>this.go(key), icon:this.icon(key==='detail'?'specimen':key,active?this.C.blue:this.C.txt3), labelStyle:{flex:'1',textAlign:'left',color:fg},
+        style:{display:'flex',alignItems:'center',gap:'11px',width:'100%',padding:'9px 11px',border:'none',borderRadius:'9px',background:active?this._rgba(this.C.blue,.12):'transparent',color:fg,font:'inherit',fontSize:'15px',fontWeight:active?600:500,cursor:'pointer',position:'relative',fontFamily:"'Hanken Grotesk',sans-serif",transition:'all .15s'},
+        bar:{position:'absolute',left:'-3px',top:'9px',bottom:'9px',width:'2.5px',borderRadius:'3px',background:active?this.C.blue:'transparent',boxShadow:active?'0 0 8px '+this.C.blue:'none'},
+        countStyle:{fontFamily:"'JetBrains Mono',monospace",fontSize:'12.2px',color:this.C.txt3,background:this.UI.softBg,padding:'1px 7px',borderRadius:'20px'} };
+    };
+    const navGroups=[
+      {title:'Platform', items:[mkItem('home','Overview')]},
+      {title:'Research', items:[mkItem('dashboard','Lab Dashboard'),mkItem('ranking','Ranking',this.robots.length),mkItem('detail','Specimen'),mkItem('compare','Compare')]},
+      {title:'Genetics', items:[mkItem('genome','Genome Lab'),mkItem('lineage','Lineage'),mkItem('experiments','Experiments','3')]},
+      {title:'About', items:[mkItem('method','Methodology')]},
+    ];
+
+    const risk=(this.props.riskMode||'wild');
+    const out={
+      logoEl:this._logo(),
+      themeClass: S.theme==='dark'?'theme-dark':'theme-light',
+      themeIsDark: S.theme==='dark',
+      themeLabel: S.theme==='dark'?'LIGHT':'DARK',
+      themeIconEl: this._themeIcon(S.theme),
+      toggleTheme: ()=>this.toggleTheme(),
+      themeBtnStyle:{display:'flex',alignItems:'center',gap:'8px',height:'30px',padding:'0 12px',borderRadius:'7px',cursor:'pointer',border:'1px solid var(--c-tglbd)',background:'var(--c-tglbg)',color:'var(--c-tglfg)',fontFamily:"'JetBrains Mono',monospace",fontSize:'11.7px',letterSpacing:'.1em'},
+      navGroups, navHover,
+      goHome:()=>this.go('home'), goRanking:()=>this.go('ranking'), goMethod:()=>this.go('method'), goLineage:()=>this.go('lineage'),
+      screenTitle:titles[S.screen]||'', screenKey:keys[S.screen]||'',
+      riskModeLabel: risk==='wild'?'WILD MODE':'CONTROLLED RISK',
+      riskChipStyle:{display:'flex',alignItems:'center',gap:'7px',height:'30px',padding:'0 11px',borderRadius:'7px',fontFamily:"'JetBrains Mono',monospace",fontSize:'11.7px',letterSpacing:'.1em',color:risk==='wild'?this.C.amber:this.C.green,background:risk==='wild'?'rgba(217,138,30,.12)':'rgba(22,163,74,.12)',border:'1px solid '+(risk==='wild'?'rgba(217,138,30,.28)':'rgba(63,217,149,.25)')},
+      isHome:S.screen==='home', isDash:S.screen==='dashboard', isRank:S.screen==='ranking', isDetail:S.screen==='detail', isCompare:S.screen==='compare', isGenome:S.screen==='genome', isLineage:S.screen==='lineage', isExp:S.screen==='experiments', isMethod:S.screen==='method',
+      ctaHover:{transform:'translateY(-2px)',boxShadow:'0 12px 38px '+this._rgba(this.C.blue,.40)},
+      ghostHover:{background:this.UI.hoverBg,borderColor:this.UI.hoverBd},
+      cardHover:{borderColor:this._rgba(this.C.blue,.35),transform:'translateY(-3px)'},
+      // home
+      heroCanvasRef:(el)=>{ if(el){ this._heroCanvas=el; this._startHelix(el); } else { this._stopHelix(); } },
+      heroStats:[{v:'12,480',l:'Specimens tested'},{v:'64',l:'Generations'},{v:'37.4%',l:'Survival rate'},{v:'9',l:'Stress windows'}],
+      topRobots:this.robots.slice(0,4).map(r=>({...r, ring:this._ring(r.fitness,54,r.color), open:()=>this.pick(r.id)})),
+      geneLegend:this.GENE_DEFS.map(g=>({code:g.code,label:g.label,dot:{width:'9px',height:'9px',borderRadius:'2px',background:this.CAT[g.cat],flex:'none'}})),
+      demoGenes:this.byId.apex.genes.map(g=>({code:g.code,pct:Math.round(g.intensity*100),barStyle:{height:Math.round(g.intensity*120)+'px',background:'linear-gradient(180deg,'+g.color+','+this._rgba(g.color,.35)+')'}})),
+      howSteps:[
+        {n:'01',t:'Seed',d:'A base strategy enters the gene pool with a known parameter genome.',icon:this.icon('specimen',this.C.blue)},
+        {n:'02',t:'Mutate',d:'Genes are altered â€” stops widened, filters toggled, targets extended.',icon:this.icon('genome',this.C.violet)},
+        {n:'03',t:'Backtest',d:'Each variant is run across years, sessions and balance sizes.',icon:this.icon('dashboard',this.C.cyan)},
+        {n:'04',t:'Evaluate',d:'Fitness scores risk-adjusted return, robustness and consistency.',icon:this.icon('ranking',this.C.green)},
+        {n:'05',t:'Select',d:'Specimens inside drawdown tolerance survive; the rest are archived.',icon:this.icon('method',this.C.gold)},
+        {n:'06',t:'Breed',d:'Survivors seed the next generation. The loop repeats.',icon:this.icon('lineage',this.C.amber)},
+      ],
+      lineagePreviewEl:this._lineageEl(true),
+      labMetrics:[
+        {v:'2.41',l:'Best profit factor',sub:'APEX-Î”7',c:this.C.green},
+        {v:'94.2',l:'Top fitness score',sub:'elite tier',c:this.C.gold},
+        {v:'21.8%',l:'Mutations approved',sub:'of 4,902 mutations',c:this.C.violet},
+        {v:'11.0%',l:'Lowest drawdown',sub:'SABLE-4',c:this.C.blue},
+      ].map(m=>({...m, css:'color:'+m.c+';', dot:{width:'8px',height:'8px',borderRadius:'50%',background:m.c,boxShadow:'0 0 10px '+m.c}})),
+    };
+    Object.assign(out, this._screenData());
+    return out;
+  }
+
+  _screenData(){
+    const S=this.state, rg=(h,a)=>this._rgba(h,a);
+    const dot=(c)=>({width:'8px',height:'8px',borderRadius:'50%',background:c,boxShadow:'0 0 10px '+c});
+
+    // ---------- DASHBOARD ----------
+    const dashKpis=[
+      {v:'12,480',l:'Specimens tested',sub:'+318 this cycle',c:this.C.blue},
+      {v:'64',l:'Generations',sub:'active cohort G8',c:this.C.cyan},
+      {v:'37.4%',l:'Survival rate',sub:'passed DD tolerance',c:this.C.green},
+      {v:'21.8%',l:'Mutations approved',sub:'of 4,902 mutations',c:this.C.violet},
+      {v:'94.2',l:'Top fitness',sub:'APEX-Î”7',c:this.C.gold},
+      {v:'3',l:'Live experiments',sub:'EXP-062 Â· 063 Â· 064',c:this.C.amber},
+    ].map(m=>({...m, valStyle:{color:m.c}, dotStyle:dot(m.c)}));
+    const byGen={}; this.robots.forEach(r=>{(byGen[r.gen]=byGen[r.gen]||[]).push(r.fitness);});
+    const genData=Object.keys(byGen).sort().map(g=>({label:'G'+g, v:Math.round(byGen[g].reduce((a,b)=>a+b,0)/byGen[g].length), c:this.C.blue}));
+    const ddBuckets=[{l:'0â€“10%',mn:0,mx:10,c:this.C.green},{l:'10â€“20%',mn:10,mx:20,c:this.C.blue},{l:'20â€“30%',mn:20,mx:30,c:this.C.amber},{l:'30%+',mn:30,mx:999,c:this.C.red}];
+    const ddData=ddBuckets.map(b=>({label:b.l, v:this.robots.filter(r=>r.dd>=b.mn&&r.dd<b.mx).length, c:b.c}));
+    const tierOrder=['Elite','Dominant','Survivor','Hybrid','Mutant','Experimental','Rejected'];
+    const counts={}; this.robots.forEach(r=>counts[r.tier]=(counts[r.tier]||0)+1);
+    const statusBars=tierOrder.map(t=>({label:t,n:counts[t]||0,color:this.TIER[t], barStyle:{width:((counts[t]||0)/this.robots.length*100)+'%',height:'100%',borderRadius:'4px',background:this.TIER[t]}, dotStyle:dot(this.TIER[t])}));
+    const dominants=this.robots.slice(0,3).map(r=>({...r, ring:this._ring(r.fitness,48,r.color), open:()=>this.pick(r.id), sparkEl:this._spark(r.equity,r.color,34)}));
+
+    // ---------- RANKING ----------
+    const sortMap={fitness:r=>r.fitness, ret:r=>r.ret, pf:r=>r.pf, robust:r=>r.robust, win:r=>r.win, dd:r=>-r.dd, surv:r=>r.surv};
+    const sortDefs=[{k:'fitness',l:'Fitness'},{k:'ret',l:'Return'},{k:'pf',l:'Profit factor'},{k:'dd',l:'Drawdown'},{k:'robust',l:'Robustness'},{k:'win',l:'Win rate'},{k:'surv',l:'Survival'}];
+    const sortOptions=sortDefs.map(s=>({...s, active:S.sort===s.k, onClick:()=>this.setState({sort:s.k}), style:{fontFamily:"'JetBrains Mono',monospace",fontSize:'13.2px',padding:'6px 12px',borderRadius:'8px',cursor:'pointer',border:'1px solid '+(S.sort===s.k?'rgba(110,168,254,.4)':'rgba(20,50,30,.12)'),background:S.sort===s.k?'rgba(31,158,87,.14)':'transparent',color:S.sort===s.k?'#15823F':'#6A7B6F',letterSpacing:'.04em'}}));
+    const filterDefs=[{k:'all',l:'All'},{k:'Elite',l:'Elite'},{k:'Dominant',l:'Dominant'},{k:'Survivor',l:'Survivor'},{k:'Mutant',l:'Mutant'},{k:'Hybrid',l:'Hybrid'},{k:'Experimental',l:'Experimental'},{k:'Rejected',l:'Rejected'}];
+    const filterOptions=filterDefs.map(f=>({...f, active:S.filterTier===f.k, onClick:()=>this.setState({filterTier:f.k}), style:{fontSize:'13.5px',padding:'6px 13px',borderRadius:'100px',cursor:'pointer',border:'1px solid '+(S.filterTier===f.k?rg(this.TIER[f.k]||this.C.blue,.4):'rgba(20,50,30,.12)'),background:S.filterTier===f.k?rg(this.TIER[f.k]||this.C.blue,.12):'transparent',color:S.filterTier===f.k?(this.TIER[f.k]||'#15823F'):'#6A7B6F',fontFamily:"'Hanken Grotesk',sans-serif",fontWeight:500}}));
+    let ranked=this.robots.filter(r=>S.filterTier==='all'||r.tier===S.filterTier);
+    ranked=[...ranked].sort((a,b)=>sortMap[S.sort](b)-sortMap[S.sort](a)).map((r,i)=>({...r, dispRank:String(i+1).padStart(2,'0'), open:()=>this.pick(r.id), rowStyle:{display:'grid',gridTemplateColumns:this.props.compactRanking?'48px 1.6fr 70px 1fr 1fr 1fr 1fr':'48px 1.7fr 90px 1fr 1fr 1fr 1fr 1fr 1.1fr',gap:'14px',alignItems:'center',padding:'15px 20px',borderRadius:'12px',border:'1px solid rgba(20,50,30,.09)',background: i<3?rg(r.color,.04):'#FFFFFF',cursor:'pointer',marginBottom:'8px'}, rankColor: i===0?this.C.gold:i===1?'#2B3A30':i===2?'#B07A3C':'#7E8E80'}));
+    const showCols=this.props.compactRanking!==true;
+
+    // ---------- DETAIL ----------
+    const sel=this.byId[S.sel];
+    const selGenes=sel.genes.map(g=>({code:g.code,label:g.label,cat:g.cat,valStr:g.value,pct:Math.round(g.intensity*100),dominant:g.dominant, barStyle:{height:Math.round(g.intensity*100)+'%',width:'100%',background:'linear-gradient(180deg,'+g.color+','+rg(g.color,.32)+')',borderRadius:'6px 6px 2px 2px'}, headStyle:{color:g.color,fontFamily:"'JetBrains Mono',monospace",fontSize:'11.5px'}, domStyle:{position:'absolute',top:'-6px',right:'-3px',width:'6px',height:'6px',borderRadius:'50%',background:g.color,boxShadow:'0 0 7px '+g.color}}));
+    const selEquityEl=this._equityChart(sel.equity, sel.ret>=0?this.C.green:this.C.red, 200);
+    const selPeriods=sel.periods.map(p=>({year:p.year, retStr:(p.ret>=0?'+':'')+p.ret+'%', retColor:p.ret>=0?this.C.green:this.C.red, ddStr:p.dd+'%', retBarStyle:{width:Math.min(100,Math.abs(p.ret)*1.3)+'%',height:'7px',borderRadius:'4px',background:p.ret>=0?this.C.green:this.C.red}, ddBarStyle:{width:Math.min(100,p.dd*2)+'%',height:'7px',borderRadius:'4px',background:rg(this.C.red,.55)}}));
+    const selRobust=sel.robustRows.map(x=>({label:x.label, sStr:String(x.s), barStyle:{width:x.s+'%',height:'100%',borderRadius:'5px',background:x.s>75?this.C.green:x.s>55?this.C.gold:this.C.red}}));
+    const selMut=sel.mutations.map(m=>({param:m.param,before:m.before,after:m.after,note:m.note, color:this._impactColor(m.impact), chipLabel:m.impact.replace(/_/g,' '), chipStyle:{color:this._impactColor(m.impact),background:rg(this._impactColor(m.impact),.12),border:'1px solid '+rg(this._impactColor(m.impact),.3),fontFamily:"'JetBrains Mono',monospace",fontSize:'11px',padding:'2px 7px',borderRadius:'5px',letterSpacing:'.06em',textTransform:'uppercase',whiteSpace:'nowrap'}}));
+    let chain=[],cur=sel,guard=0; while(cur&&guard<12){chain.unshift(cur);cur=(cur.parent&&cur.parent!=='seed')?this.byId[cur.parent]:null;guard++;}
+    const selAncestry=[{name:'SEED-Î±',genStr:'G3',color:this.C.green,id:'seed',isSeed:true}].concat(chain.map(r=>({name:r.name,genStr:r.genStr,color:r.color,id:r.id,open:()=>this.pick(r.id),current:r.id===sel.id})));
+    const selDescend=this.robots.filter(r=>r.parent===sel.id).map(r=>({...r,open:()=>this.pick(r.id)}));
+    const bestP=[...sel.periods].sort((a,b)=>b.ret-a.ret)[0], worstP=[...sel.periods].sort((a,b)=>a.ret-b.ret)[0];
+    const selEnv={bestYear:bestP.year,bestRet:(bestP.ret>=0?'+':'')+bestP.ret+'%',worstYear:worstP.year,worstRet:(worstP.ret>=0?'+':'')+worstP.ret+'%'};
+    const selPicker=this.robots.map(r=>({name:r.name,active:r.id===sel.id,onClick:()=>this.pick(r.id), style:{fontFamily:"'JetBrains Mono',monospace",fontSize:'12.7px',padding:'5px 11px',borderRadius:'7px',cursor:'pointer',whiteSpace:'nowrap',border:'1px solid '+(r.id===sel.id?rg(r.color,.4):'rgba(20,50,30,.11)'),background:r.id===sel.id?rg(r.color,.12):'transparent',color:r.id===sel.id?r.color:'#76867A'}}));
+    const selKpis=[
+      {l:'Net return',v:sel.retStr,c:sel.retColor},{l:'Max drawdown',v:sel.ddStr,c:'#2B3A30'},
+      {l:'Profit factor',v:sel.pfStr,c:'#2B3A30'},{l:'Robustness',v:sel.robStr+'/100',c:'#2B3A30'},
+      {l:'Win rate',v:sel.winStr,c:'#2B3A30'},{l:'Trades',v:String(sel.trades),c:'#2B3A30'},
+    ].map(k=>({...k,valStyle:{color:k.c}}));
+
+    // ---------- COMPARE ----------
+    const A=this.byId[S.a], B=this.byId[S.b];
+    const cmpA={...A, ring:this._ring(A.fitness,60,A.color)}, cmpB={...B, ring:this._ring(B.fitness,60,B.color)};
+    const mDefs=[{k:'fitness',l:'Fitness',low:false,f:v=>v.toFixed(1)},{k:'ret',l:'Net return',low:false,f:v=>(v>=0?'+':'')+v.toFixed(1)+'%'},{k:'dd',l:'Max drawdown',low:true,f:v=>v.toFixed(1)+'%'},{k:'pf',l:'Profit factor',low:false,f:v=>v.toFixed(2)},{k:'robust',l:'Robustness',low:false,f:v=>v+'/100'},{k:'consist',l:'Consistency',low:false,f:v=>v+'/100'},{k:'surv',l:'Survival rate',low:false,f:v=>v+'%'},{k:'win',l:'Win rate',low:false,f:v=>v+'%'}];
+    const cmpMetrics=mDefs.map(m=>{ const av=A[m.k],bv=B[m.k]; const aB=m.low?av<bv:av>bv, bB=m.low?bv<av:bv>av; const mx=Math.max(Math.abs(av),Math.abs(bv))||1;
+      return {label:m.l, aStr:m.f(av), bStr:m.f(bv), aColor:aB?this.C.green:'#2B3A30', bColor:bB?this.C.green:'#2B3A30', aBarStyle:{width:(Math.abs(av)/mx*100)+'%',height:'100%',borderRadius:'4px',background:aB?this.C.green:'rgba(20,50,30,.22)'}, bBarStyle:{width:(Math.abs(bv)/mx*100)+'%',height:'100%',borderRadius:'4px',background:bB?this.C.green:'rgba(20,50,30,.22)'}}; });
+    const cmpGenes=this.GENE_DEFS.map((g,gi)=>{ const av=A.genes[gi].intensity, bv=B.genes[gi].intensity; const big=Math.abs(av-bv)>0.22;
+      return {code:g.code,label:g.label,color:this.CAT[g.cat],aVal:A.genes[gi].value,bVal:B.genes[gi].value, aBarStyle:{height:Math.round(av*100)+'%',width:'100%',background:this.CAT[g.cat],borderRadius:'4px 4px 0 0'}, bBarStyle:{height:Math.round(bv*100)+'%',width:'100%',background:rg(this.CAT[g.cat],.45),borderRadius:'4px 4px 0 0'}, diffStyle:{fontFamily:"'JetBrains Mono',monospace",fontSize:'11.5px',color:big?this.C.gold:'#94A29A'}, diff:big?'Î”':'Â·'}; });
+    const robotOptions=this.robots.map(r=>({id:r.id,name:r.name, onA:()=>this.setState({a:r.id}), onB:()=>this.setState({b:r.id}), aStyle:{fontFamily:"'JetBrains Mono',monospace",fontSize:'12.2px',padding:'5px 10px',borderRadius:'6px',cursor:'pointer',border:'1px solid '+(S.a===r.id?'rgba(110,168,254,.4)':'rgba(20,50,30,.11)'),background:S.a===r.id?'rgba(31,158,87,.14)':'transparent',color:S.a===r.id?'#15823F':'#76867A'}, bStyle:{fontFamily:"'JetBrains Mono',monospace",fontSize:'12.2px',padding:'5px 10px',borderRadius:'6px',cursor:'pointer',border:'1px solid '+(S.b===r.id?'rgba(15,163,140,.45)':'rgba(20,50,30,.11)'),background:S.b===r.id?'rgba(15,163,140,.14)':'transparent',color:S.b===r.id?this.C.cyan:'#76867A'}}));
+
+    // ---------- GENOME ----------
+    const geneFreq=this.GENE_DEFS.map((g,gi)=>{ const avg=this.robots.reduce((a,r)=>a+r.genes[gi].intensity,0)/this.robots.length; return {code:g.code,label:g.label,color:this.CAT[g.cat],cat:g.cat,pct:Math.round(avg*100),avg}; }).sort((a,b)=>b.avg-a.avg)
+      .map(g=>({...g, barStyle:{width:g.pct+'%',height:'100%',borderRadius:'5px',background:'linear-gradient(90deg,'+g.color+','+rg(g.color,.4)+')'}, dotStyle:{width:'9px',height:'9px',borderRadius:'2px',background:g.color}}));
+    const dominantGenes=geneFreq.slice(0,3), recessiveGenes=geneFreq.slice(-3).reverse();
+    const mutationSuccess=[
+      {name:'Widen stop loss',impact:'risk_decrease',s:74},{name:'Extend target (asymmetric R)',impact:'profit_aggressive',s:61},
+      {name:'Add session filter',impact:'risk_decrease',s:68},{name:'Enable trailing stop',impact:'risk_decrease',s:57},
+      {name:'Stricter trend gate (ADX)',impact:'neutral',s:52},{name:'Enable grid recovery',impact:'risk_increase',s:23},
+    ].map(m=>({...m, sStr:m.s+'%', color:this._impactColor(m.impact), chipLabel:m.impact.replace(/_/g,' '), barStyle:{width:m.s+'%',height:'100%',borderRadius:'5px',background:this._impactColor(m.impact)}, chipStyle:{color:this._impactColor(m.impact),background:rg(this._impactColor(m.impact),.12),fontFamily:"'JetBrains Mono',monospace",fontSize:'11px',padding:'2px 7px',borderRadius:'5px',letterSpacing:'.05em',textTransform:'uppercase',whiteSpace:'nowrap'}}));
+    const heatmapEl=this._heatmapEl();
+
+    // ---------- LINEAGE ----------
+    const lineageEl=this._lineageEl(false);
+    const lineageLegend=tierOrder.map(t=>({label:t,dotStyle:dot(this.TIER[t])})).concat([{label:'Ancestor',dotStyle:dot(this.C.green)}]);
+
+    // ---------- EXPERIMENTS ----------
+    const experiment={code:'EXP-064',title:'Asymmetric payoff under widened stops',status:'RUNNING',progress:68,
+      hypothesis:'Widening the stop-loss gene while extending the target R-multiple should improve survival in high-volatility regimes without collapsing profit factor.',
+      population:120,generation:8,mutations:340,survivors:44,
+      criteria:['Max drawdown â‰¤ 20%','Profit factor â‰¥ 1.6','Out-of-sample robustness â‰¥ 70','Survives 6 of 9 stress windows'],
+      results:[{l:'Survivors',v:'44 / 120'},{l:'Mean fitness',v:'78.4'},{l:'Best mutant',v:'VANTA-M1'},{l:'Failed DD gate',v:'31'}],
+      learnings:['Widened stops raised survival rate by 9 percentage points.','Grid-recovery mutations failed the drawdown gate in 82% of runs.','Session filter remains the most reproducible positive mutation.'],
+      next:'EXP-065 â€” crossbreed APEX Ã— SABLE for low-drawdown trend capture.'};
+    const expProgressStyle={width:experiment.progress+'%',height:'100%',borderRadius:'100px',background:'linear-gradient(90deg,'+this.C.blue+','+this.C.green+')'};
+    const expPopulation=this.robots.slice(0,6).map(r=>({...r,open:()=>this.pick(r.id)}));
+    const expList=[{code:'EXP-064',title:'Widened stops Â· asymmetric payoff',status:'RUNNING',c:this.C.green},{code:'EXP-063',title:'Volatility expansion entries',status:'ANALYSING',c:this.C.amber},{code:'EXP-062',title:'Session-gated breakout',status:'COMPLETE',c:this.C.blue}].map(e=>({...e, chipStyle:{color:e.c,background:rg(e.c,.12),border:'1px solid '+rg(e.c,.3),fontFamily:"'JetBrains Mono',monospace",fontSize:'11.5px',padding:'3px 9px',borderRadius:'6px',letterSpacing:'.08em'}}));
+
+    // ---------- METHODOLOGY ----------
+    const glossary=[
+      {term:'Fitness',def:'A composite score blending risk-adjusted return, robustness and consistency â€” not raw profit.'},
+      {term:'DNA / Genome',def:'The full set of parameters and rules that define a robot: entry, filter, risk, stop, target and more.'},
+      {term:'Gene',def:'A single parameter (e.g. stop-loss, ADX threshold). Mutating it changes behaviour.'},
+      {term:'Mutation',def:'A controlled change to one or more genes, producing a new candidate version.'},
+      {term:'Generation',def:'One full evolutionary cycle. Survivors of generation N seed generation N+1.'},
+      {term:'Robustness',def:'How well performance holds under spread, slippage, cost, out-of-sample and regime stress.'},
+    ];
+    const disclaimers=['Research and education only â€” not investment advice.','All results are historical backtests, not live trading.','No promise or projection of future returns.','Performance depends on market regime, spread, slippage, execution and broker conditions.','A high ranking does not equal operational approval.','Wild Mode lists aggressive strategies (grid, martingale, no-stop) with risk flags disclosed, never hidden.'];
+
+    return { dashKpis, genFitnessEl:this._bars(genData,150), genLabels:genData, ddDistEl:this._bars(ddData,150), ddLabels:ddData, statusBars, dominants,
+      sortOptions, filterOptions, ranked, showCols,
+      sel, selGenes, selEquityEl, selPeriods, selRobust, selMut, selAncestry, selDescend, selEnv, selPicker, selKpis, selRing:this._ring(sel.fitness,72,sel.color),
+      cmpA, cmpB, cmpMetrics, cmpGenes, robotOptions,
+      geneFreq, dominantGenes, recessiveGenes, mutationSuccess, heatmapEl,
+      lineageEl, lineageLegend,
+      experiment, expProgressStyle, expPopulation, expList,
+      glossary, disclaimers };
+  }
+}
+</script>
+</body>
+</html>

@@ -23,8 +23,10 @@ logs/
 *.htm
 *.html
 *.xml
+!frontend/**/*.html
 .env
 .env.*
+mt5_robot_lab_template_intake/
 QUANTBOT_CONTEXT_RB_RISK_ENGINE.md
 MEMORY.md
 
