@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from dataclasses import dataclass, asdict, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -18,7 +19,12 @@ from app.core.mt5_detection import build_local_mt5_environment_status, redact_pu
 from app.core.mt5_process_control import make_mt5_close_summary
 from app.core.mt5_report_parser import ParsedMT5Report, parse_mt5_report
 from app.core.mt5_runner import MT5SmokeConfig, MT5SmokeExecutionError, MT5SmokeRunResult, run_mt5_smoke
-from app.core.operator_gate import APPROVAL_PHRASE_PT, approve_operator_gate, create_operator_approval_request
+from app.core.operator_gate import (
+    APPROVAL_PHRASE_PT,
+    approve_one_run_local_smoke,
+    approve_operator_gate,
+    create_operator_approval_request,
+)
 from app.core.real_mt5_result_capture import ResultCaptureManifest, create_capture_context, write_capture_manifest
 from app.core.real_mt5_runtime_contract import build_real_mt5_runtime_contract
 from app.core.strategy_tester_report_config import (
@@ -45,6 +51,9 @@ PUBLIC_CAPTURE_REPORT_MD = Path("reports") / "public" / "MVP_014B_ONE_RUN_REAL_C
 class RealMT5SmokeSummary:
     result_status: str
     operator_gate_approved: bool
+    operator_gate_version: str
+    operator_approval_method: str
+    operator_approval_persistent: bool
     mt5_detected: bool
     terminal_found: bool
     metaeditor_found: bool
@@ -87,6 +96,8 @@ class RealMT5SmokeSummary:
     report_export_contract_checked: bool = False
     report_path_privacy_checked: bool = False
     tester_ini_contract_checked: bool = False
+    worktree_clean_checked: bool = False
+    worktree_clean: bool = True
     terminal_launch_args_sanitized: list[str] = field(default_factory=list)
     tester_ini_contract_summary: dict[str, object] = field(default_factory=dict)
     report_contract_summary: dict[str, object] = field(default_factory=dict)
@@ -150,6 +161,9 @@ def _write_public_summaries(project_root: Path, summary: RealMT5SmokeSummary) ->
         "",
         f"- Result status: {summary.result_status}",
         f"- Operator gate approved: {str(summary.operator_gate_approved).lower()}",
+        f"- Operator gate version: {summary.operator_gate_version}",
+        f"- Operator approval method: {summary.operator_approval_method}",
+        f"- Operator approval persistent: {str(summary.operator_approval_persistent).lower()}",
         f"- MT5 detected: {str(summary.mt5_detected).lower()}",
         f"- Terminal found: {str(summary.terminal_found).lower()}",
         f"- MetaEditor found: {str(summary.metaeditor_found).lower()}",
@@ -181,6 +195,8 @@ def _write_public_summaries(project_root: Path, summary: RealMT5SmokeSummary) ->
         f"- Compiled EX5 checked: {str(summary.compiled_ex5_checked).lower()}",
         f"- Report export contract checked: {str(summary.report_export_contract_checked).lower()}",
         f"- Report path privacy checked: {str(summary.report_path_privacy_checked).lower()}",
+        f"- Worktree clean checked: {str(summary.worktree_clean_checked).lower()}",
+        f"- Worktree clean: {str(summary.worktree_clean).lower()}",
         "",
         "Raw local artifacts are kept only under the ignored private smoke folder.",
     ]
@@ -264,6 +280,9 @@ def _write_public_capture_summaries(
     public_json.parent.mkdir(parents=True, exist_ok=True)
     payload: dict[str, object] = {
         "result_status": result_status,
+        "operator_gate_version": summary.operator_gate_version,
+        "operator_approval_method": summary.operator_approval_method,
+        "operator_approval_persistent": summary.operator_approval_persistent,
         "mt5_real_run": summary.mt5_real_run,
         "backtest_real_run": summary.backtest_real_run,
         "strategy_tester_run": summary.strategy_tester_run,
@@ -314,6 +333,8 @@ def _write_public_capture_summaries(
         "report_export_contract_checked": summary.report_export_contract_checked,
         "report_path_privacy_checked": summary.report_path_privacy_checked,
         "tester_ini_contract_checked": summary.tester_ini_contract_checked,
+        "worktree_clean_checked": summary.worktree_clean_checked,
+        "worktree_clean": summary.worktree_clean,
         "terminal_launch_args_sanitized": summary.terminal_launch_args_sanitized,
         "tester_ini_contract_summary": summary.tester_ini_contract_summary,
         "report_contract_summary": summary.report_contract_summary,
@@ -325,6 +346,9 @@ def _write_public_capture_summaries(
         "# MVP-014B One-Run Real Capture Smoke Summary",
         "",
         f"- Result status: {result_status}",
+        f"- Operator gate version: {summary.operator_gate_version}",
+        f"- Operator approval method: {summary.operator_approval_method}",
+        f"- Operator approval persistent: {str(summary.operator_approval_persistent).lower()}",
         f"- MT5 real run: {str(summary.mt5_real_run).lower()}",
         f"- Backtest real run: {str(summary.backtest_real_run).lower()}",
         f"- Strategy Tester run: {str(summary.strategy_tester_run).lower()}",
@@ -356,6 +380,8 @@ def _write_public_capture_summaries(
         f"- Failure stage: {summary.failure_stage}",
         f"- Exit code recorded: {summary.exit_code_recorded if summary.exit_code_recorded is not None else 'not_recorded'}",
         f"- Exit code category: {summary.exit_code_category}",
+        f"- Worktree clean checked: {str(summary.worktree_clean_checked).lower()}",
+        f"- Worktree clean: {str(summary.worktree_clean).lower()}",
         "",
         "Raw local artifacts remain only in the ignored private smoke folder.",
     ]
@@ -366,10 +392,24 @@ def _write_public_capture_summaries(
     return payload
 
 
+def _git_worktree_clean(project_root: Path) -> bool:
+    if not (project_root / ".git").exists():
+        return True
+    completed = subprocess.run(
+        ["git", "status", "--short"],
+        cwd=project_root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return completed.returncode == 0 and completed.stdout.strip() == ""
+
+
 def execute_one_run_real_mt5_smoke(
     project_root: Path,
     *,
-    approval_phrase: str,
+    approval_phrase: str = "",
+    approve_one_run_local_smoke_flag: bool = False,
     symbol: str = DEFAULT_SYMBOL,
     timeframe: str = DEFAULT_TIMEFRAME,
     run_id: str | None = None,
@@ -405,7 +445,12 @@ def execute_one_run_real_mt5_smoke(
             "metaeditor_found": environment["metaeditor_found"],
         },
     )
-    gate = approve_operator_gate(gate_request, approval_phrase)
+    if approve_one_run_local_smoke_flag:
+        gate = approve_one_run_local_smoke(gate_request)
+    elif approval_phrase:
+        gate = approve_operator_gate(gate_request, approval_phrase)
+    else:
+        gate = gate_request
     (private_dir / "operator_gate_manifest.json").write_text(
         json.dumps(gate, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
@@ -461,6 +506,25 @@ def execute_one_run_real_mt5_smoke(
             ),
             "root_cause": "terminal_contract_audit_failed",
             "terminal_contract_audit": terminal_contract_audit.get("terminal_contract_audit", "FAIL"),
+        }
+    worktree_clean = _git_worktree_clean(project_root)
+    if not worktree_clean:
+        preflight_summary = {
+            **preflight_summary,
+            "status": "blocked_preflight_failed",
+            "ready_for_real_retry": False,
+            "blocking_issues": list(
+                dict.fromkeys([*list(preflight_summary.get("blocking_issues", [])), "worktree_dirty"])
+            ),
+            "root_cause": "worktree_dirty",
+            "worktree_clean_checked": True,
+            "worktree_clean": False,
+        }
+    else:
+        preflight_summary = {
+            **preflight_summary,
+            "worktree_clean_checked": True,
+            "worktree_clean": True,
         }
     ready_for_real_smoke = bool(
         environment["ready_for_real_smoke"]
@@ -552,6 +616,9 @@ def execute_one_run_real_mt5_smoke(
     summary = RealMT5SmokeSummary(
         result_status=status,
         operator_gate_approved=bool(gate["execution_allowed"]),
+        operator_gate_version=str(gate.get("operator_gate_version", "")),
+        operator_approval_method=str(gate.get("operator_approval_method", "")),
+        operator_approval_persistent=bool(gate.get("operator_approval_persistent", False)),
         mt5_detected=bool(environment["mt5_detected"]),
         terminal_found=bool(environment["terminal_found"]),
         metaeditor_found=bool(environment["metaeditor_found"]),
@@ -586,6 +653,8 @@ def execute_one_run_real_mt5_smoke(
         report_export_contract_checked=bool(preflight_summary.get("report_export_contract_checked", False)),
         report_path_privacy_checked=bool(preflight_summary.get("report_path_privacy_checked", False)),
         tester_ini_contract_checked=bool(preflight_summary.get("tester_ini_contract_checked", False)),
+        worktree_clean_checked=bool(preflight_summary.get("worktree_clean_checked", False)),
+        worktree_clean=bool(preflight_summary.get("worktree_clean", True)),
         terminal_launch_args_sanitized=terminal_launch_args_sanitized,
         tester_ini_contract_summary=dict(preflight_summary.get("tester_ini_contract_summary", {})),
         report_contract_summary=dict(preflight_summary.get("report_contract_summary", {})),
