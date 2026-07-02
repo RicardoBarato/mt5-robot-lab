@@ -5,7 +5,9 @@ Status: HOLD_MVP_014L_REAL_RETRY_NO_REPORT_FOUND
 ## Operator Gate
 
 - Operator gate approved: true
-- Approval phrase supplied: true
+- Operator gate version: v2
+- Approval method: cli_flag_one_run_local_smoke
+- Approval persistent: false
 - Smoke only: true
 - Max backtests: 1
 - Tournament 100 run: false

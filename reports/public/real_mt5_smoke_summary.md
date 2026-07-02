@@ -2,6 +2,9 @@
 
 - Result status: PASS_REAL_MT5_SMOKE_ONE_RUN_COMPLETED
 - Operator gate approved: true
+- Operator gate version: v2
+- Operator approval method: cli_flag_one_run_local_smoke
+- Operator approval persistent: false
 - MT5 detected: true
 - Terminal found: true
 - MetaEditor found: true
@@ -33,5 +36,7 @@
 - Compiled EX5 checked: true
 - Report export contract checked: true
 - Report path privacy checked: true
+- Worktree clean checked: true
+- Worktree clean: true
 
 Raw local artifacts are kept only under the ignored private smoke folder.

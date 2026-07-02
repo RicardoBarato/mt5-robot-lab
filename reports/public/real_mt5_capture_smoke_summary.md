@@ -1,6 +1,9 @@
 # MVP-014B One-Run Real Capture Smoke Summary
 
 - Result status: HOLD_REAL_CAPTURE_SMOKE_NO_REPORT_FOUND
+- Operator gate version: v2
+- Operator approval method: cli_flag_one_run_local_smoke
+- Operator approval persistent: false
 - MT5 real run: true
 - Backtest real run: true
 - Strategy Tester run: true
@@ -32,5 +35,7 @@
 - Failure stage: completed_report_pending_capture
 - Exit code recorded: 0
 - Exit code category: success
+- Worktree clean checked: true
+- Worktree clean: true
 
 Raw local artifacts remain only in the ignored private smoke folder.

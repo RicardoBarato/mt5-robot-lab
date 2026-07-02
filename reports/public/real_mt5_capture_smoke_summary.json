@@ -26,6 +26,9 @@
     "stdout.txt"
   ],
   "observed_report_files": [],
+  "operator_approval_method": "cli_flag_one_run_local_smoke",
+  "operator_approval_persistent": false,
+  "operator_gate_version": "v2",
   "parse_enabled": true,
   "parse_status": "no_report_found",
   "parseable": false,
@@ -38,22 +41,22 @@
   "ready_for_real_retry": true,
   "real_smoke_runs": 1,
   "replace_report": true,
-  "report_base": "reports\\private\\real_mt5_smoke\\real_smoke_20260701T184857Z_272052f2\\strategy_tester_report",
+  "report_base": "reports\\private\\real_mt5_smoke\\real_smoke_20260702T031701Z_283908d5\\strategy_tester_report",
   "report_capture_attempted": true,
   "report_capture_status": "no_report_found",
   "report_contract_summary": {
     "expected_report_paths": [
-      "reports\\private\\real_mt5_smoke\\real_smoke_20260701T184857Z_272052f2\\strategy_tester_report.html",
-      "reports\\private\\real_mt5_smoke\\real_smoke_20260701T184857Z_272052f2\\strategy_tester_report.htm",
-      "reports\\private\\real_mt5_smoke\\real_smoke_20260701T184857Z_272052f2\\strategy_tester_report.xml",
-      "reports\\private\\real_mt5_smoke\\real_smoke_20260701T184857Z_272052f2\\strategy_tester_report.csv",
-      "reports\\private\\real_mt5_smoke\\real_smoke_20260701T184857Z_272052f2\\strategy_tester_report.json"
+      "reports\\private\\real_mt5_smoke\\real_smoke_20260702T031701Z_283908d5\\strategy_tester_report.html",
+      "reports\\private\\real_mt5_smoke\\real_smoke_20260702T031701Z_283908d5\\strategy_tester_report.htm",
+      "reports\\private\\real_mt5_smoke\\real_smoke_20260702T031701Z_283908d5\\strategy_tester_report.xml",
+      "reports\\private\\real_mt5_smoke\\real_smoke_20260702T031701Z_283908d5\\strategy_tester_report.csv",
+      "reports\\private\\real_mt5_smoke\\real_smoke_20260702T031701Z_283908d5\\strategy_tester_report.json"
     ],
     "parse_required": true,
     "private_artifacts_only": true,
     "public_summary_sanitized": true,
     "replace_report": true,
-    "report_base": "reports\\private\\real_mt5_smoke\\real_smoke_20260701T184857Z_272052f2\\strategy_tester_report",
+    "report_base": "reports\\private\\real_mt5_smoke\\real_smoke_20260702T031701Z_283908d5\\strategy_tester_report",
     "report_export_configured": true,
     "report_required": true,
     "shutdown_terminal": true
@@ -85,5 +88,7 @@
     "symbol": "XAUUSD"
   },
   "timeframe_requested": "M5",
-  "tournament_100_run": false
+  "tournament_100_run": false,
+  "worktree_clean": true,
+  "worktree_clean_checked": true
 }
